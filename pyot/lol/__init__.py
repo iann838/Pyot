@@ -5,6 +5,7 @@ from .match import Match, MatchTimeline, Timeline, MatchHistory
 from .profileicon import ProfileIcon, ProfileIcons
 from .spectator import FeaturedGames, CurrentGame
 from .championrotation import ChampionRotation
+from .merakichampion import MerakiChampion
 from .spell import Spell, Spells
 from .champion import Champion
 from .summoner import Summoner

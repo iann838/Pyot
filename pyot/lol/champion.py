@@ -117,7 +117,6 @@ class Champion(PyotCore):
         raws = ["roles"]
         renamed = {"alias": "key", "short_bio": "lore", "playstyle_info": "play_style", "square_portrait_path": "square_path", "spells": "abilities"}
         removed = ["stinger_sfx_path", "choose_vo_path", "ban_vo_path", "recommended_item_defaults"]
-        base_url = "http://raw.communitydragon.org/pbe/"
 
     def __init__(self, id: int = None, key: str = None, name: str = None, locale: str = None):
         self._lazy_set(locals())
@@ -171,16 +170,3 @@ class Champion(PyotCore):
         spells["p"] = data.pop("passive")
         data["spells"] = spells
         return data
-
-
-
-
-
-    
-
-    
-
-                
-
-
-
