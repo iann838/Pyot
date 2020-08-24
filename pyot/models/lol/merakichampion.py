@@ -2,6 +2,7 @@ from .__core__ import PyotStatic, PyotCore
 from ...stores.merakicdn import MerakiCDN
 from typing import List
 
+
 # PYOT STATIC OBJECTS
 
 class MerakiChampionSpellModifierData(PyotStatic):
@@ -154,4 +155,10 @@ class MerakiChampion(PyotCore):
                 self.key = await self.Meta.pipeline.transform_key(MerakiCDN, list(self.Meta.rules.keys())[0], "id", self.id)
             elif hasattr(self, "name"):
                 self.key = await self.Meta.pipeline.transform_key(MerakiCDN, list(self.Meta.rules.keys())[0], "name", self.name)
+
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.id if hasattr(self,"id") else None, name=self.name if hasattr(self,"name") else None, 
+            key=self.key if hasattr(self,"key") else None, locale="en_us")
 

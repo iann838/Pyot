@@ -170,3 +170,9 @@ class Champion(PyotCore):
         spells["p"] = data.pop("passive")
         data["spells"] = spells
         return data
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.id if hasattr(self,"id") else None, name=self.name if hasattr(self,"name") else None, 
+            key=self.key if hasattr(self,"key") else None)

@@ -15,6 +15,11 @@ class CurrentGameBansData(PyotStatic):
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
 
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
+
 
 class CurrentGameParticipantData(PyotStatic):
     team_id: int
@@ -41,6 +46,11 @@ class CurrentGameParticipantData(PyotStatic):
     def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
 
     @property
     def profile_icon(self) -> "ProfileIcon":
@@ -85,6 +95,11 @@ class FeaturedGameParticipantData(PyotStatic):
     def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
         
     @property
     def profile_icon(self) -> "ProfileIcon":

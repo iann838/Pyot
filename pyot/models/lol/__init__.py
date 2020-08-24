@@ -6,6 +6,7 @@ from .profileicon import ProfileIcon, ProfileIcons
 from .spectator import FeaturedGames, CurrentGame
 from .championrotation import ChampionRotation
 from .merakichampion import MerakiChampion
+from .merakiitem import MerakiItem
 from .spell import Spell, Spells
 from .champion import Champion
 from .summoner import Summoner

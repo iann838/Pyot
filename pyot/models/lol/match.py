@@ -15,6 +15,11 @@ class MatchBanData(PyotStatic):
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
 
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
+
 
 class MatchParticipantStatData(PyotStatic):
     participant_id: int
@@ -94,6 +99,14 @@ class MatchParticipantStatData(PyotStatic):
         mutable = []
         for i in self.item_ids:
             mutable.append(Item(id=i, locale=self.to_locale(self.platform)))
+        return mutable
+
+    @property
+    def meraki_items(self) -> List["MerakiItem"]:
+        from .merakiitem import MerakiItem
+        mutable = []
+        for i in self.item_ids:
+            mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
@@ -185,6 +198,21 @@ class MatchEventData(PyotStatic):
         from .item import Item
         return Item(id=self.before_id, locale=self.to_locale(self.platform))
 
+    @property
+    def meraki_after_item(self) -> "MerakiItem":
+        from .merakiitem import MerakiItem
+        return MerakiItem(id=self.after_id)
+
+    @property
+    def meraki_item(self) -> "MerakiItem":
+        from .merakiitem import MerakiItem
+        return MerakiItem(id=self.item_id)
+
+    @property
+    def meraki_before_item(self) -> "MerakiItem":
+        from .merakiitem import MerakiItem
+        return MerakiItem(id=self.before_id)
+
 
 class MatchParticipantTimelineData(PyotStatic):
     participant_id: int
@@ -220,7 +248,12 @@ class MatchParticipantData(PyotStatic):
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
-        return Champion(id=self.champion_id, locale=self.locale)
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
 
     @property
     def spells(self) -> List["Spell"]:
@@ -274,6 +307,11 @@ class MatchHistoryMatchData(PyotStatic):
     def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
 
     @property
     def match(self) -> "Match":

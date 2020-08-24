@@ -31,11 +31,16 @@ class ChampionMastery(PyotCore):
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
-    
+
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
 
 
 

@@ -75,6 +75,11 @@ class Item(PyotCore):
             items.append(Item(id=id, locale=self.locale))
         return items
 
+    @property
+    def meraki_item(self) -> "MerakiItem":
+        from .merakiitem import MerakiItem
+        return MerakiItem(id=self.id) 
+
 
 class Items(PyotCore):
     items: List[Item]

@@ -32,4 +32,20 @@ class ChampionRotation(PyotCore):
             mutable.append(Champion(id=i, locale=self.to_locale(self.platform)))
         return mutable
 
+    @property
+    def meraki_free_champions(self) -> List["MerakiChampion"]:
+        from .merakichampion import MerakiChampion
+        mutable = []
+        for i in self.free_champion_ids:
+            mutable.append(MerakiChampion(id=i))
+        return mutable
+
+    @property
+    def meraki_free_newie_champions(self) -> List["MerakiChampion"]:
+        from .merakichampion import MerakiChampion
+        mutable = []
+        for i in self.free_newie_champion_ids:
+            mutable.append(MerakiChampion(id=i))
+        return mutable
+
 
