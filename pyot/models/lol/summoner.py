@@ -1,6 +1,6 @@
 from .__core__ import PyotCore
 from datetime import datetime
-from ..core.object import PyotLazyObject
+from ...core.object import PyotLazyObject
 
 
 # PYOT CORE OBJECTS

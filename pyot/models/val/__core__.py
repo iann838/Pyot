@@ -1,4 +1,4 @@
-from ..core.object import PyotCoreObject
+from ...core.object import PyotCoreObject
 
 class PyotCore(PyotCoreObject):
     

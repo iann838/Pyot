@@ -158,8 +158,8 @@ class RiotAPIRateLimiter:
                         if not self._methods_rates[method][i][0] or method_count[i][0] < self._methods_rates[method][i][0]:
                             self._methods_rates[method][i][0] = method_count[i][0]
                     for i in range(2):
-                        app_top = date + timedelta(seconds=self._application_rates[i][3]) + timedelta(seconds=0.5)
-                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3]) + timedelta(seconds=0.5)
+                        app_top = date + timedelta(seconds=self._application_rates[i][3]) + timedelta(seconds=0.8)
+                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3]) + timedelta(seconds=0.8)
                         if app_top < self._application_times[i] or token.flag:
                             self._application_times[i] = app_top
                         if method_top < self._methods_times[method][i] or token.flag:

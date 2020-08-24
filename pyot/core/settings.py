@@ -27,7 +27,7 @@ class PyotSettings:
     LOCALE_MAP: Mapping[str, str] = field(default_factory=dict)
 
     def activate(self):
-        module = import_module(f"pyot.{self.GAME_VARIANT.lower()}.__core__")
+        module = import_module(f"pyot.models.{self.GAME_VARIANT.lower()}.__core__")
         self._check_platform(self.DEFAULT_PLATFORM, self.GAME_VARIANT.lower())
         self._check_region(self.DEFAULT_REGION, self.GAME_VARIANT.lower())
         self._check_locale(self.DEFAULT_LOCALE, self.GAME_VARIANT.lower())

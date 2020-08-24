@@ -7,7 +7,7 @@ pyot.Settings(
     DEFAULT_REGION = "AMERICAS",
     PIPELINE = [
         {
-            "BACKEND": "pyot.stores.Oden",
+            "BACKEND": "pyot.stores.Omnistone",
             "LOGS_ENABLED": False,
         },
         {

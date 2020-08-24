@@ -1,4 +1,4 @@
-from ..core.object import PyotCoreObject, PyotStaticObject
+from ...core.object import PyotCoreObject, PyotStaticObject
 
 
 class PyotBaseObject:

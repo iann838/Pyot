@@ -1,15 +1,25 @@
 from .__core__ import PyotCore
-from ..stores.cdragon import CDragonTransformers
-from ..core.exceptions import NotFound
+from ...stores.cdragon import CDragon, CDragonTransformers
+from ...core.exceptions import NotFound
 from typing import List, Iterator
 
 
-class ProfileIcon(PyotCore):
+
+# PYOT CORE OBJECTS
+
+class Rune(PyotCore):
     id: int
+    name: str
+    major_patch: str
+    description: str
+    long_description: str
+    cleaned_description: str
     icon_path: str
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_profile_icon_full": ["id"]}
+        removed = ["tooltip", "end_of_game_stat_descs"]
+        rules = {"cdragon_rune_full": ["id"]}
+        renamed = {"major_change_patch_version": "major_patch", "long_desc": "long_description", "short_desc": "description"}
 
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
@@ -19,7 +29,7 @@ class ProfileIcon(PyotCore):
             if item["id"] == self.id:
                 return item
         raise NotFound
-    
+
     async def _refactor(self):
         if self.locale.lower() == "en_us":
             self.Meta.server = "default"
@@ -29,23 +39,24 @@ class ProfileIcon(PyotCore):
     async def _transform(self, data):
         tr = CDragonTransformers(self.locale)
         data["iconPath"] = tr.url_assets(data["iconPath"])
+        data["cleanedDescription"] = tr.sanitize(data["longDesc"])
         return data
 
 
-class ProfileIcons(PyotCore):
-    icons = List[ProfileIcon]
-    
+class Runes(PyotCore):
+    runes: List[Rune]
+
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_profile_icon_full": []}
+        rules = {"cdragon_rune_full": []}
 
     def __init__(self, locale: str = None):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
-        return self.icons[item]
+        return self.runes[item]
 
-    def __iter__(self) -> Iterator[ProfileIcon]:
-        return iter(self.icons)
+    def __iter__(self) -> Iterator[Rune]:
+        return iter(self.runes)
 
     async def _refactor(self):
         if self.locale.lower() == "en_us":
@@ -53,8 +64,9 @@ class ProfileIcons(PyotCore):
 
     async def _transform(self, data_):
         tr = CDragonTransformers(self.locale)
-        icons = []
+        runes = []
         for data in data_:
             data["iconPath"] = tr.url_assets(data["iconPath"])
-            icons.append({"data": data})
-        return {"icons": icons}
+            data["cleanedDescription"] = tr.sanitize(data["longDesc"])
+            runes.append({"data": data})
+        return {"runes": runes}

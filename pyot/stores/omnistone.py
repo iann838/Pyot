@@ -13,7 +13,7 @@ from logging import getLogger
 LOGGER = getLogger(__name__)
 
 
-class Oden(PyotStoreObject):
+class Omnistone(PyotStoreObject):
     unique = True
 
     def __init__(self, game: str, expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = False) -> None:
@@ -34,11 +34,11 @@ class Oden(PyotStoreObject):
                 if await self._allowed():
                     self._data[token] = (value, timeout, datetime.datetime.now(), datetime.datetime.now())
                     if self._logs_enabled:
-                        LOGGER.warning(f"[Trace: Oden] PUT: {self._log_template(token)}")
+                        LOGGER.warning(f"[Trace: Omnistone] PUT: {self._log_template(token)}")
             if len(self._data) > self._max_entries and await self._allowed():
                 async with self._lock:
                     if self._logs_enabled:
-                        LOGGER.warning(f"[Trace: Oden] VACUUM: Expiration check starts")
+                        LOGGER.warning(f"[Trace: Omnistone] VACUUM: Expiration check starts")
                     self._cull_lock = [True, datetime.datetime.now()]
                 await self.expire()
                 if len(self._data) > self._max_entries - self._max_entries/self._cull_frecuency:
@@ -51,7 +51,7 @@ class Oden(PyotStoreObject):
             except KeyError:
                 raise NotFound
             if self._logs_enabled and not expiring:
-                LOGGER.warning(f"[Trace: Oden] GET: {self._log_template(token)}")
+                LOGGER.warning(f"[Trace: Omnistone] GET: {self._log_template(token)}")
 
             now = datetime.datetime.now()
             if timeout == -1:
@@ -62,7 +62,7 @@ class Oden(PyotStoreObject):
                 try:
                     del self._data[token]
                     if self._logs_enabled:
-                        LOGGER.warning(f"[Trace: Oden] EXPIRE: {self._log_template(token)}")
+                        LOGGER.warning(f"[Trace: Omnistone] EXPIRE: {self._log_template(token)}")
                 except: pass
                 raise NotFound
             
@@ -74,7 +74,7 @@ class Oden(PyotStoreObject):
         try:
             del self._data[token]
             if self._logs_enabled:
-                LOGGER.warning(f"[Trace: Oden] DELETE: {self._log_template(token)}")
+                LOGGER.warning(f"[Trace: Omnistone] DELETE: {self._log_template(token)}")
         except KeyError:
             raise NotFound
 
@@ -86,7 +86,7 @@ class Oden(PyotStoreObject):
         async with self._lock:
             self._data = {}
             if self._logs_enabled:
-                LOGGER.warning(f"[Trace: Oden] CLEAR: Store has been cleared successfully")
+                LOGGER.warning(f"[Trace: Omnistone] CLEAR: Store has been cleared successfully")
 
     async def _allowed(self):
         if not self._cull_lock[0]:

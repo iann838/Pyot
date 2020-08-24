@@ -1,5 +1,5 @@
 from .__core__ import PyotStatic, PyotCore
-from ..stores.merakicdn import MerakiCDN
+from ...stores.merakicdn import MerakiCDN
 from typing import List
 
 # PYOT STATIC OBJECTS
