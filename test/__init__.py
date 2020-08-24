@@ -8,7 +8,15 @@ pyot.Settings(
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Oden",
+            "LOGS_ENABLED": False,
+        },
+        {
+            "BACKEND": "pyot.stores.CDragon",
             "LOGS_ENABLED": True,
+            "ERROR_HANDLING": {
+                404: ("T", []),
+                500: ("R", [3])
+            }
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",

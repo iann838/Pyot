@@ -1,11 +1,11 @@
 from .__core__ import PyotCore, PyotStatic
 from datetime import datetime
-from typing import List
+from typing import List, Iterator
 
 
-# PYOT STATIC OBJECTS
+# PYOT CORE OBJECTS
 
-class ChampionMasteryData(PyotStatic):
+class ChampionMastery(PyotCore):
     champion_id: int
     champion_level: int
     champion_points: int
@@ -15,27 +15,43 @@ class ChampionMasteryData(PyotStatic):
     chest_granted: bool
     tokens_earned: int
     summoner_id: str
+    
+    class Meta(PyotCore.Meta):
+        rules = {"champion_mastery_v4_by_champion_id": ["summoner_id", "champion_id"]}
 
     def __getattribute__(self, name):
         if name == "last_play_time":
             return datetime.fromtimestamp(super().__getattribute__(name)//1000)
         return super().__getattribute__(name)
 
+    def __init__(self, summoner_id: str = None, champion_id: int = None, platform: str = None):
+        self._lazy_set(locals())
+
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
+    
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
 
 
-# PYOT CORE OBJECTS
 
 class ChampionMasteries(PyotCore):
     summoner_id: str
-    masteries: List[ChampionMasteryData]
+    masteries: List[ChampionMastery]
     total_score: int
 
     class Meta(PyotCore.Meta):
-        rules = {"champion-mastery-v4-all-mastery": ["summoner_id"]}
+        rules = {"champion_mastery_v4_all_mastery": ["summoner_id"]}
+
+    def __getitem__(self, item):
+        return self.masteries[item]
+
+    def __iter__(self) -> Iterator[ChampionMastery]:
+        return iter(self.masteries)
 
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -43,25 +59,12 @@ class ChampionMasteries(PyotCore):
     async def _transform(self, data):
         new_data = {}
         new_data["totalScore"] = 0
+        masteries = []
         for a in data:
             new_data["totalScore"] += a["championLevel"]
-        new_data["masteries"] = data
+            masteries.append({"data": a})
+        new_data["masteries"] = masteries
         return new_data
-
-    @property
-    def summoner(self) -> "Summoner":
-        from .summoner import Summoner
-        return Summoner(id=self.summoner_id, platform=self.platform)
-
-
-class ChampionMastery(ChampionMasteryData, PyotCore):
-    champion_id: int
-    
-    class Meta(PyotCore.Meta):
-        rules = {"champion-mastery-v4-by-champion-id": ["summoner_id", "champion_id"]}
-
-    def __init__(self, summoner_id: str = None, champion_id: int = None, platform: str = None):
-        self._lazy_set(locals())
 
     @property
     def summoner(self) -> "Summoner":

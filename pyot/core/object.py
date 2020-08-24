@@ -16,24 +16,14 @@ class PyotLazyObject:
                 self.clas = clas.__args__[0]
         except Exception:
             self.clas = clas
-        if platform is not None:
-            if isinstance(obj, list):
-                for l in obj:
-                    l.update({"platform": platform})
-            else:
-                obj.update({"platform": platform})
-        if region is not None:
-            if isinstance(obj, list):
-                for l in obj:
-                    l.update({"region": region})
-            else:
-                obj.update({"region": region})
-        if locale is not None:
-            if isinstance(obj, list):
-                for l in obj:
-                    l.update({"locale": locale})
-            else:
-                obj.update({"locale": locale})
+        server_map = {"platform": platform, "region": region, "locale": locale}
+        for key, val in server_map.items():
+            if val is not None:
+                if isinstance(obj, list):
+                    for l in obj:
+                        l.update({key: val})
+                else:
+                    obj.update({key: val})
         self.obj = obj
 
     def __call__(self):
@@ -41,10 +31,20 @@ class PyotLazyObject:
             if isinstance(self.obj, list):
                 l = []
                 for obj in self.obj:
-                    l.append(self.clas(**obj))
+                    data = obj["data"]
+                    shallow = {k:v for (k,v) in obj.items() if k != "data"}
+                    instance = self.clas(**shallow)
+                    instance.Meta.data = data
+                    instance._fill()
+                    l.append(instance)
                 return l
             else:
-                return self.clas(**self.obj)
+                data = self.obj["data"]
+                shallow = {k:v for (k,v) in self.obj.items() if k != "data"}
+                instance = self.clas(**shallow)
+                instance.Meta.data = data
+                instance._fill()
+                return instance
         elif issubclass(self.clas, PyotStaticObject):
             if isinstance(self.obj, list):
                 l = []
@@ -66,14 +66,14 @@ class PyotStaticObject:
 
     class Meta:
         raws: List[str] = []
+        removed: List[str] = []
         types: Dict[str, Any] = {}
         data: Dict[str, Any] = {}
         renamed: Dict[str, str] = {}
-        special: Dict[str, Any] = {}
 
-    region: str
-    platform: str
-    locale: str
+    region: str = ""
+    platform: str = ""
+    locale: str = ""
 
     def __init__(self, data):
         self.Meta.types = get_type_hints(self.__class__)
@@ -82,17 +82,23 @@ class PyotStaticObject:
     def __getattribute__(self, name):
         try:
             if type(super().__getattribute__(name)) is PyotLazyObject:
-                return super().__getattribute__(name)()
+                obj = super().__getattribute__(name)()
+                setattr(self, name, obj)
+                return obj
             else:
                 return super().__getattribute__(name)
         except (KeyError, AttributeError):
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+            raise
+            # raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def _lazy_set(self, kwargs):
         self.Meta.types = get_type_hints(self.__class__)
         self.Meta.data = {}
         for name, val in kwargs.items():
-            if val is not None and name != "self":
+            if name in ["platform", "region", "locale"] and val is not None:
+                self.Meta.data[name] = val.lower()
+                setattr(self, name, val.lower())
+            elif val is not None and name != "self":
                 self.Meta.data[name] = val
                 setattr(self, name, val)
         return self
@@ -107,50 +113,47 @@ class PyotStaticObject:
     
     def _fill(self):
         data_ = self._normalize(self.Meta.data)
-        if "platform" in data_.keys():
-            self.platform = data_["platform"]
-        if "region" in data_.keys():
-            self.region = data_["region"]
-        if "locale" in data_.keys():
-            self.locale = data_["locale"]
-        for attr, val in data_.items():
+        for server in ["platform", "region", "locale"]:
+            if server in data_.keys():
+                setattr(self, server, data_[server])
+        for attr, val in data_.items():   # RENAME > REMOVE > RAW > LAZY
             attr = attr if attr not in self.Meta.renamed.keys() else self.Meta.renamed[attr]
-            if attr in self.Meta.raws:
+            if attr in self.Meta.removed:
+                continue
+            elif attr in self.Meta.raws:
                 setattr(self, attr, val)
             elif PyotLazyObject.need_lazy(val):
-                try:
-                    platform = self.platform
-                except AttributeError:
-                    platform = None
-                try:
-                    region = self.region
-                except AttributeError:
-                    region = None
-                try:
-                    locale = self.locale
-                except AttributeError:
-                    locale = None
-                setattr(self, attr, PyotLazyObject(self.Meta.types[attr], val, platform, region, locale))
+                servers = []
+                for server in ["platform", "region", "locale"]:
+                    try:
+                        servers.append(getattr(self, server))
+                    except AttributeError:
+                        servers.append(None)
+                setattr(self, attr, PyotLazyObject(self.Meta.types[attr], val, servers[0], servers[1], servers[2]))
             elif attr not in ["platform", "region", "locale"]:
                 setattr(self, attr, val)
         return self
 
-    def dict(self, pyotify: bool = False):
+    def dict(self, pyotify: bool = False, remove_server: bool = True):
         if not pyotify:
             return copy.deepcopy(self.Meta.data)
         def recursive(obj):
             dic = copy.deepcopy(obj.__dict__)
+            if remove_server:
+                for server in ["platform", "region", "locale"]:
+                    if server in dic.keys():
+                        dic.pop(server)
             for key, val in dic.items():
                 if type(val) is PyotLazyObject:
                     obj = val()
                     if isinstance(obj, list):
                         dic[key] = []
                         for i in range(len(obj)):
-                            recursive(obj[i])
-                            dic[key].append(obj[i].__dict__)
+                            inner = recursive(obj[i])
+                            dic[key].append(inner)
                     else:
-                        recursive(obj)
-                        dic[key] = obj.__dict__
+                        inner = recursive(obj)
+                        dic[key] = inner
             return dic
         return recursive(self)
 
@@ -159,7 +162,6 @@ class PyotStaticObject:
         if not pyotify:
             return json.dumps(self.Meta.data)
         return json.dumps(self.pyot_dict())
-
 
 
 class PyotCoreObject(PyotStaticObject):
@@ -174,14 +176,12 @@ class PyotCoreObject(PyotStaticObject):
         rules: Mapping[str, List[str]] = {}
         server_type: str = "platform"
         allow_query: bool = False
-        region_list = ["americas", "europe", "asia"]
-        platform_list = ["br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru"]
-        locale_list = ["cs_cz", "de_de", "en_us", "el_gr", "en_au", "en_gb", "en_ph", "en_sg", "es_ar", 
-            "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro", 
-            "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw"]
+        region_list = []
+        platform_list = []
+        locale_list = []
 
     def __getattribute__(self, name):
-        if name in ["region", "platform"] and name != self.Meta.server_type:
+        if name in ["region", "platform", "locale"] and name != self.Meta.server_type:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
         return super().__getattribute__(name)
 
@@ -193,37 +193,39 @@ class PyotCoreObject(PyotStaticObject):
 
     async def get(self):
         token = await self._create_token()
-        data = await self.Meta.pipeline.get(token)
+        data = await self.Meta.pipeline.get(token, self.filter)
         self.Meta.data = await self._transform(data)
         self._fill()
         return self
 
     def _lazy_set(self, kwargs):
-        if "platform" in kwargs.keys():
-            self.Meta.server_type = "platform"
-        elif "region" in kwargs.keys():
-            self.Meta.server_type = "region"
-        elif "locale" in kwargs.keys():
-            self.Meta.server_type = "locale"
-        else:
-            raise RuntimeError("Invalid or missing server type was passed as subclass")
+        for server in ["platform", "region", "locale"]:
+            if server in kwargs.keys():
+                self.Meta.server_type = server
+                break
+            if server == "locale":  # if server is last and still not found, raise
+                raise RuntimeError("Invalid or missing server type was passed as subclass")
         return super()._lazy_set(kwargs)
 
-    def _parse_query(self, kwargs):
-        return {key: val for (key,val) in kwargs.items() if key != "self" and val is not None}
+    def to_camel_case(self, snake_str):
+        components = snake_str.split('_')
+        return components[0] + ''.join(x.title() for x in components[1:])
 
-    async def _create_token(self):
+    def _parse_query(self, kwargs) -> Dict:
+        return {self.to_camel_case(key): val for (key,val) in kwargs.items() if key != "self" and val is not None}
+
+    async def _create_token(self) -> PyotPipelineToken:
         if not hasattr(self.Meta, "pipeline"): raise RuntimeError("Pyot for this variant wasn't activated")
         await self._clean()
         await self._get_rule()
-        await self._check_server()
-        token = PyotPipelineToken(self.Meta.server, self.Meta.key, self.Meta.load, self.Meta.query)
-        await self._token_transform(token)
-        return token
+        await self._get_server()
+        await self._refactor()
+        return PyotPipelineToken(self.Meta.server, self.Meta.key, self.Meta.load, self.Meta.query)
 
     async def _get_rule(self):
         if len(self.Meta.rules.keys()) == 0:
             raise RuntimeError("This Pyot object is not get-able")
+        repeated = False
         for key, attr in self.Meta.rules.items():
             load = {}
             for a in attr:
@@ -233,33 +235,39 @@ class PyotCoreObject(PyotStaticObject):
                     break
             if len(load.keys()) != len(attr):
                 continue
+            if hasattr(self.Meta, "key") and key == self.Meta.key and load == self.Meta.load:
+                repeated = True
+                continue
             self.Meta.key = key
             self.Meta.load = load
             return self
-        raise AttributeError(f"'{self.__class__.__name__}' has missing or incomplete attributes")
+        if not repeated:
+            raise ValueError("Incomplete values to create request token")
+        self.Meta.key = None
+        self.Meta.load = {}
+        return await self._get_rule()
 
-    async def _check_server(self):
-        if self.Meta.server_type == "platform":
-            if self.platform.lower() not in self.Meta.platform_list:
-                raise AttributeError(f"Invalid 'platform' attribute, '{self.platform}' was given")
-            self.Meta.server = self.platform
-        elif self.Meta.server_type == "region":
-            if self.region.lower() not in self.Meta.region_list:
-                raise AttributeError(f"Invalid 'region' attribute, '{self.region}' was given")
-            self.Meta.server = self.region
-        elif self.Meta.server_type == "locale":
-            if self.locale.lower() not in self.Meta.locale_list:
-                raise AttributeError(f"Invalid 'locale' attribute, '{self.locale}' was given")
-            self.Meta.server = self.locale
-        else:
-            raise RuntimeError("Invalid or missing server type was passed as subclass")
+    async def _get_server(self):
+        for server_type in ["platform", "region", "locale"]:
+            if self.Meta.server_type == server_type:
+                server = getattr(self, server_type)
+                list_ = getattr(self.Meta, server_type+"_list")
+                if server.lower() not in list_:
+                    raise ValueError(f"Invalid '{server_type}' value, '{server}' was given")
+                self.Meta.server = server.lower()
+                break
+            if server_type == "locale": # if server is last and still not found, raise
+                raise RuntimeError("Invalid or missing server type was passed as subclass")
         return self
 
-    async def _transform(self, data):
+    async def _transform(self, data) -> Dict:
         return data
 
     async def _clean(self):
         pass
 
-    async def _token_transform(self, token):
+    async def _refactor(self):
         pass
+
+    def filter(self, data):
+        return data

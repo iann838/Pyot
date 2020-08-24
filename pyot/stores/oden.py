@@ -16,10 +16,10 @@ LOGGER = getLogger(__name__)
 class Oden(PyotStoreObject):
     unique = True
 
-    def __init__(self, game: str, custom_expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = False) -> None:
+    def __init__(self, game: str, expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = False) -> None:
         self._data = dict()
         self._lock = PyotLock()
-        self._manager = PyotExpirationManager(game, custom_expirations)
+        self._manager = PyotExpirationManager(game, expirations)
         self._max_entries = max_entries if max_entries is not None else 10000
         self._cull_frecuency = cull_frecuency if cull_frecuency is not None else 2
         self._cull_lock = [False, datetime.datetime.now()]
@@ -44,7 +44,7 @@ class Oden(PyotStoreObject):
                 if len(self._data) > self._max_entries - self._max_entries/self._cull_frecuency:
                     await self.cull()
 
-    async def get(self, token: PyotPipelineToken, expiring: bool = False) -> Any:
+    async def get(self, token: PyotPipelineToken, expiring: bool = False, session = None) -> Any:
         async with self._lock:
             try:
                 item, timeout, entered, _ = self._data[token]
@@ -80,7 +80,7 @@ class Oden(PyotStoreObject):
 
     async def expire(self):
         for token in self._data.keys():
-            await self.get(token, True)
+            await self.get(token, expiring=True)
 
     async def clear(self):
         async with self._lock:

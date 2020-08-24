@@ -48,7 +48,7 @@ class ClashPlayers(PyotCore):
     players: List[ClashPlayerData]
 
     class Meta(PyotCore.Meta):
-        rules = {"clash-v1-players": ["summoner_id"]}
+        rules = {"clash_v1_players": ["summoner_id"]}
 
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -76,7 +76,7 @@ class ClashTeam(PyotCore):
 
     class Meta(PyotCore.Meta):
         renamed = {"captain": "captain_summoner_id"}
-        rules = {"clash-v1-teams": ["id"]}
+        rules = {"clash_v1_teams": ["id"]}
 
     def __init__(self, id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -100,7 +100,7 @@ class ClashTournaments(PyotCore):
     tournaments: List[ClashTournamentData]
 
     class Meta(PyotCore.Meta):
-        rules = {"clash-v1-tournaments-all": []}
+        rules = {"clash_v1_tournaments_all": []}
 
     def __init__(self, platform: str = None):
         self._lazy_set(locals())
@@ -116,8 +116,8 @@ class ClashTournament(ClashTournamentData, PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {
-            "clash-v1-tournaments-by-team-id": ["team_id"],
-            "clash-v1-toutnaments-by-tournament-id": ["id"]
+            "clash_v1_tournaments_by_team_id": ["team_id"],
+            "clash_v1_toutnaments_by_tournament_id": ["id"]
         }
 
     def __init__(self, id: int = None, team_id: str = None, platform: str = None):

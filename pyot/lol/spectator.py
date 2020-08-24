@@ -1,5 +1,5 @@
 from .__core__ import PyotCore, PyotStatic
-from typing import List
+from typing import List, Iterator
 from datetime import datetime, timedelta
 import copy
 
@@ -10,8 +10,14 @@ class CurrentGameBansData(PyotStatic):
     pick_turn: int
     champion_id: int
 
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
 
 class CurrentGameParticipantData(PyotStatic):
+    team_id: int
     champion_id: int
     profile_icon_id: int
     is_bot: bool
@@ -31,8 +37,35 @@ class CurrentGameParticipantData(PyotStatic):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
 
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def profile_icon(self) -> "ProfileIcon":
+        from .profileicon import ProfileIcon
+        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
+
+    @property
+    def runes(self) -> List["Rune"]:
+        from .rune import Rune
+        mutable = []
+        for i in self.rune_ids:
+            mutable.append(Rune(id=i, locale=self.to_locale(self.platform)))
+        return mutable
+
+    @property
+    def spells(self) -> List["Spell"]:
+        from .spell import Spell
+        mutable = []
+        for i in self.spell_ids:
+            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
+        return mutable
+
 
 class FeaturedGameParticipantData(PyotStatic):
+    team_id: int
     champion_id: int
     profile_icon_id: int
     is_bot: bool
@@ -47,6 +80,24 @@ class FeaturedGameParticipantData(PyotStatic):
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(name=self.summoner_name, platform=self.platform)
+
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+        
+    @property
+    def profile_icon(self) -> "ProfileIcon":
+        from .profileicon import ProfileIcon
+        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
+
+    @property
+    def spells(self) -> List["Spell"]:
+        from .spell import Spell
+        mutable = []
+        for i in self.spell_ids:
+            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
+        return mutable
 
 
 class CurrentGameTeamData(PyotStatic):
@@ -72,6 +123,8 @@ class FeaturedGameData(PyotStatic):
     queue: int
     observers_key: str
     teams: List[FeaturedGameTeamData]
+    blue_team: FeaturedGameTeamData
+    red_team: FeaturedGameTeamData
 
     class Meta(PyotStatic.Meta):
         renamed = {"game_id": "id", "game_type": "type", "game_start_time": "creation", "game_mode": "mode",
@@ -92,13 +145,12 @@ class CurrentGame(FeaturedGameData, PyotCore):
     teams: List[CurrentGameTeamData]
 
     class Meta(FeaturedGameData.Meta, PyotCore.Meta):
-        rules = {"spectator-v4-current-game": ["summoner_id"]}
+        rules = {"spectator_v4_current_game": ["summoner_id"]}
 
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data_):
-        data = copy.deepcopy(data_)
+    async def _transform(self, data):
         data["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
         data["observersKey"] = None
         for attr, val in data.items():
@@ -118,10 +170,8 @@ class CurrentGame(FeaturedGameData, PyotCore):
                     p["spellIds"] = [p.pop("spell1Id"), p.pop("spell2Id")]
                     p.update(p.pop("perks"))
                     if p["teamId"] == 100:
-                        p.pop("teamId")
                         data["teams"][0]["participants"].append(p)
                     elif p["teamId"] == 200:
-                        p.pop("teamId")
                         data["teams"][1]["participants"].append(p)
                     else:
                         raise RuntimeError
@@ -131,12 +181,11 @@ class CurrentGame(FeaturedGameData, PyotCore):
                 pass
             else:
                 data[attr] = val
-        try: data.pop("bannedChampions")
-        except: pass
-        try: data.pop("participants")
-        except: pass
-        try: data.pop("observers")
-        except: pass
+        data.pop("bannedChampions", None)
+        data.pop("participants", None)
+        data.pop("observers", None)
+        data["blueTeam"] = data["teams"][0]
+        data["redTeam"] = data["teams"][1]
         return data
 
     @property
@@ -150,7 +199,7 @@ class FeaturedGames(PyotCore):
     refresh_interval: int
 
     class Meta(PyotCore.Meta):
-        rules = {"spectator-v4-featured-games": []}
+        rules = {"spectator_v4_featured_games": []}
         renamed = {"client_refresh_interval": "refresh_interval", "game_list": "games"}
 
     def __getattribute__(self, name):
@@ -158,11 +207,16 @@ class FeaturedGames(PyotCore):
             return timedelta(seconds=super().__getattribute__(name))
         return super().__getattribute__(name)
 
+    def __getitem__(self, item):
+        return self.games[item]
+
+    def __iter__(self) -> Iterator[FeaturedGameData]:
+        return iter(self.games)
+
     def __init__(self, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data_):
-        data = copy.deepcopy(data_)
+    async def _transform(self, data):
         for i in range(len(data["gameList"])):
             data["gameList"][i]["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
             data["gameList"][i]["observersKey"] = None
@@ -181,10 +235,8 @@ class FeaturedGames(PyotCore):
                     for p in val:
                         p["spellIds"] = [p.pop("spell1Id"), p.pop("spell2Id")]
                         if p["teamId"] == 100:
-                            p.pop("teamId")
                             data["gameList"][i]["teams"][0]["participants"].append(p)
                         elif p["teamId"] == 200:
-                            p.pop("teamId")
                             data["gameList"][i]["teams"][1]["participants"].append(p)
                         else:
                             raise RuntimeError
@@ -194,10 +246,9 @@ class FeaturedGames(PyotCore):
                     pass
                 else:
                     data["gameList"][i][attr] = val
-            try: data["gameList"][i].pop("bannedChampions")
-            except: pass
-            try: data["gameList"][i].pop("participants")
-            except: pass
-            try: data["gameList"][i].pop("observers")
-            except: pass
+            data["gameList"][i].pop("bannedChampions", None)
+            data["gameList"][i].pop("participants", None)
+            data["gameList"][i].pop("observers", None)
+            data["gameList"][i]["blueTeam"] = data["gameList"][i]["teams"][0]
+            data["gameList"][i]["redTeam"] = data["gameList"][i]["teams"][1]
         return data

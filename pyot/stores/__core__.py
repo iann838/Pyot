@@ -2,7 +2,6 @@ from datetime import timedelta as td
 from dataclasses import dataclass
 from typing import Tuple, Any
 from ..core import exceptions as exc
-from ..core.core import run
 import asyncio
 import aiohttp
 import atexit
@@ -14,9 +13,12 @@ class PyotStoreObject:
         return f"<{token.server.upper()} {token.method}: {' '.join([str(token.params[k]) for k in token.params])}>"
 
     async def initialize(self):
+        return True
+
+    async def transform_key(self, *args):
         raise NotImplementedError
 
-    async def get(self, token):
+    async def get(self, token, *args):
         raise NotImplementedError
 
     async def put(self, token, response):
@@ -38,39 +40,48 @@ class PyotStoreObject:
 class PyotExpirationManager:
     _expirations = {
         "lol": {
-            "champion-v3-rotation": td(hours=3),
-            "champion-mastery-v4-all-mastery": td(minutes=30),
-            "champion-mastery-v4-by-champion-id": td(minutes=30),
-            "clash-v1-players": td(minutes=5),
-            "clash-v1-teams": td(minutes=5),
-            "clash-v1-tournaments-by-team-id": td(minutes=5),
-            "clash-v1-toutnaments-by-tournament-id": td(minutes=5),
-            "clash-v1-tournaments-all": td(hours=3),
-            "league-v4-summoner-entries": td(hours=3),
-            "league-v4-challenger-league": td(hours=1),
-            "league-v4-grandmaster-league": td(hours=1),
-            "league-v4-master-league": td(hours=1),
-            "league-v4-entries-by-division": td(hours=1),
-            "league-v4-league-by-league-id": td(hours=1),
-            "status-v3-shard-data": td(minutes=5),
-            "match-v4-match": td(days=7),
-            "match-v4-timeline": td(days=3),
-            "match-v4-matchlist": td(minutes=5),
-            "spectator-v4-current-game": td(minutes=5),
-            "spectator-v4-featured-games": td(minutes=5),
-            "summoner-v4-by-name": td(hours=3),
-            "summoner-v4-by-id": td(hours=3),
-            "summoner-v4-by-account-id": td(hours=3),
-            "summoner-v4-by-puuid": td(hours=3),
-            "third-party-code-v4-code": 0,
+            "champion_v3_rotation": td(hours=3),
+            "champion_mastery_v4_all_mastery": td(minutes=30),
+            "champion_mastery_v4_by_champion_id": td(minutes=30),
+            "clash_v1_players": td(minutes=5),
+            "clash_v1_teams": td(minutes=5),
+            "clash_v1_tournaments_by_team_id": td(minutes=5),
+            "clash_v1_toutnaments_by_tournament_id": td(minutes=5),
+            "clash_v1_tournaments_all": td(hours=3),
+            "league_v4_summoner_entries": td(hours=3),
+            "league_v4_challenger_league": td(hours=1),
+            "league_v4_grandmaster_league": td(hours=1),
+            "league_v4_master_league": td(hours=1),
+            "league_v4_entries_by_division": td(hours=1),
+            "league_v4_league_by_league_id": td(hours=1),
+            "status_v3_shard_data": td(minutes=5),
+            "match_v4_match": td(days=7),
+            "match_v4_timeline": td(days=3),
+            "match_v4_matchlist": td(minutes=5),
+            "spectator_v4_current_game": td(minutes=5),
+            "spectator_v4_featured_games": td(minutes=5),
+            "summoner_v4_by_name": td(hours=3),
+            "summoner_v4_by_id": td(hours=3),
+            "summoner_v4_by_account_id": td(hours=3),
+            "summoner_v4_by_puuid": td(hours=3),
+            "third_party_code_v4_code": 0,
+
+            "cdragon_champion_by_id": td(hours=1),
+            "cdragon_item_full": td(hours=1),
+            "cdragon_rune_full": td(hours=1),
+            "cdragon_profile_icon_full": td(hours=1),
+            "cdragon_spells_full": td(hours=1),
+
+            "meraki_champion_by_key": td(hours=3),
+            "meraki_item_by_id": td(hours=3),
         },
         "val": {
-            "account-v1-by-puuid": td(hours=3),
-            "account-v1-by-riot-id": td(hours=3),
-            "account-v1-active-shard": td(hours=3),
-            "match-v1-match": td(days=7),
-            "match-v1-matchlist": td(minutes=5),
-            "content-v1-contents": td(hours=3),
+            "account_v1_by_puuid": td(hours=3),
+            "account_v1_by_riot_id": td(hours=3),
+            "account_v1_active_shard": td(hours=3),
+            "match_v1_match": td(days=7),
+            "match_v1_matchlist": td(minutes=5),
+            "content_v1_contents": td(hours=3),
         }
     }
 

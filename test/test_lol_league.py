@@ -5,7 +5,7 @@ LEAGUE_ID = "1fd2554b-d9d1-4f09-a5d0-54998d88f516"
 
 def assert_apex_league(league):
     assert isinstance(league.tier, str)
-    assert isinstance(league.league_id, str)
+    assert isinstance(league.id, str)
     assert isinstance(league.queue, str)
     assert isinstance(league.name, str)
     assert isinstance(league.league, pyot.lol.League)

@@ -14,13 +14,13 @@ LOGGER = getLogger(__name__)
 class MerakiCDNEndpoints:
     _endpoints = {
         "lol": {
-            "meraki-champion-by-champion-key": "/lol/resources/latest/en-US/champions/{key}.json",
-            "meraki-item-by-item-id": "/lol/resources/latest/en-US/items/{id}.json"
+            "meraki_champion_by_key": "/lol/resources/latest/en-US/champions/{key}.json",
+            "meraki_item_by_id": "/lol/resources/latest/en-US/items/{id}.json"
         }
     }
 
     _transformers = {
-        "meraki-champion-by-key": {
+        "meraki_champion_by_key": {
             "final": "key",
             "by_id": {},
             "by_name": {},
@@ -32,23 +32,17 @@ class MerakiCDNEndpoints:
     def __init__(self, game):
         self.endpoints = self._endpoints[game]
 
-    def transform_key(self, token: PyotPipelineToken):
-        for method, tr in self._transformers.items():
-            if token.method == method:
-                if token.params.keys()[0] == tr["final"]:
-                    return token 
-                key = token.params.keys()[0]
-                val = token.params[key]
-                final_params = {}
-                final_params[tr["final"]] = getattr(self, tr["by_"+key])[val]
-                token.params = final_params
-                return token
-        return token
+    def transform_key(self, method: str, key: str, content: str):
+        for alias, tr in self._transformers.items():
+            if alias == method:
+                if tr["final"] == key:
+                    return content
+                return tr["by_"+key][content]
+        return content
 
     async def resolve(self, token: PyotPipelineToken) -> str:
         try:
             base = self._base_url
-            token = self.transform_key(token)
             url = self.endpoints[token.method].format(**token.params)
             return base + url
         except KeyError:
@@ -71,6 +65,8 @@ class MerakiCDN(PyotStoreObject):
             try:
                 if not reinit:
                     LOGGER.warning("[Trace: MerakiCDN] Store initializing ...")
+                else:
+                    LOGGER.warning("[Trace: MerakiCDN] Updating initialized data ...")
                 response = await session.request("GET", url)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
@@ -79,36 +75,35 @@ class MerakiCDN(PyotStoreObject):
                 for champ in dic:
                     if champ["id"] == -1:
                         continue
-                    self._endpoints._transformers["meraki-champion-by-key"]["by_id"][champ["id"]] = champ["alias"]
-                    self._endpoints._transformers["meraki-champion-by-key"]["by_name"][champ["name"]] = champ["alias"]
+                    self._endpoints._transformers["meraki_champion_by_key"]["by_id"][champ["id"]] = champ["alias"]
+                    self._endpoints._transformers["meraki_champion_by_key"]["by_name"][champ["name"]] = champ["alias"]
             else:
                 raise RuntimeError("[Trace: MerakiCDN]: Store failed to initialize, "+
                     f"cdragon raw core file call responded with status code {response.status}")
 
-    async def get(self, token: PyotPipelineToken) -> Dict:
-        url = await self._endpoints.resolve(token)
-        request_token = PyotRequestToken()
-        async with aiohttp.ClientSession() as session: # type: aiohttp.ClientSession
-            while await request_token.run_or_raise():
-                try:
-                    if self._logs_enabled:
-                        LOGGER.warning(f"[Trace: MerakiCDN] GET: {self._log_template(token)}")
-                    response = await session.request("GET", url)
-                except RuntimeError:
-                    raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
-                except Exception:
-                    response = None
-
-                if response and response.status == 200:
-                    try:
-                        return await response.json(encoding="utf-8")
-                    except JSONDecodeError:
-                        return await response.text()
-
-                code = response.status if response is not None else 408
-                how = self._handler_map[code] if self._handler_map[code] else self._handler_map[888]
-                await request_token.stream(code, how)
+    async def get(self, token: PyotPipelineToken, session: aiohttp.ClientSession) -> Dict:
         if self._last_updated + timedelta(hours=3) < datetime.now():
             self._last_updated = datetime.now()
             await self.initialize(True)
+        url = await self._endpoints.resolve(token)
+        request_token = PyotRequestToken()
+        while await request_token.run_or_raise():
+            try:
+                if self._logs_enabled:
+                    LOGGER.warning(f"[Trace: MerakiCDN] GET: {self._log_template(token)}")
+                response = await session.request("GET", url)
+            except RuntimeError:
+                raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
+            except Exception:
+                response = None
+
+            if response and response.status == 200:
+                try:
+                    return await response.json(encoding="utf-8")
+                except JSONDecodeError:
+                    return await response.text()
+
+            code = response.status if response is not None else 408
+            how = self._handler_map[code] if self._handler_map[code] else self._handler_map[888]
+            await request_token.stream(code, how)
 

@@ -16,10 +16,10 @@ class Summoner(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {
-            "summoner-v4-by-name": ["name"],
-            "summoner-v4-by-id": ["id"],
-            "summoner-v4-by-account-id": ["account_id"],
-            "summoner-v4-by-puuid": ["puuid"],
+            "summoner_v4_by_name": ["name"],
+            "summoner_v4_by_id": ["id"],
+            "summoner_v4_by_account_id": ["account_id"],
+            "summoner_v4_by_puuid": ["puuid"],
         }
         renamed = {"summoner_level": "level"}
 
@@ -55,3 +55,8 @@ class Summoner(PyotCore):
     def current_game(self) -> "CurrentGame":
         from .spectator import CurrentGame
         return CurrentGame(summoner_id=self.id, platform=self.platform)
+
+    @property
+    def profile_icon(self) -> "ProfileIcon":
+        from .profileicon import ProfileIcon
+        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
