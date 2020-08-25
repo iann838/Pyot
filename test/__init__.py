@@ -36,7 +36,7 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": "RGAPI-c2dd189e-5f61-471c-9a6d-4be96d4a92f8",
+            "KEY": os.environ["RIOT_API_KEY"],
             "LIMITING_SHARE": 1,
             "ERROR_HANDLING": {
                 400: ("T", []),
@@ -72,7 +72,7 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": "RGAPI-c2dd189e-5f61-471c-9a6d-4be96d4a92f8",
+            "KEY": os.environ["RIOT_API_KEY"],
             "LIMITING_SHARE": 1,
             "ERROR_HANDLING": {
                 400: ("T", []),
