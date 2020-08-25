@@ -30,10 +30,10 @@ class Summoner(PyotCore):
     def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    # @property
-    # def league_entries(self) -> "SummonerLeague":
-    #     from .league import SummonerLeague
-    #     return SummonerLeague(summoner_id=self.id, platform=self.platform)
+    @property
+    def league_entries(self) -> "SummonerLeague":
+        from .league import SummonerLeague
+        return SummonerLeague(summoner_id=self.id, platform=self.platform)
 
     @property
     def third_party_code(self) -> "ThirdPartyCode":

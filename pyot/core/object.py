@@ -165,12 +165,12 @@ class PyotStaticObject:
 
 
 class PyotCoreObject(PyotStaticObject):
+    _session_id: str = None
 
     class Meta(PyotStaticObject.Meta):
         pipeline: PyotPipeline
         key: str
         server: str
-        session_id: str = None
         load: Mapping[str, Any]
         query: Mapping[str, Any] = {}
         types: Dict[str, Any] = None
@@ -194,7 +194,7 @@ class PyotCoreObject(PyotStaticObject):
 
     async def get(self):
         token = await self._create_token()
-        data = await self.Meta.pipeline.get(token, self.filter, self.Meta.session_id)
+        data = await self.Meta.pipeline.get(token, self.filter, self._session_id)
         self.Meta.data = await self._transform(data)
         self._fill()
         return self
@@ -216,7 +216,7 @@ class PyotCoreObject(PyotStaticObject):
         return {self.to_camel_case(key): val for (key,val) in kwargs.items() if key != "self" and val is not None}
 
     def _set_session_id(self, id: str):
-        self.Meta.session_id = id
+        self._session_id = id
         return self
 
     async def _create_token(self) -> PyotPipelineToken:
