@@ -2,7 +2,7 @@ import pyot
 
 
 async def async_free_champ():
-    rotation = await pyot.lol.ChampionRotation(platform="KR").get()
+    rotation = await pyot.lol.ChampionRotation(platform="NA1").get()
     assert isinstance(rotation.newie_max_level, int)
     assert rotation.free_champion_ids is not None
     assert rotation.free_newie_champion_ids is not None
