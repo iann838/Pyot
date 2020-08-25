@@ -1,6 +1,5 @@
 from .__core__ import PyotCore
 from datetime import datetime
-from ...core.object import PyotLazyObject
 
 
 # PYOT CORE OBJECTS
@@ -16,10 +15,10 @@ class Summoner(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {
-            "summoner_v4_by_name": ["name"],
-            "summoner_v4_by_id": ["id"],
-            "summoner_v4_by_account_id": ["account_id"],
-            "summoner_v4_by_puuid": ["puuid"],
+            "summoner_v1_by_name": ["name"],
+            "summoner_v1_by_id": ["id"],
+            "summoner_v1_by_account_id": ["account_id"],
+            "summoner_v1_by_puuid": ["puuid"],
         }
         renamed = {"summoner_level": "level"}
 
@@ -31,30 +30,15 @@ class Summoner(PyotCore):
     def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    @property
-    def champion_masteries(self) -> "ChampionMasteries":
-        from .championmastery import ChampionMasteries
-        return ChampionMasteries(summoner_id=self.id, platform=self.platform)
-
-    @property
-    def league_entries(self) -> "SummonerLeague":
-        from .league import SummonerLeague
-        return SummonerLeague(summoner_id=self.id, platform=self.platform)
+    # @property
+    # def league_entries(self) -> "SummonerLeague":
+    #     from .league import SummonerLeague
+    #     return SummonerLeague(summoner_id=self.id, platform=self.platform)
 
     @property
     def third_party_code(self) -> "ThirdPartyCode":
         from .thirdpartycode import ThirdPartyCode
         return ThirdPartyCode(summoner_id=self.id, platform=self.platform)
-
-    @property
-    def clash_players(self) -> "ClashPlayers":
-        from .clash import ClashPlayers
-        return ClashPlayers(summoner_id=self.id, platform=self.platform)
-
-    @property
-    def current_game(self) -> "CurrentGame":
-        from .spectator import CurrentGame
-        return CurrentGame(summoner_id=self.id, platform=self.platform)
 
     @property
     def profile_icon(self) -> "ProfileIcon":

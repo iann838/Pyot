@@ -21,8 +21,7 @@ class PyotPipelineToken:
 class PyotPipeline:
     def __init__(self, stores: List[Any]):
         self.stores = stores
-        self.session = None
-        self.hold = False
+        self.sessions = {}
 
     async def initialize(self):
         statements = []
@@ -36,11 +35,10 @@ class PyotPipeline:
                 return store._endpoints.transform_key(method, key, content)
         raise RuntimeError("[Trace: PyotPipeline] FATAL: no key transformer found")
 
-    async def get(self, token: PyotPipelineToken, filter: Any):
-        if self.hold: await asyncio.sleep(1)
+    async def get(self, token: PyotPipelineToken, filter: Callable, session_id: str = None):
         response = dict()
         found_in = None
-        session = aiohttp.ClientSession() if self.session is None else self.session
+        session = aiohttp.ClientSession() if session_id is None else self.sessions[session_id]
         try:
             for store in self.stores:
                 try:
@@ -52,10 +50,10 @@ class PyotPipeline:
                     continue
                 break
         except:
-            if self.session is None: await session.close()
+            if session_id is None: await session.close()
             raise
         finally:
-            if self.session is None: await session.close()
+            if session_id is None: await session.close()
         
         for store in self.stores:
             try:

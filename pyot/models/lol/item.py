@@ -78,7 +78,7 @@ class Item(PyotCore):
     @property
     def meraki_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
-        return MerakiItem(id=self.id) 
+        return MerakiItem(id=self.id)
 
 
 class Items(PyotCore):

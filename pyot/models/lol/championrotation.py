@@ -10,6 +10,7 @@ class ChampionRotation(PyotCore):
     newie_max_level: int
 
     class Meta(PyotCore.Meta):
+        rules = {"champion_v3_rotation": []}
         raws = ["free_champion_ids", "free_newie_champion_ids"]
         renamed = {"free_champion_ids_for_new_players": "free_newie_champion_ids", "max_new_player_level": "newie_max_level"}
 

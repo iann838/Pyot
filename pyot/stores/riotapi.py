@@ -45,6 +45,7 @@ class RiotAPIRateLimiter:
 
     def __init__(self, game, share):
         yesterday = datetime.now(pytz.utc) - timedelta(days=1)
+        self._game = game
         self._lock = PyotLock()
         self._share = share
         self._methods_rates = defaultdict(lambda: [[None, 1, 10, 60], [None, 1, 10, 60]])
@@ -158,14 +159,14 @@ class RiotAPIRateLimiter:
                         if not self._methods_rates[method][i][0] or method_count[i][0] < self._methods_rates[method][i][0]:
                             self._methods_rates[method][i][0] = method_count[i][0]
                     for i in range(2):
-                        app_top = date + timedelta(seconds=self._application_rates[i][3]) + timedelta(seconds=0.8)
-                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3]) + timedelta(seconds=0.8)
+                        app_top = date + timedelta(seconds=self._application_rates[i][3]) + timedelta(seconds=0.3)
+                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3]) + timedelta(seconds=0.3)
                         if app_top < self._application_times[i] or token.flag:
                             self._application_times[i] = app_top
                         if method_top < self._methods_times[method][i] or token.flag:
                             self._methods_times[method][i] = method_top
             except Exception:
-                LOGGER.warning("[Trace: RiotAPI] Something unexpected happened while streaming to rate limiter")
+                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] Something unexpected happened while streaming to rate limiter")
 
     async def inmediate_backoff(self, seconds: int, type_: str, method: str = None):
         async with self._lock:
@@ -179,6 +180,8 @@ class RiotAPIRateLimiter:
 class RiotAPIEndpoint:
     _endpoints = {
         "lol": {
+            "account_v1_by_puuid": "/riot/account/v1/accounts/by-puuid/{puuid}",
+            "account_v1_active_shard": "/riot/account/v1/active-shards/by-game/{game}/by-puuid/{puuid}",
             "champion_v3_rotation": "/lol/platform/v3/champion-rotations",
             "champion_mastery_v4_by_champion_id": "/lol/champion-mastery/v4/champion-masteries/by-summoner/{summoner_id}/by-champion/{champion_id}",
             "champion_mastery_v4_all_mastery": "/lol/champion-mastery/v4/champion-masteries/by-summoner/{summoner_id}",
@@ -205,6 +208,22 @@ class RiotAPIEndpoint:
             "summoner_v4_by_puuid": "/lol/summoner/v4/summoners/by-puuid/{puuid}",
             "third_party_code_v4_code": "/lol/platform/v4/third-party-code/by-summoner/{summoner_id}",
         },
+        "tft": {
+            "account_v1_by_puuid": "/riot/account/v1/accounts/by-puuid/{puuid}",
+            "account_v1_active_shard": "/riot/account/v1/active-shards/by-game/{game}/by-puuid/{puuid}",
+            "league_v1_summoner_entries": "/tft/league/v1/entries/by-summoner/{summoner_id}",
+            "league_v1_challenger_league": "/tft/league/v1/challenger",
+            "league_v1_grandmaster_league": "/tft/league/v1/grandmaster",
+            "league_v1_master_league": "/tft/league/v1/master",
+            "league_v1_entries_by_division": "/tft/league/v1/entries/{tier}/{division}",
+            "league_v1_league_by_league_id": "/tft/league/v1/leagues/{id}",
+            "match_v1_matchlist": "/tft/match/v1/matches/by-puuid/{puuid}/ids",
+            "match_v1_match": "/tft/match/v1/matches/{id}",
+            "summoner_v1_by_name": "/tft/summoner/v1/summoners/by-name/{name}",
+            "summoner_v1_by_id": "/tft/summoner/v1/summoners/{id}",
+            "summoner_v1_by_account_id": "/tft/summoner/v1/summoners/by-account/{account_id}",
+            "summoner_v1_by_puuid": "/tft/summoner/v1/summoners/by-puuid/{puuid}",
+        },
         "val": {
             "account_v1_by_puuid": "/riot/account/v1/accounts/by-puuid/{puuid}",
             "account_v1_by_riot_id": "/riot/account/v1/accounts/by-riot-id/{name}/{tag}",
@@ -213,6 +232,12 @@ class RiotAPIEndpoint:
             "match_v1_matchlist": "/val/match/v1/matchlists/by-puuid/{puuid}",
             "content_v1_contents": "/val/content/v1/contents",
         }
+    }
+
+    _initializers = {
+        "lol": "https://na1.api.riotgames.com/lol/status/v3/shard-data",
+        "tft": "https://na1.api.riotgames.com/tft/league/v1/challenger",
+        "val": "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/stelar7/stl7",
     }
     
     _base_url = "https://{server}.api.riotgames.com"
@@ -251,6 +276,7 @@ class RiotAPI(PyotStoreObject):
     
     def __init__(self, game: str, key: str, limiting_share: float = 1, error_handling: Mapping[int, Any] = None, logs_enabled: bool = True):
         validator = RiotAPIValidate()
+        self._game = game
         self._endpoints = RiotAPIEndpoint(game)
         self._limiting_share = validator.create_share(limiting_share)
         self._rate_limiter = RiotAPIRateLimiter(game, self._limiting_share)
@@ -260,10 +286,10 @@ class RiotAPI(PyotStoreObject):
 
     async def initialize(self):
         headers = { "X-Riot-Token": self._api_key }
-        url = "https://na1.api.riotgames.com/lol/status/v3/shard-data"
+        url = self._endpoints._initializers[self._game]
         async with aiohttp.ClientSession() as session: # type: aiohttp.ClientSession
             try:
-                LOGGER.warning("[Trace: RiotAPI] Store initializing ...")
+                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] Store initializing ...")
                 response = await session.request("GET", url, headers=headers)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
@@ -271,7 +297,7 @@ class RiotAPI(PyotStoreObject):
                 token = RiotAPILimitToken()
                 await self._rate_limiter.stream(response, "status-v3-shard-data", token)
             else:
-                raise RuntimeError("[Trace: RiotAPI]: Store failed to initialize, "+
+                raise RuntimeError(f"[Trace: {self._game.upper()} > RiotAPI]: Store failed to initialize, "+
                     f"the server responded with status code {response.status} to the preflight call")
 
     async def get(self, token: PyotPipelineToken, session: aiohttp.ClientSession) -> Dict:
@@ -285,12 +311,12 @@ class RiotAPI(PyotStoreObject):
                 if await limit_token.run_or_wait():
                     continue
                 if self._logs_enabled:
-                    LOGGER.warning(f"[Trace: RiotAPI] GET: {self._log_template(token)}")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] GET: {self._log_template(token)}")
                 response = await session.request("GET", url, headers=headers)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
             except Exception as e:
-                LOGGER.warning(f"[Trace: RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
+                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
                 response = None
             
             await self._rate_limiter.stream(response, method, limit_token)
@@ -307,7 +333,7 @@ class RiotAPI(PyotStoreObject):
     
     async def _check_backoff(self, response: Any, method: str, code: int):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
-            LOGGER.warning(f"[Trace: RiotAPI] FATAL: The server responded with a non service 429, interrupts your task if this persists")
+            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] FATAL: The server responded with a non service 429, interrupts your task if this persists")
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
             type_ = response.headers["X-Rate-Limit-Type"]
             await self._rate_limiter.inmediate_backoff(int(seconds), type_, method)

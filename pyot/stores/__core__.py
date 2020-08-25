@@ -40,6 +40,8 @@ class PyotStoreObject:
 class PyotExpirationManager:
     _expirations = {
         "lol": {
+            "account_v1_by_puuid": td(hours=3),
+            "account_v1_active_shard": td(hours=3),
             "champion_v3_rotation": td(hours=3),
             "champion_mastery_v4_all_mastery": td(minutes=30),
             "champion_mastery_v4_by_champion_id": td(minutes=30),
@@ -74,6 +76,25 @@ class PyotExpirationManager:
 
             "meraki_champion_by_key": td(hours=3),
             "meraki_item_by_id": td(hours=3),
+        },
+        "tft": {
+            "account_v1_by_puuid": td(hours=3),
+            "account_v1_active_shard": td(hours=3),
+            "league_v1_summoner_entries": td(hours=3),
+            "league_v1_challenger_league": td(hours=1),
+            "league_v1_grandmaster_league": td(hours=1),
+            "league_v1_master_league": td(hours=1),
+            "league_v1_entries_by_division": td(hours=1),
+            "league_v1_league_by_league_id": td(hours=1),
+            "match_v1_match": td(days=7),
+            "match_v1_matchlist": td(minutes=5),
+            "summoner_v1_by_name": td(hours=3),
+            "summoner_v1_by_id": td(hours=3),
+            "summoner_v1_by_account_id": td(hours=3),
+            "summoner_v1_by_puuid": td(hours=3),
+
+            "cdragon_tft_full": td(hours=1),
+            "cdragon_profile_icon_full": td(hours=1),
         },
         "val": {
             "account_v1_by_puuid": td(hours=3),

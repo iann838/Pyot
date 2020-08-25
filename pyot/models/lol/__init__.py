@@ -5,6 +5,8 @@ from .match import Match, MatchTimeline, Timeline, MatchHistory
 from .profileicon import ProfileIcon, ProfileIcons
 from .spectator import FeaturedGames, CurrentGame
 from .championrotation import ChampionRotation
+from .account import Account, ActivePlatform
+from .thirdpartycode import ThirdPartyCode
 from .merakichampion import MerakiChampion
 from .merakiitem import MerakiItem
 from .spell import Spell, Spells
@@ -12,4 +14,3 @@ from .champion import Champion
 from .summoner import Summoner
 from .item import Item, Items
 from .rune import Rune, Runes
-from .thirdpartycode import ThirdPartyCode

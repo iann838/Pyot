@@ -6,6 +6,11 @@ import asyncio
 
 # PYOT STATIC OBJECTS
 
+class MatchPositionData(PyotStatic):
+    x: int
+    y: int
+
+
 class MatchBanData(PyotStatic):
     champion_id: int
     pick_turn: int
@@ -143,11 +148,8 @@ class MatchFrameData(PyotStatic):
     level: int
     xp: int
     current_gold: int
-    position: List[int]
+    position: MatchPositionData
     jungle_minions_killed: int
-
-    class Meta(PyotStatic.Meta):
-        raws = ["position"]
 
 
 class MatchEventData(PyotStatic):
@@ -168,7 +170,7 @@ class MatchEventData(PyotStatic):
     monster_type: str
     monster_sub_type: str
     team_id: int
-    position: List[int]
+    position: MatchPositionData
     killer_id: int
     timestamp: timedelta
     assisting_participant_ids: List[int]
@@ -176,7 +178,7 @@ class MatchEventData(PyotStatic):
     victim_id: int
 
     class Meta(PyotStatic.Meta):
-        raws = ["position", "assisting_participant_ids"]
+        raws = ["assisting_participant_ids"]
 
     def __getattribute__(self, name):
         if name == "timestamp":
@@ -320,6 +322,10 @@ class MatchHistoryMatchData(PyotStatic):
     @property
     def match_timeline(self) -> "MatchTimeline":
         return MatchTimeline(id=self.id, platform=self.platform)
+
+    @property
+    def timeline(self) -> "Timeline":
+        return Timeline(id=self.id, platform=self.platform)
 
 
 class MatchFrameMinuteData(PyotStatic):
@@ -497,8 +503,6 @@ class MatchTimeline(Match, PyotCore):
         for frame in data2["frames"]:
             for key, val in frame["participantFrames"].items():
                 p = val["participantId"]
-                if "position" in val.keys():
-                    val["position"] = [val["position"]["x"], val["position"]["y"]]
                 frames[p].append(val)
             for event in frame["events"]:
                 p = 0
@@ -508,8 +512,6 @@ class MatchTimeline(Match, PyotCore):
                     p = int(event["creatorId"])
                 elif "killerId" in event.keys():
                     p = int(event["killerId"])
-                if "position" in event.values():
-                    event["position"] = [event["position"]["x"], event["position"]["y"]]
                 if p != 0:
                     events[p].append(event)
         for key in frames.keys():
@@ -575,6 +577,9 @@ class MatchHistory(PyotCore):
 
     def query(self, champion_ids: List[int] = None, queue_ids: List[int] = None, season_ids: List[int] = None, end_time: int = None, begin_time: int = None, end_index: int = None, begin_index: int = None):
         kargs = {key if key[-3:] != "ids" else key[:-3] : val for (key,val) in locals().items()}
+        for i in [champion_ids, queue_ids, season_ids]:
+            if not isinstance(i, list) and i is not None:
+                raise RuntimeError("Query parameters 'champion_ids', 'queue_ids' and 'season_ids' must be a list of values")
         self.Meta.query = self._parse_query(kargs)
         return self
 

@@ -54,6 +54,9 @@ class MerakiCDN(PyotStoreObject):
 
     def __init__(self, game: str, error_handling: Dict[int, Tuple], logs_enabled: bool = True):
         handler = PyotErrorHandler()
+        if game != "lol":
+            raise NotImplementedError("MerakiCDN only supports the LOL model")
+        self._game = game
         self._handler_map = handler.create_handler(error_handling)
         self._endpoints = MerakiCDNEndpoints(game)
         self._logs_enabled = logs_enabled
@@ -64,9 +67,9 @@ class MerakiCDN(PyotStoreObject):
         async with aiohttp.ClientSession() as session: # type: aiohttp.ClientSession
             try:
                 if not reinit:
-                    LOGGER.warning("[Trace: MerakiCDN] Store initializing ...")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > MerakiCDN] Store initializing ...")
                 else:
-                    LOGGER.warning("[Trace: MerakiCDN] Updating initialized data ...")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > MerakiCDN] Updating initialized data ...")
                 response = await session.request("GET", url)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
@@ -78,7 +81,7 @@ class MerakiCDN(PyotStoreObject):
                     self._endpoints._transformers["meraki_champion_by_key"]["by_id"][champ["id"]] = champ["alias"]
                     self._endpoints._transformers["meraki_champion_by_key"]["by_name"][champ["name"]] = champ["alias"]
             else:
-                raise RuntimeError("[Trace: MerakiCDN]: Store failed to initialize, "+
+                raise RuntimeError(f"[Trace: {self._game.upper()} > MerakiCDN]: Store failed to initialize, "+
                     f"cdragon raw core file call responded with status code {response.status}")
 
     async def get(self, token: PyotPipelineToken, session: aiohttp.ClientSession) -> Dict:
@@ -90,7 +93,7 @@ class MerakiCDN(PyotStoreObject):
         while await request_token.run_or_raise():
             try:
                 if self._logs_enabled:
-                    LOGGER.warning(f"[Trace: MerakiCDN] GET: {self._log_template(token)}")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > MerakiCDN] GET: {self._log_template(token)}")
                 response = await session.request("GET", url)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")

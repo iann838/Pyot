@@ -6,6 +6,7 @@ from typing import Mapping, Tuple, Dict, List, Any
 from json import JSONDecodeError
 import aiohttp
 import asyncio
+import re
 
 from logging import getLogger
 LOGGER = getLogger(__name__)
@@ -20,16 +21,24 @@ class CDragonTransformers:
         else:
             self.locale = locale
 
+    def start_k(self, string: str) -> str:
+        if string is None: return string
+        return string[1:] if string[0] == "k" else string
+
     def url_assets(self, link: str) -> str:
         if link is None: return link
         link = link.lower()
         if len(link.split("/lol-game-data/assets/")) == 2:
-            link = self._base_url+ f"plugins/rcp-be-lol-game-data/global/{self.locale}/" + link.split("/lol-game-data/assets/")[1]
+            link = self._base_url+ "plugins/rcp-be-lol-game-data/global/default/" + link.split("/lol-game-data/assets/")[1]
         return link
 
-    def start_k(self, string: str) -> str:
-        if string is None: return string
-        return string[1:] if string[0] == "k" else string
+    def tft_url_assets(self, link: str) -> str:
+        if link is None: return link
+        link = link.lower()
+        if link[-3:] not in ["png","jpg","jpeg"]:
+            link = link[:-3] + "png"
+        link = self._base_url + "game/" + link
+        return link
 
     def sanitize(self, string: str) -> str:
         if string is None: return string
@@ -38,24 +47,91 @@ class CDragonTransformers:
         is_at = False
         tag = ""
         for s in string:
-            if not is_tag and not is_at and s not in "<>@":
-                new_string += s
-            if s == "<":
-                is_tag = True
+            if not is_tag and not is_at and s not in "<>@": new_string += s
+            if s == "<": is_tag = True
             elif s == ">":
                 is_tag = False
-                if tag == "br" and len(new_string) > 0 and new_string[-1] != " ":
-                    new_string += " "
+                if tag == "br" and len(new_string) > 0 and new_string[-1] != " ": new_string += " "
                 tag = ""
             elif s == "@" and not is_at:
                 is_at = True
                 new_string += "(?)"
+            elif s == "@": is_at = False
+            if is_tag and s not in "<>": tag += s
+        return new_string
+
+    def tft_item_sanitize(self, string: str, obj: dict) -> str:
+        if string is None: return string
+        new_string = ""
+        is_tag = False
+        is_at = False
+        is_percent = False
+        percent = ""
+        tag = ""
+        at = ""
+        for s in string:
+            if not is_tag and not is_at and not is_percent and s not in "<>@": new_string += s
+            if s == "<": is_tag = True
+            elif s == ">":
+                is_tag = False
+                if tag == "br" and len(new_string) > 0 and new_string[-1] != " ": new_string += " "
+                tag = ""
+            elif s == "@" and not is_at: is_at = True
             elif s == "@":
                 is_at = False
+                try: new_string += str(obj[at])
+                except KeyError: new_string += "(?)"
+                at = ""
+            elif s == "%": is_percent = True
+            elif is_percent and s == " " and percent == "":
+                is_percent = False
+                new_string += s
+            elif s == "%" and is_percent and len(percent) > 1:
+                is_percent = False
+                new_string = new_string[:-1]
+            if is_tag and s not in "<>": tag += s
+            if is_at and s != "@": at += s
+            if is_percent and s != "%": percent += s
+        return new_string
+
+    def tft_champ_sanitize(self, string: str, list_of_obj: list) -> str:
+        if string is None: return string
+        new_string = ""
+        is_tag = False
+        is_at = False
+        tag = ""
+        at = ""
+        for s in string:
+            if not is_tag and not is_at and s not in "<>@": new_string += s
+            if s == "<": is_tag = True
+            elif s == ">":
+                is_tag = False
+                if tag == "br" and len(new_string) > 0 and new_string[-1] != " ": new_string += " "
+                tag = ""
+            elif s == "@" and not is_at: is_at = True
+            elif s == "@":
+                is_at = False
+                tags = self.snakecase(tag).split("_")
+                found = False
+                for t in tags:
+                    for obj in list_of_obj:
+                        if t in self.snakecase(obj["name"]):
+                            new_string += "/".join([str(vall) for vall in obj["value"][1:4]])
+                            found = True
+                            break
+                    if found: break
+                if not found: new_string += "(?)"
+                at = ""
             if is_tag and s not in "<>":
                 tag += s
+            if is_at and s != "@":
+                at += s
         return new_string
-    
+
+    def snakecase(self, attr: str) -> str:
+        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', attr)
+        snake_case = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+        return snake_case
 
 
 class CDragonEndpoints:
@@ -66,6 +142,10 @@ class CDragonEndpoints:
             "cdragon_rune_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/perks.json",
             "cdragon_spells_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/summoner-spells.json",
             "cdragon_profile_icon_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
+        },
+        "tft": {
+            "cdragon_tft_full": "/latest/cdragon/tft/{locale}.json",
+            "cdragon_profile_icon_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
         }
     }
 
@@ -73,6 +153,11 @@ class CDragonEndpoints:
         "cdragon_champion_by_id": {
             "final": "id",
             "by_key": {},
+            "by_name": {},
+        },
+        "cdragon_tft_full": {
+            "final": "key",
+            "by_lol_id": {},
             "by_name": {},
         }
     }
@@ -107,6 +192,7 @@ class CDragon(PyotStoreObject):
 
     def __init__(self, game: str, error_handling: Dict[int, Tuple], logs_enabled: bool = True):
         handler = PyotErrorHandler()
+        self._game = game
         self._handler_map = handler.create_handler(error_handling)
         self._endpoints = CDragonEndpoints(game)
         self._logs_enabled = logs_enabled
@@ -117,9 +203,9 @@ class CDragon(PyotStoreObject):
         async with aiohttp.ClientSession() as session: # type: aiohttp.ClientSession
             try:
                 if not reinit:
-                    LOGGER.warning("[Trace: CDragon] Store initializing ...")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > CDragon] Store initializing ...")
                 else:
-                    LOGGER.warning("[Trace: CDragon] Updating initialized data ...")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > CDragon] Updating initialized data ...")
                 response = await session.request("GET", url)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
@@ -128,10 +214,14 @@ class CDragon(PyotStoreObject):
                 for champ in dic:
                     if champ["id"] == -1:
                         continue
-                    self._endpoints._transformers["cdragon_champion_by_id"]["by_key"][champ["alias"]] = champ["id"]
-                    self._endpoints._transformers["cdragon_champion_by_id"]["by_name"][champ["name"]] = champ["id"]
+                    if self._game == "lol":
+                        self._endpoints._transformers["cdragon_champion_by_id"]["by_key"][champ["alias"]] = champ["id"]
+                        self._endpoints._transformers["cdragon_champion_by_id"]["by_name"][champ["name"]] = champ["id"]
+                    elif self._game == "tft":
+                        self._endpoints._transformers["cdragon_tft_full"]["by_lol_id"][champ["id"]] = champ["alias"]
+                        self._endpoints._transformers["cdragon_tft_full"]["by_name"][champ["name"]] = champ["alias"]
             else:
-                raise RuntimeError("[Trace: CDragon]: Store failed to initialize, "+
+                raise RuntimeError(f"[Trace: {self._game.upper()} > CDragon]: Store failed to initialize, "+
                     f"cdragon raw core file call responded with status code {response.status}")
 
     async def get(self, token: PyotPipelineToken, session: aiohttp.ClientSession) -> Dict:
@@ -143,7 +233,7 @@ class CDragon(PyotStoreObject):
         while await request_token.run_or_raise():
             try:
                 if self._logs_enabled:
-                    LOGGER.warning(f"[Trace: CDragon] GET: {self._log_template(token)}")
+                    LOGGER.warning(f"[Trace: {self._game.upper()} > CDragon] GET: {self._log_template(token)}")
                 response = await session.request("GET", url)
             except RuntimeError:
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")

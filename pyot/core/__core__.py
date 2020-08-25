@@ -1,7 +1,9 @@
-from typing import List
+from .pipeline import PyotPipeline
+from typing import List, Mapping, Any
 import aiohttp
 import asyncio
-from .pipeline import PyotPipeline
+import uuid
+import inspect
 
 from logging import getLogger
 LOGGER = getLogger(__name__)
@@ -9,22 +11,34 @@ LOGGER = getLogger(__name__)
 
 class Registry:
     PYOT_PIPELINES: List[PyotPipeline] = []
-registry = Registry()
+    GATHERER_SETTINGS: Mapping[str, Any] = {
+        "workers": 200,
+        "logs_enabled": True,
+        "session_class": aiohttp.ClientSession,
+        "cancel_on_raise": False,
+    }
+
+REGISTRY = Registry()
 
 
-
-class Scraper:
-    responses: List
-    semaphore: int
+class PyotGatherer:
+    workers: int
+    session_class: Any
+    logs_enabled: bool
+    cancel_on_raise: bool
     statements: List
+    responses: List
 
-    def __init__(self, semaphore: int = 10000, statements: List = []):
+    def __init__(self, workers: int = REGISTRY.GATHERER_SETTINGS["workers"], session_class: Any = REGISTRY.GATHERER_SETTINGS["session_class"],
+        logs_enabled: bool = REGISTRY.GATHERER_SETTINGS["logs_enabled"], cancel_on_raise: bool = REGISTRY.GATHERER_SETTINGS["cancel_on_raise"]):
         """
         Scraper that wraps asyncio.gather, automatically create a session that 
         is reused across the statements provided to get data even faster
         """
-        self.semaphore = semaphore
-        self.statements = statements
+        self.workers = workers
+        self.session_class = session_class
+        self.cancel_on_raise = cancel_on_raise
+        self.logs_enabled = logs_enabled
 
     async def __aenter__(self):
         return self
@@ -32,21 +46,36 @@ class Scraper:
     async def __aexit__(self, *args):
         return
 
-    async def scrape(self):
+    async def gather(self):
         """Awaitable, starts the scraping process and saves results to `responses`"""
-        LOGGER.warning("[Trace: PyotScraper] Creating session and semaphore ...")
-        async with aiohttp.ClientSession() as session, asyncio.Semaphore(self.semaphore) as _:
-            for pipeline in registry.PYOT_PIPELINES:
-                pipeline.session = session
-            
-            self.responses = await asyncio.gather(*self.statements)
+        session_id = uuid.uuid4()
+        if self.logs_enabled:
+            LOGGER.warning(f"[Trace: PyotGatherer] Creating session '{session_id}', adding session id to statements ...")
+        async with self.session_class() as session, asyncio.Semaphore(self.workers) as _:
 
-            LOGGER.warning("[Trace: PyotScraper] Cleaning up session, waiting to exit ...")
-            for pipeline in registry.PYOT_PIPELINES:
-                pipeline.hold = True
-                await asyncio.sleep(1)
-                pipeline.session = None
-                pipeline.hold = False
+            for pipeline in REGISTRY.PYOT_PIPELINES:
+                pipeline.sessions[session_id] = session
+
+
+            for i in range(len(self.statements)):
+                try:
+                    self.statements[i] = asyncio.create_task(self.statements[i]._set_session_id(session_id).get())
+                except Exception:
+                    raise RuntimeError(f"[Trace: PyotGatherer] Failed to add session id to statements at index {i}, "
+                        "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
+            try:
+                self.responses = await asyncio.gather(*self.statements)
+            except Exception as e:
+                if self.cancel_on_raise:
+                    for task in self.statements:
+                        task.cancel()
+                if self.logs_enabled:
+                    LOGGER.warning(f"[Trace: PyotGatherer] All statements of session '{session_id}' are cancelled due to exception: {e}")
+
+            if self.logs_enabled:
+                LOGGER.warning(f"[Trace: PyotGatherer] Closing session '{session_id}', cleaning up pipeline ...")
+            for pipeline in REGISTRY.PYOT_PIPELINES:
+                pipeline.sessions.pop(session_id)
 
 
 def run(coro):
