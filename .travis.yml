@@ -5,6 +5,7 @@ install:
   - yarn install # npm ci
 script:
   - cd docs
+  - yarn add vuepress
   - yarn build # npm run docs:build
 deploy:
   provider: pages
