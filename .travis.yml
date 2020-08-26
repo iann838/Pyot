@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - lts/*
+install:
+  - yarn install # npm ci
+script:
+  - cd docs
+  - yarn build # npm run docs:build
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: docs/.vuepress/dist
+  github_token: $TRAVIS_CI_TOKEN
+  keep_history: true
+  committer_from_gh: true
+  on:
+    branch: master

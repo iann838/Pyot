@@ -1,0 +1,12 @@
+
+CASE 1
+
+Pyot isn’t endorsed by any point or aspects of Riot Games and doesn’t reflect 
+the views or opinions of Riot Games or anyone officially involved in producing 
+or managing the Riot's products. Riot Games and its products are trademarks 
+or registered trademarks of Riot Games, Inc.
+
+CASE 2
+
+Pyot will not take any responsibility of any source, the software is provided
+"AS IS" as stated in license, and using it means that you have knowledge of so.

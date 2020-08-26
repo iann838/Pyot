@@ -1,0 +1,19 @@
+{
+  "name": "pyot",
+  "version": "0.0.1",
+  "description": "2020 High level Python framework for the Riot Games API, support for AsyncIO and Django",
+  "main": "index.js",
+  "authors": {
+    "name": "Paaksing",
+    "email": "paaksingtech@gmail.com"
+  },
+  "repository": "pyot/Pyot",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.5.4"
+  }
+}

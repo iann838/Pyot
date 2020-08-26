@@ -16,7 +16,7 @@ LOGGER = getLogger(__name__)
 class Omnistone(PyotStoreObject):
     unique = True
 
-    def __init__(self, game: str, expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = False) -> None:
+    def __init__(self, game: str, expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = True) -> None:
         self._game = game
         self._data = dict()
         self._lock = PyotLock()

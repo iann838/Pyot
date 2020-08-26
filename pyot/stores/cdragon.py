@@ -190,7 +190,7 @@ class CDragonEndpoints:
 class CDragon(PyotStoreObject):
     unique = True
 
-    def __init__(self, game: str, error_handling: Dict[int, Tuple], logs_enabled: bool = True):
+    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, logs_enabled: bool = True):
         handler = PyotErrorHandler()
         self._game = game
         self._handler_map = handler.create_handler(error_handling)

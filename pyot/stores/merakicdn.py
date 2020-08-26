@@ -52,7 +52,7 @@ class MerakiCDNEndpoints:
 class MerakiCDN(PyotStoreObject):
     unique = True
 
-    def __init__(self, game: str, error_handling: Dict[int, Tuple], logs_enabled: bool = True):
+    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, logs_enabled: bool = True):
         handler = PyotErrorHandler()
         if game != "lol":
             raise NotImplementedError("MerakiCDN only supports the LOL model")
