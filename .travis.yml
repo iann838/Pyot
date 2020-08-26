@@ -5,12 +5,11 @@ install:
   - yarn install # npm ci
 script:
   - cd docs
-  - yarn add vuepress
   - yarn build # npm run docs:build
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: docs/.vuepress/dist
+  local_dir: docs/src/.vuepress/dist
   github_token: $TRAVIS_CI_TOKEN
   keep_history: true
   committer_from_gh: true
