@@ -20,9 +20,10 @@ All of the `statements` provided needs to be an instance of the Pyot Core object
 Pyot Gatherer will automatically append `get()` to the instance after setting the session id.
 :::
 
-### Pyot Settings Reference
+## Pyot Settings Reference
+The settings params and default values for the `GATHERER` argument in Pyot Settings. Detailed explanation of each param is below.
 :::tip
-Keys can be all caps to keep settings clean.
+Keys can be ALL CAPS to keep settings clean.
 For more in depth explanation of these params please refer to the Pyot Gatherer API section below.
 :::
 ```python
