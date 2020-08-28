@@ -158,7 +158,7 @@ Syot is an adaptation of Pyot to synchronous code (although I don't see a reason
 Syot and Pyot **_shares the same pipeline_** per each model so you can use the 2 world together without problem of any. They won't have any conflict UNLESS UNLESS and UNLESS you try to activate the same Settings twice both in Syot and Pyot.
 
 ## Similarities
-1. All Pyot Object's methods that are not marked with <Badge text="awaitable" type="error" vertical="middle"/> are usable in Syot, that includes Pyot Object's `dict()`, `json()` and others not mentioned.
+1. All Pyot Object's methods that are not marked with "awaitable" are usable in Syot, that includes Pyot Object's `dict()`, `json()` and others not mentioned.
 2. All the models API are available on Syot, with some minor changes listed below.
 
 ## Differences
