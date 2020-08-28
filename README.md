@@ -143,7 +143,7 @@ INSTALLED_APPS = [
 
 In the same `settings.py` file, add the file path to a reserved variable for Djot called `PYOT_SETTINGS`.
 
-Supposing the file is at: `test/pyot.py`
+Supposing the pyot settings file is at: `test/pyot.py`
 ```python
 PYOT_SETTINGS = [
     'test.pyot'
