@@ -86,7 +86,7 @@ Create a file (preferably named `pyot.py`) under any of the Django modules (eith
 This example will take `test` as the project directory, so create a `pyot.py` file inside it and add up the needed Pyot Settings.
 The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
-```python{1,3,9,62}
+```python
 #test/pyot.py
 
 import pyot
@@ -129,7 +129,7 @@ pyot.Settings(
 ```
 Then in your projects `settings.py` file, add `djot` to the `INSTALLED_APPS`.
 
-```python{8}
+```python
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -144,7 +144,7 @@ INSTALLED_APPS = [
 In the same `settings.py` file, add the file path to a reserved variable for Djot called `PYOT_SETTINGS`.
 
 Supposing the file is at: `test/pyot.py`
-```python{2}
+```python
 PYOT_SETTINGS = [
     'test.pyot'
 ]
@@ -170,7 +170,7 @@ Syot and Pyot **_shares the same pipeline_** per each model so you can use the 2
 
 ## Example Usage
 Activate the settings before you script entry point or module `__init__.py`
-```python{1,4,15,18}
+```python
 import syot
 import os
 
@@ -191,7 +191,7 @@ syot.Settings(
 ).activate() # <- DON'T FORGET TO ACTIVATE THE SETTINGS
 ```
 Example of Syot code
-```python{1,3,7}
+```python
 import syot
 
 summoner = syot.lol.Summoner(name="Morimorph", platform="NA1").get()
