@@ -1,57 +1,52 @@
 from typing import Callable, Any, TypeVar
-from collections import defaultdict
 from django.core.cache import caches
+from .__core__ import PyotStoreObject, PyotExpirationManager
+from ..core.pipeline import PyotPipelineToken
+from ..core.exceptions import NotFound
 import datetime
 
 from logging import getLogger
-
 LOGGER = getLogger(__name__)
-T = TypeVar("T")
 
-class DjangoCache(object):
-    def __init__(self, alias: str = None, logs_enabled: bool = False) -> None:
+
+class DjangoCache(PyotStoreObject):
+    unique = False
+
+    def __init__(self, game: str, alias: str = None, expirations: Any = None, logs_enabled: bool = True) -> None:
+        if alias is None: raise RuntimeError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' because Pyot will not guess which cache is used")
+        self._game = game
         self._alias = alias
         self._cache = caches[alias]
+        self._manager = PyotExpirationManager(game, expirations)
         self._logs_enabled = logs_enabled
 
-    def put(self, key: Any, value: Any, timeout: int = -1) -> None:
+    async def put(self, token: PyotPipelineToken, value: Any) -> None:
+        timeout = self._manager.get_timeout(token.method)
         if timeout != 0:
             if timeout == -1:
                 timeout = None
-            self._cache.set(key, value, timeout)
+            self._cache.set(token.stringify, value, timeout)
             if self._logs_enabled:
-                LOGGER.warn(f"[Trace: {self._alias}] PUT: {key}")
+                LOGGER.warn(f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] PUT: {self._log_template(token)}")
 
-    def put_many(self, pairs: Any, timeout: int = -1) -> None:
-        if timeout != 0:
-            if timeout == -1:
-                timeout = None
-            self._cache.set_many(pairs, timeout)
-            if self._logs_enabled:
-                LOGGER.warn(f"[Trace: {self._alias}] PUT-MANY: {[key for key in pairs.keys()]}")
-
-    def get(self, key: Any) -> Any:
-        item = self._cache.get(key)
+    async def get(self, token: PyotPipelineToken, session = None) -> Any:
+        timeout = self._manager.get_timeout(token.method)
+        if timeout == 0:
+            raise NotFound
+        item = self._cache.get(token.stringify)
         if item is None:
-            raise KeyError
+            raise NotFound
         if self._logs_enabled:
-            LOGGER.warn(f"[Trace: {self._alias}] GET: {key}")
+            LOGGER.warn(f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] GET: {self._log_template(token)}")
         return item
 
-    # This varies from the cache backend you use, might implement
-    def get_all(self, type: Any):
-        raise NotImplementedError
+    def delete(self, token: PyotPipelineToken) -> None:
+        self._cache.delete(token.stringify)
+        if self._logs_enabled:
+            LOGGER.warn(f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] DELETE: {self._log_template(token)}")
 
-    # This should be rarely used, no delete() implemented in cassiopeia
-    # You need to manually enter the key
-    # For django you can just simply delete it by entering your cache backend server/db
-    def delete(self, key: Any) -> None:
-        self._cache.delete(key)
-
-    # Again, cass not implemented, you can do it on your django backend server/db
-    # but option is here if you want to make life harder
-    def contains(self, key: Any) -> bool:
-        item = self._cache.get(key)
+    def contains(self, token: PyotPipelineToken) -> bool:
+        item = self._cache.get(token.stringify)
         if item is None:
             return False
         return True
@@ -62,14 +57,8 @@ class DjangoCache(object):
     # terminal/cmd: `python manage.py shell`
     # >>> from django.core.cache import caches
     # >>> caches[name_of_your_cache].clear()
-    def clear(self, pref: str = None):
-        if pref is None:
-            self._cache.clear()
-        else:
-            self._cache.clear(prefix=pref)
-
-    # No need to expire, Django handles it.
-    # For filebased/database backends, it should have its own culling system.
-    def expire(self, type: Any = None):
-        pass
+    def clear(self):
+        self._cache.clear()
+        if self._logs_enabled:
+            LOGGER.warn(f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] CLEAR: Store has been cleared successfully")
 

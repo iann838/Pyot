@@ -105,6 +105,12 @@ class ClashTournaments(PyotCore):
     def __init__(self, platform: str = None):
         self._lazy_set(locals())
 
+    def __getitem__(self, name):
+        return self.tournaments[name]
+
+    def __iter__(self) -> List[ClashTournamentData]:
+        return iter(self.tournaments)
+
     async def _transform(self, data):
         new_data = {}
         new_data["tournaments"] = data

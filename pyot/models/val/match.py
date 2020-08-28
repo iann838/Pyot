@@ -241,7 +241,7 @@ class Match(PyotCore):
 
 
 class MatchHistory(PyotCore):
-    puuid: str	
+    puuid: str
     history: List[MatchHistoryData]
 
     class Meta(PyotCore.Meta):

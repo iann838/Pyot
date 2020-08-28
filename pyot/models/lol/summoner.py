@@ -65,3 +65,8 @@ class Summoner(PyotCore):
     def account(self) -> "Account":
         from .account import Account
         return Account(puuid=self.puuid)
+
+    @property
+    def match_history(self) -> "MatchHistory":
+        from .match import MatchHistory
+        return MatchHistory(account_id=self.account_id, platform=self.platform)

@@ -97,6 +97,10 @@ class Champion(PyotCore):
         data["ability"]["iconPath"] = tr.tft_url_assets(data["ability"].pop("icon"))
         return data
 
+    @property
+    def traits(self) -> List["Trait"]:
+        from .trait import Trait
+        return [Trait(key=i, locale=self.locale) for i in self.trait_keys]
 
 class Champions(PyotCore):
     set: int

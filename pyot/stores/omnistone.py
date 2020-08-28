@@ -1,7 +1,5 @@
-from functools import wraps
 from typing import Callable, Any, TypeVar, Tuple
 from threading import Lock
-from collections import defaultdict
 from .__core__ import PyotStoreObject, PyotExpirationManager
 from ..core.pipeline import PyotPipelineToken
 from ..core.exceptions import NotFound
@@ -16,13 +14,13 @@ LOGGER = getLogger(__name__)
 class Omnistone(PyotStoreObject):
     unique = True
 
-    def __init__(self, game: str, expirations: Any = None, max_entries: int = None, cull_frecuency: int = None, logs_enabled: bool = True) -> None:
+    def __init__(self, game: str, expirations: Any = None, max_entries: int = 10000, cull_frecuency: int = 2, logs_enabled: bool = True) -> None:
         self._game = game
         self._data = dict()
         self._lock = PyotLock()
         self._manager = PyotExpirationManager(game, expirations)
-        self._max_entries = max_entries if max_entries is not None else 10000
-        self._cull_frecuency = cull_frecuency if cull_frecuency is not None else 2
+        self._max_entries = max_entries
+        self._cull_frecuency = cull_frecuency
         self._cull_lock = [False, datetime.datetime.now()]
         self._logs_enabled = logs_enabled
 
@@ -46,6 +44,9 @@ class Omnistone(PyotStoreObject):
                     await self.cull()
 
     async def get(self, token: PyotPipelineToken, expiring: bool = False, session = None) -> Any:
+        timeout = self._manager.get_timeout(token.method)
+        if timeout == 0:
+            raise NotFound
         async with self._lock:
             try:
                 item, timeout, entered, _ = self._data[token]

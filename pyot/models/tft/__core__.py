@@ -27,6 +27,20 @@ class PyotBaseObject:
             "asia": "ko_kr",
         }
 
+        to_region = {
+            "na1": "americas",
+            "br1": "americas",
+            "la1": "americas",
+            "la2": "americas",
+            "oc1": "americas",
+            "kr": "asia",
+            "jp1": "asia",
+            "eun1": "europe",
+            "euw1": "europe",
+            "tr1": "europe",
+            "ru": "europe"
+        }
+
     @classmethod
     def set_region(cls, region):
         cls.region = region.lower()
@@ -45,6 +59,9 @@ class PyotBaseObject:
     
     def to_locale(self, platform):
         return self.Meta.to_locale[platform]
+
+    def to_region(self, platform):
+        return self.Meta.to_region[platform]
 
 
 class PyotCore(PyotBaseObject, PyotCoreObject):

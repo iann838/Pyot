@@ -11,6 +11,7 @@ class MatchMetadataData(PyotStatic):
     participant_puuids: List[str]
 
     class Meta(PyotStatic.Meta):
+        raws = ["participant_puuids"]
         renamed = {"match_id": "id", "participants": "participant_puuids"}
 
     @property
@@ -112,6 +113,9 @@ class Match(PyotCore):
     info: MatchInfoData
     metadata: MatchMetadataData
 
+    class Meta(PyotCore.Meta):
+        rules = {"match_v1_match": ["id"]}
+
     def __init__(self, id: str = None, region: str = None):
         self._lazy_set(locals())
 
@@ -127,6 +131,7 @@ class MatchHistory(PyotCore):
     puuid: str
 
     class Meta(PyotCore.Meta):
+        rules = {"match_v1_matchlist": ["puuid"]}
         raws = ["ids"]
         allow_query = True
     
@@ -150,3 +155,6 @@ class MatchHistory(PyotCore):
             return Summoner(account_id=self.account_id, platform=self.ids[0].split("_")[0])
         except (AttributeError, IndexError):
             raise AttributeError("Match history is empty, could not identify platform from list")
+
+    async def _transform(self, data):
+        return {"ids": data}

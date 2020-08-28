@@ -14,3 +14,4 @@ from .champion import Champion
 from .summoner import Summoner
 from .item import Item, Items
 from .rune import Rune, Runes
+from .status import Status

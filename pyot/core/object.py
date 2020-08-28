@@ -139,6 +139,8 @@ class PyotStaticObject:
             return copy.deepcopy(self.Meta.data)
         def recursive(obj):
             dic = copy.deepcopy(obj.__dict__)
+            if "Meta" in dic.keys():
+                del dic["Meta"]
             if remove_server:
                 for server in ["platform", "region", "locale"]:
                     if server in dic.keys():
@@ -158,10 +160,10 @@ class PyotStaticObject:
         return recursive(self)
 
 
-    def json(self, pyotify: bool = False):
+    def json(self, pyotify: bool = False, remove_server: bool = True):
         if not pyotify:
             return json.dumps(self.Meta.data)
-        return json.dumps(self.pyot_dict())
+        return json.dumps(self.dict(pyotify=pyotify, remove_server=remove_server))
 
 
 class PyotCoreObject(PyotStaticObject):
@@ -193,7 +195,7 @@ class PyotCoreObject(PyotStaticObject):
         return self
 
     async def get(self):
-        token = await self._create_token()
+        token = await self.create_token()
         data = await self.Meta.pipeline.get(token, self.filter, self.Meta.session_id)
         self.Meta.data = await self._transform(data)
         self._fill()
@@ -216,11 +218,11 @@ class PyotCoreObject(PyotStaticObject):
     def _parse_query(self, kwargs) -> Dict:
         return {self.to_camel_case(key): val for (key,val) in kwargs.items() if key != "self" and val is not None}
 
-    def _set_session_id(self, id: str):
+    def set_session_id(self, id: str):
         self.Meta.session_id = id
         return self
 
-    async def _create_token(self) -> PyotPipelineToken:
+    async def create_token(self) -> PyotPipelineToken:
         if not hasattr(self.Meta, "pipeline"): raise RuntimeError("Pyot for this variant wasn't activated")
         await self._clean()
         await self._get_rule()

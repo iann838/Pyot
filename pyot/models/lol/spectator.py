@@ -211,7 +211,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
 
 class FeaturedGames(PyotCore):
     games: List[FeaturedGameData]
-    refresh_interval: int
+    refresh_interval: timedelta
 
     class Meta(PyotCore.Meta):
         rules = {"spectator_v4_featured_games": []}

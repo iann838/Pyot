@@ -6,6 +6,8 @@ import pickle
 import asyncio
 import aiohttp
 
+def default_filter(response):
+    return response
 
 @dataclass
 class PyotPipelineToken:
@@ -17,6 +19,9 @@ class PyotPipelineToken:
     def __hash__(self):
         return hash((self.server, self.method, str(self.params), str(self.queries)))
 
+    @property
+    def stringify(self):
+        return (self.server+self.method+str(self.params)+str(self.queries)).replace(" ", "_")
 
 class PyotPipeline:
     def __init__(self, stores: List[Any]):
@@ -35,7 +40,7 @@ class PyotPipeline:
                 return store._endpoints.transform_key(method, key, content)
         raise RuntimeError("[Trace: PyotPipeline] FATAL: no key transformer found")
 
-    async def get(self, token: PyotPipelineToken, filter: Callable, session_id: str = None):
+    async def get(self, token: PyotPipelineToken, filter: Callable = default_filter, session_id: str = None):
         response = dict()
         found_in = None
         session = aiohttp.ClientSession() if session_id is None else self.sessions[session_id]
@@ -58,13 +63,20 @@ class PyotPipeline:
         for store in self.stores:
             try:
                 if store == found_in:
-                    continue
+                    break
                 await store.put(token, response)
             except NotImplementedError:
                 continue
         return pickle.loads(pickle.dumps(filter(response)))
         # Using pickle for dict copying and maintaining cleanest of sinked data
         # Note: pickle is performing 8 times faster than copy.deepcopy
+
+    async def put(self, token: PyotPipelineToken, value: Any):
+        for store in self.stores:
+            try:
+                await store.put(token, value)
+            except NotImplementedError:
+                continue
 
     async def clear(self):
         for store in self.stores:

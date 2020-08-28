@@ -28,7 +28,7 @@ class Trait(PyotCore):
     cleaned_description: str
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_tft_full": ["key"]}
+        rules = {"cdragon_tft_full": ["set","key"]}
         renamed = {"api_name": "key", "desc": "description"}
 
     def __init__(self, key: str = None, set: int = None, locale: str = None):

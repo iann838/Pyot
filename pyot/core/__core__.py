@@ -10,7 +10,7 @@ LOGGER = getLogger(__name__)
 
 
 class Registry:
-    PYOT_PIPELINES: List[PyotPipeline] = []
+    PIPELINES: Mapping[str, PyotPipeline] = {}
     GATHERER_SETTINGS: Mapping[str, Any] = {
         "workers": 200,
         "logs_enabled": True,
@@ -21,7 +21,7 @@ class Registry:
 REGISTRY = Registry()
 
 
-class PyotGatherer:
+class Gatherer:
     workers: int
     session_class: Any
     logs_enabled: bool
@@ -53,13 +53,13 @@ class PyotGatherer:
             LOGGER.warning(f"[Trace: PyotGatherer] Creating session '{session_id}', adding session id to statements ...")
         async with self.session_class() as session, asyncio.Semaphore(self.workers) as _:
 
-            for pipeline in REGISTRY.PYOT_PIPELINES:
+            for pipeline in REGISTRY.PIPELINES.values():
                 pipeline.sessions[session_id] = session
 
 
             for i in range(len(self.statements)):
                 try:
-                    self.statements[i] = asyncio.create_task(self.statements[i]._set_session_id(session_id).get())
+                    self.statements[i] = asyncio.create_task(self.statements[i].set_session_id(session_id).get())
                 except Exception:
                     raise RuntimeError(f"[Trace: PyotGatherer] Failed to add session id to statements at index {i}, "
                         "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
@@ -74,9 +74,11 @@ class PyotGatherer:
 
             if self.logs_enabled:
                 LOGGER.warning(f"[Trace: PyotGatherer] Closing session '{session_id}', cleaning up pipeline ...")
-            for pipeline in REGISTRY.PYOT_PIPELINES:
+            for pipeline in REGISTRY.PIPELINES.values():
                 pipeline.sessions.pop(session_id)
 
 
 def run(coro):
     return asyncio.get_event_loop().run_until_complete(coro)
+
+pipelines = REGISTRY.PIPELINES

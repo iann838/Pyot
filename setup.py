@@ -17,13 +17,13 @@ install_requires = [
     "pytz",
 ]
 
-# Require python 3.6
+# Require python 3.7
 if sys.version_info.major != 3 and sys.version_info.minor < 7:
     sys.exit("'Pyot' requires Python >= 3.7!")
 
 setup(
     name="pyot",
-    version="0.1.0", 
+    version="1.0.0", 
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
@@ -46,7 +46,7 @@ setup(
         "Framework :: Django :: 3.0",
     ],
     license="MIT",
-    packages=find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=("test","test_djot")),
     zip_safe=True,
     install_requires=install_requires,
     include_package_data=True

@@ -479,8 +479,8 @@ class MatchTimeline(Match, PyotCore):
 
     async def get(self):
         # pylint: disable=no-member
-        token1 = await self._create_token()
-        token2 = await self._create_token()
+        token1 = await self.create_token()
+        token2 = await self.create_token()
         task1 = asyncio.create_task(self.Meta.pipeline.get(token1, self.filter))
         task2 = asyncio.create_task(self.Meta.pipeline.get(token2, self.filter))
         data1 = await task1

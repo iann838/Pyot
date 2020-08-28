@@ -7,7 +7,7 @@ import aiohttp
 
 
 @dataclass
-class PyotSettings:
+class Settings:
     MODEL: str
     PIPELINE: Mapping[str, Any]
     DEFAULT_REGION: str = "AMERICAS"
@@ -35,7 +35,7 @@ class PyotSettings:
         self._check_gatherer()
         REGISTRY.GATHERER_SETTINGS.update(self.GATHERER)
         run(self.pipeline.initialize())
-        REGISTRY.PYOT_PIPELINES.append(self.pipeline)
+        REGISTRY.PIPELINES[self.MODEL.lower()] = self.pipeline
 
     def _make_pipeline(self, pipeline_configs):
         stores = []

@@ -1,11 +1,14 @@
 from datetime import timedelta as td
 from dataclasses import dataclass
-from typing import Tuple, Any
+from typing import Tuple, Any, Dict
 from ..core import exceptions as exc
 import asyncio
 import aiohttp
 import atexit
+import copy
 
+from logging import getLogger
+LOGGER = getLogger(__name__)
 
 class PyotStoreObject:
 
@@ -41,31 +44,31 @@ class PyotExpirationManager:
     _expirations = {
         "lol": {
             "account_v1_by_puuid": td(hours=3),
-            "account_v1_active_shard": td(hours=3),
+            "account_v1_active_shard": 0,
             "champion_v3_rotation": td(hours=3),
-            "champion_mastery_v4_all_mastery": td(minutes=30),
-            "champion_mastery_v4_by_champion_id": td(minutes=30),
-            "clash_v1_players": td(minutes=5),
-            "clash_v1_teams": td(minutes=5),
-            "clash_v1_tournaments_by_team_id": td(minutes=5),
-            "clash_v1_toutnaments_by_tournament_id": td(minutes=5),
+            "champion_mastery_v4_all_mastery": 0,
+            "champion_mastery_v4_by_champion_id": 0,
+            "clash_v1_players": 0,
+            "clash_v1_teams": 0,
+            "clash_v1_tournaments_by_team_id": 0,
+            "clash_v1_toutnaments_by_tournament_id": 0,
             "clash_v1_tournaments_all": td(hours=3),
-            "league_v4_summoner_entries": td(hours=3),
+            "league_v4_summoner_entries": 0,
             "league_v4_challenger_league": td(hours=1),
             "league_v4_grandmaster_league": td(hours=1),
             "league_v4_master_league": td(hours=1),
-            "league_v4_entries_by_division": td(hours=1),
-            "league_v4_league_by_league_id": td(hours=1),
-            "status_v3_shard_data": td(minutes=5),
+            "league_v4_entries_by_division": 0,
+            "league_v4_league_by_league_id": 0,
+            "status_v3_shard_data": 0,
             "match_v4_match": td(days=7),
             "match_v4_timeline": td(days=3),
-            "match_v4_matchlist": td(minutes=5),
-            "spectator_v4_current_game": td(minutes=5),
-            "spectator_v4_featured_games": td(minutes=5),
-            "summoner_v4_by_name": td(hours=3),
-            "summoner_v4_by_id": td(hours=3),
-            "summoner_v4_by_account_id": td(hours=3),
-            "summoner_v4_by_puuid": td(hours=3),
+            "match_v4_matchlist": 0,
+            "spectator_v4_current_game": 0,
+            "spectator_v4_featured_games": 0,
+            "summoner_v4_by_name": td(hours=1),
+            "summoner_v4_by_id": td(hours=1),
+            "summoner_v4_by_account_id": td(hours=1),
+            "summoner_v4_by_puuid": td(hours=1),
             "third_party_code_v4_code": 0,
 
             "cdragon_champion_by_id": td(hours=1),
@@ -78,39 +81,47 @@ class PyotExpirationManager:
             "meraki_item_by_id": td(hours=3),
         },
         "tft": {
-            "account_v1_by_puuid": td(hours=3),
-            "account_v1_active_shard": td(hours=3),
-            "league_v1_summoner_entries": td(hours=3),
+            "account_v1_by_puuid": td(hours=1),
+            "account_v1_active_shard": 0,
+            "league_v1_summoner_entries": 0,
             "league_v1_challenger_league": td(hours=1),
             "league_v1_grandmaster_league": td(hours=1),
             "league_v1_master_league": td(hours=1),
-            "league_v1_entries_by_division": td(hours=1),
-            "league_v1_league_by_league_id": td(hours=1),
+            "league_v1_entries_by_division": 0,
+            "league_v1_league_by_league_id": 0,
             "match_v1_match": td(days=7),
             "match_v1_matchlist": td(minutes=5),
-            "summoner_v1_by_name": td(hours=3),
-            "summoner_v1_by_id": td(hours=3),
-            "summoner_v1_by_account_id": td(hours=3),
-            "summoner_v1_by_puuid": td(hours=3),
+            "summoner_v1_by_name": td(hours=1),
+            "summoner_v1_by_id": td(hours=1),
+            "summoner_v1_by_account_id": td(hours=1),
+            "summoner_v1_by_puuid": td(hours=1),
 
             "cdragon_tft_full": td(hours=1),
             "cdragon_profile_icon_full": td(hours=1),
         },
         "val": {
-            "account_v1_by_puuid": td(hours=3),
-            "account_v1_by_riot_id": td(hours=3),
-            "account_v1_active_shard": td(hours=3),
+            "account_v1_by_puuid": td(hours=1),
+            "account_v1_by_riot_id": td(hours=1),
+            "account_v1_active_shard": 0,
             "match_v1_match": td(days=7),
-            "match_v1_matchlist": td(minutes=5),
+            "match_v1_matchlist": 0,
             "content_v1_contents": td(hours=3),
         }
     }
 
-    def __init__(self, game, custom_expirations):
+    def __init__(self, game, custom_expirations: Dict):
+        self.expirations = copy.deepcopy(self._expirations[game]) 
         if custom_expirations is not None:
-            self._expirations[game].update(custom_expirations)
-        expire = self._expirations[game]
-        self.expirations = self._create_expiration(expire)
+            if "*" in custom_expirations.keys():
+                for key in self.expirations.keys():
+                    if key not in custom_expirations.keys():
+                        custom_expirations[key] = custom_expirations["*"]
+                custom_expirations.pop("*")
+            for key in custom_expirations.keys():
+                if key not in self.expirations.keys():
+                    raise RuntimeError(f"'{key}' is not a valid expiration token")
+            self.expirations.update(custom_expirations)
+        self.expirations = self._create_expiration(self.expirations)
 
     def _create_expiration(self, expirations):
         expirations_ = {}
@@ -124,7 +135,11 @@ class PyotExpirationManager:
         return expirations_
         
     def get_timeout(self, key):
-        return self.expirations[key]
+        try:
+            return self.expirations[key]
+        except KeyError:
+            LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined expiration token was passed, returned 0 by default")
+            return 0
 
 
 @dataclass
@@ -211,5 +226,6 @@ class PyotErrorHandler:
                     raise RuntimeError(f"Handler strategy 'R' (Retry) takes 1 parameters, but {len(params)} was given")
             else:
                 raise RuntimeError(f"Handler strategy '{strategy}' is not a valid token for error handling")
-        self.default_handler.update(handler)
-        return self.default_handler
+        hand = copy.deepcopy(self.default_handler)
+        hand.update(handler)
+        return hand
