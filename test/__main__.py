@@ -8,7 +8,7 @@ from datetime import datetime
 async def pull_leagues():
     league = await pyot.lol.ChallengerLeague(queue="RANKED_SOLO_5x5", platform="NA1").get()
     async with pyot.Gatherer() as gatherer: # type: pyot.Gatherer
-        gatherer.statements = [entry.summoner for entry in league.entries[:100]]
+        gatherer.statements = [entry.summoner for entry in league.entries[:1000]]
         await gatherer.gather()
         responses = gatherer.responses # type: List[pyot.lol.Summoner]
     history = await responses[0].match_history.get()

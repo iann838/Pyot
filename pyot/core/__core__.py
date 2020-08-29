@@ -1,5 +1,4 @@
 from .pipeline import PyotPipeline
-from .exceptions import GathererCancelled
 from typing import List, Mapping, Any
 import aiohttp
 import asyncio
@@ -51,7 +50,7 @@ class Gatherer:
         """Awaitable, starts the scraping process and saves results to `responses`"""
         session_id = uuid.uuid4()
         if self.logs_enabled:
-            LOGGER.warning(f"[Trace: PyotGatherer] Creating session '{session_id}', adding session id to statements ...")
+            LOGGER.warning(f"[Trace: Pyot Gatherer] Creating session '{session_id}', adding session id to statements ...")
         async with self.session_class() as session, asyncio.Semaphore(self.workers) as _:
 
             for pipeline in REGISTRY.PIPELINES.values():
@@ -62,7 +61,7 @@ class Gatherer:
                 try:
                     self.statements[i] = asyncio.create_task(self.statements[i].set_session_id(session_id).get())
                 except Exception:
-                    raise RuntimeError(f"[Trace: PyotGatherer] Failed to add session id to statements at index {i}, "
+                    raise RuntimeError(f"[Trace: Pyot Gatherer] Failed to add session id to statements at index {i}, "
                         "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
 
             if self.cancel_on_raise:
@@ -71,12 +70,14 @@ class Gatherer:
                 except Exception as e:
                     for task in self.statements:
                         task.cancel()
-                    raise GathererCancelled(session_id, e)
+                    if self.logs_enabled:
+                        LOGGER.warning(f"[Trace: Pyot Gatherer] All statements of session '{session_id}' are cancelled due to exception: {e}")
+                    raise
             else:
                 self.responses = await asyncio.gather(*self.statements, return_exceptions=True)
 
             if self.logs_enabled:
-                LOGGER.warning(f"[Trace: PyotGatherer] Closing session '{session_id}', cleaning up pipeline ...")
+                LOGGER.warning(f"[Trace: Pyot Gatherer] Closing session '{session_id}', cleaning up pipeline ...")
             for pipeline in REGISTRY.PIPELINES.values():
                 pipeline.sessions.pop(session_id)
 

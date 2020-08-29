@@ -4,10 +4,6 @@ A list of catchable exceptions used by Pyot. Bases at `pyot.core.exceptions`
 
 ## Exceptions List
 
-### `GathererCancelled` <Badge type="error" text="Exception" vertical="middle" />
-> `f"[Trace: PyotGatherer] All statements of session '{session_id}' are cancelled due to exception: {e}"`
-
-
 ### `SessionNotFound` <Badge type="error" text="Exception" vertical="middle" />
 > `"[Trace: Pyot Pipeline] 661: Session Not Found, use 'pyot.run' to your coroutines"`
 
