@@ -123,12 +123,36 @@ Model: League of Legends
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `SummonerLeagueEntryData` <Badge text="Pyot Static" vertical="middle"/>
+>`summoner_id: str`
+>
+>`summoner_name: str`
+>
+>`league_points: int`
+>
+>`rank: str`
+>
+>`wins: int`
+>
+>`losses: int`
+>
+>`veteran: bool`
+>
+>`inactive: bool`
+>
+>`fresh_blood: bool`
+>
+>`hot_streak: bool`
+>
+>`mini_series: MiniSeriesData`
+>
 >`league_id: str`
 >
 >`queue: str`
 >
 >`tier: str`
 
+>`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
+>
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `LeagueEntryData` <Badge text="Pyot Static" vertical="middle"/>
