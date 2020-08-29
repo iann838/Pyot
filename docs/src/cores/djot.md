@@ -5,14 +5,14 @@ This little app is installed together with Pyot.
 
 ## Setup
 
-Create a file (preferably named `pyot.py`) under any of the Django modules (either under an app folder or project folder):
+Create a file (preferably named `djot.py`) under any of the Django modules (either under an app folder or project folder):
 
-This example will take `test` as the project directory, so create a `pyot.py` file inside it and add up the needed Pyot Settings.
+This example will take `test` as the project directory, so create a `djot.py` file inside it and add up the needed Pyot Settings.
 :::tip INFO
 The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 :::
 ```python{1,3,9,62}
-#test/pyot.py
+#test/djot.py
 
 import pyot
 import os
@@ -91,10 +91,10 @@ INSTALLED_APPS = [
 
 In the same `settings.py` file, add the file path to a reserved variable for Djot called `PYOT_SETTINGS`.
 
-Supposing the pyot settings file is at: `test/pyot.py`
+Supposing the pyot settings file is at: `test/djot.py`
 ```python{2}
 PYOT_SETTINGS = [
-    'test.pyot'
+    'test.djot'
 ]
 ```
 :::tip INFO
