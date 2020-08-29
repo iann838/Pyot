@@ -76,6 +76,7 @@ class PyotStaticObject:
     locale: str = ""
 
     def __init__(self, data):
+        self.Meta = self.Meta()
         self.Meta.types = get_type_hints(self.__class__)
         self.Meta.data = data
 
@@ -90,18 +91,6 @@ class PyotStaticObject:
         except (KeyError, AttributeError):
             raise
             # raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
-
-    def _lazy_set(self, kwargs):
-        self.Meta.types = get_type_hints(self.__class__)
-        self.Meta.data = {}
-        for name, val in kwargs.items():
-            if name in ["platform", "region", "locale"] and val is not None:
-                self.Meta.data[name] = val.lower()
-                setattr(self, name, val.lower())
-            elif val is not None and name != "self":
-                self.Meta.data[name] = val
-                setattr(self, name, val)
-        return self
     
     def _normalize(self, data):
         new_data = {}
@@ -114,10 +103,10 @@ class PyotStaticObject:
     def _fill(self):
         data_ = self._normalize(self.Meta.data)
         for server in ["platform", "region", "locale"]:
-            if server in data_.keys():
+            if server in data_:
                 setattr(self, server, data_[server])
         for attr, val in data_.items():   # RENAME > REMOVE > RAW > LAZY
-            attr = attr if attr not in self.Meta.renamed.keys() else self.Meta.renamed[attr]
+            attr = attr if attr not in self.Meta.renamed else self.Meta.renamed[attr]
             if attr in self.Meta.removed:
                 continue
             elif attr in self.Meta.raws:
@@ -139,11 +128,11 @@ class PyotStaticObject:
             return copy.deepcopy(self.Meta.data)
         def recursive(obj):
             dic = copy.deepcopy(obj.__dict__)
-            if "Meta" in dic.keys():
+            if "Meta" in dic:
                 del dic["Meta"]
             if remove_server:
                 for server in ["platform", "region", "locale"]:
-                    if server in dic.keys():
+                    if server in dic:
                         dic.pop(server)
             for key, val in dic.items():
                 if type(val) is PyotLazyObject:
@@ -204,12 +193,21 @@ class PyotCoreObject(PyotStaticObject):
     def _lazy_set(self, kwargs):
         self.Meta = self.Meta()
         for server in ["platform", "region", "locale"]:
-            if server in kwargs.keys():
+            if server in kwargs:
                 self.Meta.server_type = server
                 break
             if server == "locale":  # if server is last and still not found, raise
                 raise RuntimeError("Invalid or missing server type was passed as subclass")
-        return super()._lazy_set(kwargs)
+        self.Meta.types = get_type_hints(self.__class__)
+        self.Meta.data = {}
+        for name, val in kwargs.items():
+            if name in ["platform", "region", "locale"] and val is not None:
+                self.Meta.data[name] = val.lower()
+                setattr(self, name, val.lower())
+            elif val is not None and name != "self":
+                self.Meta.data[name] = val
+                setattr(self, name, val)
+        return self
 
     def to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -231,7 +229,7 @@ class PyotCoreObject(PyotStaticObject):
         return PyotPipelineToken(self.Meta.server, self.Meta.key, self.Meta.load, self.Meta.query)
 
     async def _get_rule(self):
-        if len(self.Meta.rules.keys()) == 0:
+        if len(self.Meta.rules) == 0:
             raise RuntimeError("This Pyot object is not get-able")
         repeated = False
         for key, attr in self.Meta.rules.items():
@@ -241,7 +239,7 @@ class PyotCoreObject(PyotStaticObject):
                     load[a] = getattr(self, a)
                 except AttributeError:
                     break
-            if len(load.keys()) != len(attr):
+            if len(load) != len(attr):
                 continue
             if hasattr(self.Meta, "key") and key == self.Meta.key and load == self.Meta.load:
                 repeated = True

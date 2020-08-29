@@ -1,4 +1,5 @@
 from .pipeline import PyotPipeline
+from .exceptions import GathererCancelled
 from typing import List, Mapping, Any
 import aiohttp
 import asyncio
@@ -63,14 +64,16 @@ class Gatherer:
                 except Exception:
                     raise RuntimeError(f"[Trace: PyotGatherer] Failed to add session id to statements at index {i}, "
                         "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
-            try:
-                self.responses = await asyncio.gather(*self.statements)
-            except Exception as e:
-                if self.cancel_on_raise:
+
+            if self.cancel_on_raise:
+                try:
+                    self.responses = await asyncio.gather(*self.statements)
+                except Exception as e:
                     for task in self.statements:
                         task.cancel()
-                if self.logs_enabled:
-                    LOGGER.warning(f"[Trace: PyotGatherer] All statements of session '{session_id}' are cancelled due to exception: {e}")
+                    raise GathererCancelled(session_id, e)
+            else:
+                self.responses = await asyncio.gather(*self.statements, return_exceptions=True)
 
             if self.logs_enabled:
                 LOGGER.warning(f"[Trace: PyotGatherer] Closing session '{session_id}', cleaning up pipeline ...")

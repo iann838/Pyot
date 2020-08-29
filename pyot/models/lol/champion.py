@@ -144,7 +144,7 @@ class Champion(PyotCore):
             skin["loadScreenPath"] = tr.url_assets(skin["loadScreenPath"])
             skin["rarity"] = tr.start_k(skin["rarity"])
             skin["chromaPath"] = tr.url_assets(skin["chromaPath"])
-            if "chromas" in skin.keys():
+            if "chromas" in skin:
                 chromas = []
                 for chroma in skin["chromas"]:
                     chroma["chromaPath"] = tr.url_assets(chroma["chromaPath"])

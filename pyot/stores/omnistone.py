@@ -81,7 +81,7 @@ class Omnistone(PyotStoreObject):
             raise NotFound
 
     async def expire(self):
-        for token in self._data.keys():
+        for token in self._data:
             await self.get(token, expiring=True)
 
     async def clear(self):

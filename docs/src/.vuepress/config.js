@@ -77,6 +77,7 @@ module.exports = {
             'settings',
             'pipeline',
             'gatherer',
+            'exceptions',
           ]
         },
         {

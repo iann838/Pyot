@@ -112,13 +112,13 @@ class PyotExpirationManager:
     def __init__(self, game, custom_expirations: Dict):
         self.expirations = copy.deepcopy(self._expirations[game]) 
         if custom_expirations is not None:
-            if "*" in custom_expirations.keys():
-                for key in self.expirations.keys():
-                    if key not in custom_expirations.keys():
+            if "*" in custom_expirations:
+                for key in self.expirations:
+                    if key not in custom_expirations:
                         custom_expirations[key] = custom_expirations["*"]
                 custom_expirations.pop("*")
-            for key in custom_expirations.keys():
-                if key not in self.expirations.keys():
+            for key in custom_expirations:
+                if key not in self.expirations:
                     raise RuntimeError(f"'{key}' is not a valid expiration token")
             self.expirations.update(custom_expirations)
         self.expirations = self._create_expiration(self.expirations)
@@ -205,7 +205,7 @@ class PyotErrorHandler:
         if handler is None:
             return self.default_handler
         for code, c in handler.items():
-            if code not in self.default_handler.keys():
+            if code not in self.default_handler:
                 raise RuntimeError(f"Handler code {code} is not a valid status for error handling")
             strategy = c[0]
             try:

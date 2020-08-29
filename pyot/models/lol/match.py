@@ -481,8 +481,8 @@ class MatchTimeline(Match, PyotCore):
         # pylint: disable=no-member
         token1 = await self.create_token()
         token2 = await self.create_token()
-        task1 = asyncio.create_task(self.Meta.pipeline.get(token1, self.filter))
-        task2 = asyncio.create_task(self.Meta.pipeline.get(token2, self.filter))
+        task1 = asyncio.create_task(self.Meta.pipeline.get(token1, self.filter, self.Meta.session_id))
+        task2 = asyncio.create_task(self.Meta.pipeline.get(token2, self.filter, self.Meta.session_id))
         data1 = await task1
         data2 = await task2
         if "timeline" in token2.method:
@@ -506,15 +506,15 @@ class MatchTimeline(Match, PyotCore):
                 frames[p].append(val)
             for event in frame["events"]:
                 p = 0
-                if "participantId" in event.keys():
+                if "participantId" in event:
                     p = int(event["participantId"])
-                elif "creatorId" in event.keys():
+                elif "creatorId" in event:
                     p = int(event["creatorId"])
-                elif "killerId" in event.keys():
+                elif "killerId" in event:
                     p = int(event["killerId"])
                 if p != 0:
                     events[p].append(event)
-        for key in frames.keys():
+        for key in frames:
             for i in range(len(teams)):
                 found = False
                 for j in range(len(teams[i]["participants"])):

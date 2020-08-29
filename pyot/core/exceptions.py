@@ -1,6 +1,11 @@
 from typing import Mapping
 
 
+class GathererCancelled(Exception):
+    def __init__(self, session_id, e):
+        Exception.__init__(self, f"[Trace: PyotGatherer] All statements of session '{session_id}' are cancelled due to exception: {e}")
+
+
 class SessionNotFound(Exception):
     def __init__(self):
         Exception.__init__(self, "[Trace: Pyot Pipeline] 661: Session Not Found, use 'pyot.run' to your coroutines")
