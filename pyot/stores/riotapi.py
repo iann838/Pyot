@@ -51,34 +51,34 @@ class RiotAPIRateLimiter:
         self._methods_rates = defaultdict(lambda: [[None, 1, 10, 60], [None, 1, 10, 60]])
         self._methods_times = defaultdict(lambda: [yesterday, yesterday])
         self._methods_backoffs = defaultdict(lambda: yesterday)
-        self._application_rates = [[None, 1, 20, 1],[None, 1, 100, 120]]
-        self._application_times = [yesterday, yesterday]
-        self._application_backoffs = yesterday
+        self._application_rates = defaultdict(lambda: [[None, 1, 20, 1],[None, 1, 100, 120]])
+        self._application_times = defaultdict(lambda: [yesterday, yesterday])
+        self._application_backoffs = defaultdict(lambda: yesterday)
         self._methods_bucket = defaultdict(lambda: 0)
-        self._application_bucket = 0
+        self._application_bucket = defaultdict(lambda: 0)
         
         # Rates are recorded as [minumum_call_backed, current_call_passed, max_call_allowed, time_span]
 
-    async def get_limit_token(self, method: str) -> RiotAPILimitToken:
+    async def get_limit_token(self, server: str, method: str) -> RiotAPILimitToken:
         async with self._lock:
             token = RiotAPILimitToken()
-            app_rate1 = self._application_rates[0]
-            app_rate2 = self._application_rates[1]
-            app_time1 = self._application_times[0]
-            app_time2 = self._application_times[1]
+            app_rate1 = self._application_rates[server][0]
+            app_rate2 = self._application_rates[server][1]
+            app_time1 = self._application_times[server][0]
+            app_time2 = self._application_times[server][1]
             now = datetime.now(pytz.utc)
             method_rate1 = self._methods_rates[method][0]
             method_rate2 = self._methods_rates[method][1]
             method_time1 = self._methods_times[method][0]
             method_time2 = self._methods_times[method][1]
             if app_time1 < now:
-                app_time1 = self._application_times[0] = now + timedelta(seconds=app_rate1[3])
-                app_rate1[0] = self._application_rates[0][0] = None
-                app_rate1[1] = self._application_rates[0][1] = 0
+                app_time1 = self._application_times[server][0] = now + timedelta(seconds=app_rate1[3])
+                app_rate1[0] = self._application_rates[server][0][0] = None
+                app_rate1[1] = self._application_rates[server][0][1] = 0
             if app_time2 < now:
-                app_time2 = self._application_times[1] = now + timedelta(seconds=app_rate2[3])
-                app_rate2[0] = self._application_rates[1][0] = None
-                app_rate2[1] = self._application_rates[1][1] = 0
+                app_time2 = self._application_times[server][1] = now + timedelta(seconds=app_rate2[3])
+                app_rate2[0] = self._application_rates[server][1][0] = None
+                app_rate2[1] = self._application_rates[server][1][1] = 0
             if method_time1 < now:
                 method_time1 = self._methods_times[method][0] = now + timedelta(seconds=method_rate1[3])
                 method_rate1[0] = self._methods_rates[method][0][0] = None
@@ -97,19 +97,19 @@ class RiotAPIRateLimiter:
                 else:
                     token.append(0)
 
-            if self._application_backoffs > now:
-                token.append((self._application_backoffs-now).total_seconds())
+            if self._application_backoffs[server] > now:
+                token.append((self._application_backoffs[server]-now).total_seconds())
 
             if self._methods_backoffs[method] > now:
                 token.append((self._methods_backoffs[method]-now).total_seconds())
 
 
             if token.max == 0:
-                if self._application_rates[0][0] is None and self._application_bucket == 0:
-                    self._application_bucket += 1
+                if self._application_rates[server][0][0] is None and self._application_bucket[server] == 0:
+                    self._application_bucket[server] += 1
                     token.flag = True
                     token.append(0)
-                elif self._application_rates[0][0] is None and self._application_bucket > 0:
+                elif self._application_rates[server][0][0] is None and self._application_bucket[server] > 0:
                     token.append(0.5)
 
                 if self._methods_rates[method][0][0] is None and self._methods_bucket[method] == 0 and token.max == 0:
@@ -125,7 +125,7 @@ class RiotAPIRateLimiter:
 
             return token
 
-    async def stream(self, response: Any, method: str, token: RiotAPILimitToken):
+    async def stream(self, response: Any, server: str, method: str, token: RiotAPILimitToken):
         headers = response.headers if hasattr(response, "headers") else None
         if headers:
             try:
@@ -140,39 +140,39 @@ class RiotAPIRateLimiter:
                     method_count.append(method_count[0])
                 async with self._lock:
                     for i in range(2):
-                        if self._application_rates[0][i+2] != app_limit[0][i]:
-                            self._application_rates[0][i+2] = app_limit[0][i]
-                        if self._application_rates[1][i+2] != app_limit[1][i]:
-                            self._application_rates[1][i+2] = app_limit[1][i]
+                        if self._application_rates[server][0][i+2] != app_limit[0][i]:
+                            self._application_rates[server][0][i+2] = app_limit[0][i]
+                        if self._application_rates[server][1][i+2] != app_limit[1][i]:
+                            self._application_rates[server][1][i+2] = app_limit[1][i]
                         if self._methods_rates[method][0][i+2] != method_limit[0][i]:
                             self._methods_rates[method][0][i+2] = method_limit[0][i]
                         if self._methods_rates[method][1][i+2] != method_limit[1][i]:
                             self._methods_rates[method][1][i+2] = method_limit[1][i]
                     for i in range(2):
-                        if token.flag and self._application_bucket > 0:
-                            self._application_bucket -= 1
+                        if token.flag and self._application_bucket[server] > 0:
+                            self._application_bucket[server] -= 1
                         if token.flag and self._methods_bucket[method] > 0:
                             self._methods_bucket[method] -= 1
                     for i in range(2):
-                        if not self._application_rates[i][0] or app_count[i][0] < self._application_rates[i][0]:
-                            self._application_rates[i][0] = app_count[i][0]
+                        if not self._application_rates[server][i][0] or app_count[i][0] < self._application_rates[server][i][0]:
+                            self._application_rates[server][i][0] = app_count[i][0]
                         if not self._methods_rates[method][i][0] or method_count[i][0] < self._methods_rates[method][i][0]:
                             self._methods_rates[method][i][0] = method_count[i][0]
                     for i in range(2):
-                        app_top = date + timedelta(seconds=self._application_rates[i][3]) + timedelta(seconds=0.3)
-                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3]) + timedelta(seconds=0.3)
-                        if app_top < self._application_times[i] or token.flag:
-                            self._application_times[i] = app_top
+                        app_top = date + timedelta(seconds=self._application_rates[server][i][3])
+                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3])
+                        if app_top < self._application_times[server][i] or token.flag:
+                            self._application_times[server][i] = app_top
                         if method_top < self._methods_times[method][i] or token.flag:
                             self._methods_times[method][i] = method_top
             except Exception:
                 LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] Something unexpected happened while streaming to rate limiter")
 
-    async def inmediate_backoff(self, seconds: int, type_: str, method: str = None):
+    async def inmediate_backoff(self, seconds: int, type_: str, server: str, method: str = None):
         async with self._lock:
             time = datetime.now(pytz.utc) + timedelta(seconds=seconds)
             if type_ == "application":
-                self._application_backoffs = time
+                self._application_backoffs[server] = time
             else:
                 self._methods_backoffs[method] = time
 
@@ -295,19 +295,20 @@ class RiotAPI(PyotStoreObject):
                 raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
             if response and response.status == 200:
                 token = RiotAPILimitToken()
-                await self._rate_limiter.stream(response, "status-v3-shard-data", token)
+                await self._rate_limiter.stream(response, "na1", "na1status-v3-shard-data", token)
             else:
                 raise RuntimeError(f"[Trace: {self._game.upper()} > RiotAPI]: Store failed to initialize, "+
                     f"the server responded with status code {response.status} to the preflight call")
 
     async def get(self, token: PyotPipelineToken, session: aiohttp.ClientSession) -> Dict:
         method = token.method
+        server = token.server
         url = await self._endpoints.resolve(token)
         headers = { "X-Riot-Token": self._api_key }
         request_token = PyotRequestToken()
         while await request_token.run_or_raise():
             try:
-                limit_token = await self._rate_limiter.get_limit_token(method)
+                limit_token = await self._rate_limiter.get_limit_token(server, server+method)
                 if await limit_token.run_or_wait():
                     continue
                 if self._logs_enabled:
@@ -319,7 +320,7 @@ class RiotAPI(PyotStoreObject):
                 LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
                 response = None
             
-            await self._rate_limiter.stream(response, method, limit_token)
+            await self._rate_limiter.stream(response, server, server+method, limit_token)
             if response and response.status == 200:
                 try:
                     return await response.json(encoding="utf-8")
@@ -328,14 +329,14 @@ class RiotAPI(PyotStoreObject):
 
             code = response.status if response is not None else 408
             how = self._handler_map[code] if self._handler_map[code] else self._handler_map[888]
-            await self._check_backoff(response, method, code)
+            await self._check_backoff(response, server, method, code)
             await request_token.stream(code, how)
     
-    async def _check_backoff(self, response: Any, method: str, code: int):
+    async def _check_backoff(self, response: Any, server: str, method: str, code: int):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
             LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] FATAL: The server responded with a non service 429, interrupts your task if this persists")
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
             type_ = response.headers["X-Rate-Limit-Type"]
-            await self._rate_limiter.inmediate_backoff(int(seconds), type_, method)
+            await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, server+method)
 
 
