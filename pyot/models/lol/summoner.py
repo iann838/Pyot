@@ -16,10 +16,10 @@ class Summoner(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {
-            "summoner_v4_by_name": ["name"],
             "summoner_v4_by_id": ["id"],
             "summoner_v4_by_account_id": ["account_id"],
             "summoner_v4_by_puuid": ["puuid"],
+            "summoner_v4_by_name": ["name"],
         }
         renamed = {"summoner_level": "level"}
 
