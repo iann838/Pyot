@@ -34,7 +34,7 @@ Supposing the following import
 from datetime import timedelta as td
 ```
 > ### `LOL` <Badge text="Model" type="warning" vertical="middle" />
->`"account_v1_by_puuid": td(hours=3)`
+>`"account_v1_by_puuid": 0`
 >
 >`"account_v1_active_shard": 0`
 >
@@ -56,11 +56,11 @@ from datetime import timedelta as td
 >
 >`"league_v4_summoner_entries": 0`
 >
->`"league_v4_challenger_league": td(hours=1)`
+>`"league_v4_challenger_league": td(minutes=10)`
 >
->`"league_v4_grandmaster_league": td(hours=1)`
+>`"league_v4_grandmaster_league": td(minutes=10)`
 >
->`"league_v4_master_league": td(hours=1)`
+>`"league_v4_master_league": td(minutes=10)`
 >
 >`"league_v4_entries_by_division": 0`
 >
@@ -78,13 +78,13 @@ from datetime import timedelta as td
 >
 >`"spectator_v4_featured_games": 0`
 >
->`"summoner_v4_by_name": td(hours=1)`
+>`"summoner_v4_by_name": 0`
 >
->`"summoner_v4_by_id": td(hours=1)`
+>`"summoner_v4_by_id": 0`
 >
->`"summoner_v4_by_account_id": td(hours=1)`
+>`"summoner_v4_by_account_id": 0`
 >
->`"summoner_v4_by_puuid": td(hours=1)`
+>`"summoner_v4_by_puuid": 0`
 >
 >`"third_party_code_v4_code": 0`
 >
@@ -103,17 +103,17 @@ from datetime import timedelta as td
 >`"meraki_item_by_id": td(hours=3)`
 
 > ### `TFT` <Badge text="Model" type="warning" vertical="middle" />
->`"account_v1_by_puuid": td(hours=1)`
+>`"account_v1_by_puuid": 0`
 >
 >`"account_v1_active_shard": 0`
 >
 >`"league_v1_summoner_entries": 0`
 >
->`"league_v1_challenger_league": td(hours=1)`
+>`"league_v1_challenger_league": td(minutes=10)`
 >
->`"league_v1_grandmaster_league": td(hours=1)`
+>`"league_v1_grandmaster_league": td(minutes=10)`
 >
->`"league_v1_master_league": td(hours=1)`
+>`"league_v1_master_league": td(minutes=10)`
 >
 >`"league_v1_entries_by_division": 0`
 >
@@ -123,22 +123,22 @@ from datetime import timedelta as td
 >
 >`"match_v1_matchlist": td(minutes=5)`
 >
->`"summoner_v1_by_name": td(hours=1)`
+>`"summoner_v1_by_name": 0`
 >
->`"summoner_v1_by_id": td(hours=1)`
+>`"summoner_v1_by_id": 0`
 >
->`"summoner_v1_by_account_id": td(hours=1)`
+>`"summoner_v1_by_account_id": 0`
 >
->`"summoner_v1_by_puuid": td(hours=1)`
+>`"summoner_v1_by_puuid": 0`
 >
 >`"cdragon_tft_full": td(hours=1)`
 >
 >`"cdragon_profile_icon_full": td(hours=1)`
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
->`"account_v1_by_puuid": td(hours=1)`
+>`"account_v1_by_puuid": 0`
 >
->`"account_v1_by_riot_id": td(hours=1)`
+>`"account_v1_by_riot_id": 0`
 >
 >`"account_v1_active_shard": 0`
 >

@@ -12,6 +12,9 @@ Normally the Pyot Pipeline will create a brand new session per `get()` and this 
 
 It will create a session and store this session under each of the pipelines `sessions` dict with an `uuid4()` key to give the highest uniqueness possible, this session id is added to each of the objects in the `statements` provided. After finishing the execution of all the statements, it then proceed to delete the session from the pipeline. 
 
+:::tip
+For customized gathering of data through Pyot please read below "Custom gathering" section below.
+:::
 :::warning
 All of the `statements` provided needs to be an instance of the Pyot Core object and **_`get()` must NOT be appended to the instance, as `get()` is "unchainable" so Pyot Gatherer has no way of calling `set_session_id()` on a coroutine_**. It will raise a `RuntimeError` if this happens.
 :::
@@ -28,7 +31,7 @@ For more in depth explanation of these params please refer to the Pyot Gatherer 
 :::
 ```python
 {
-    "workers": 20,
+    "workers": 30,
     "logs_enabled": True,
     "session_class": aiohttp.ClientSession,
     "cancel_on_raise": False,
@@ -48,11 +51,11 @@ async with Gatherer() as gatherer:
 :::warning
 This object is preferably used as a context manager because it will clean up the instance after the `with` statement freeing memory, although nothing stops you from doing `gatherer = pyot.Gatherer()`
 :::
-> ### `__init__(workers: int = 20, session_class: Any = aiohttp.ClientSession, logs_enabled: bool = True, cancel_on_raise: bool = False)`
+> ### `__init__(workers: int = 30, session_class: Any = aiohttp.ClientSession, logs_enabled: bool = True, cancel_on_raise: bool = False)`
 > Creates an instance of Gatherer with the respective params, these params are set when Pyot Settings was set if specified the `GATHERER` param, you can also override partial settings at runtime by passing the params on instance creation:
-> - `workers` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Maximum number of connections allowed for this Gatherer to run concurrently, this is then set as an `aiohttp.TCPConnector` instance for the gathering, set `None` for no limit. Defaults to `limit=100`
+> - `workers` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Maximum number of concurrent connections and tasks allowed for this Gatherer. Defaults to 30.
 >:::warning
-> Since v1.0.6, the default has dropped to 20, and each Gatherer will have its own connector limit, none of them will share instances of the connector, even if the same Gatherer's `gather()` is called multiple times, it will create a new connector instance.
+> Since v1.0.6: The default has dropped to 30, and each Gatherer will have its own limit independently. Increasing the number of workers may increase or decrease performance.
 >:::
 > - `session_class` <Badge text="param" type="warning" vertical="middle"/> -> `Any`: The session class to be used for creating the session and used for gathering. Defaults to `aiohttp.ClientSession`
 > - `logs_enabled` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Enables logs for the Gatherer (has nothing to do with pipeline logs). Defaults to `True`.
@@ -69,6 +72,24 @@ This object is preferably used as a context manager because it will clean up the
 
 :::tip
 You can use the same gatherer to `gather()` multiple list of statements by overriding it after saving the responses, this creates a nice way to do everything in a single Gatherer, For example: get ChallengerLeague -> all Summoner in the entries -> pull all MatchHistory of the gotten Summoners.
+:::
+
+## Custom Gathering
+
+If you would like to define your own style for gathering data, It is designed to be configurable so you don't need to throw Pyot away !
+
+Pyot relies on session ids for identifying the different sessions to avoid shared resource and unexpected shutdown of unintended session. Each session created is saved using the Pyot Pipeline Low Level API, and the session id is tagged into the Pyot Core object so its `get()` coroutine has a way to use the session stored in the pipeline. Below is a common approach that is used to achieve this:
+
+- Create a session and generate an uuid for it
+- Get the list of activated pipelines by importing it: `from pyot import pipelines`
+- Set the session with its id on each pipelines `sessions` property (dictionary).
+- Set the session id for each Pyot Core object using its `set_session_id()`.
+- Start gathering.
+- After finishing, delete the session from the pipelines
+- Close the session.
+
+:::tip
+For more detailed information of implementing it, please check the Pyot Pipeline Low Level API, Pyot Core objects API and/or source code.
 :::
 
 ## Example Usage

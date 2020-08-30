@@ -16,7 +16,7 @@ pyot.Settings(
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
-            "LOGS_ENABLED": False,
+            "LOGS_ENABLED": True,
         },
         {
             "BACKEND": "pyot.stores.MerakiCDN",
@@ -72,7 +72,7 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": "RGAPI-992210e5-831a-44f9-af48-0b4b********",
+            "KEY": "RGAPI-c1e21786-4ec3-4b68-847b-d9df741e****",
             "LIMITING_SHARE": 1,
             "ERROR_HANDLING": {
                 400: ("T", []),
