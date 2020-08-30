@@ -12,7 +12,6 @@ LOGGER = getLogger(__name__)
 class Registry:
     PIPELINES: Mapping[str, PyotPipeline] = {}
     GATHERER_SETTINGS: Mapping[str, Any] = {
-        "workers": 200,
         "logs_enabled": True,
         "session_class": aiohttp.ClientSession,
         "cancel_on_raise": False,
@@ -22,23 +21,24 @@ REGISTRY = Registry()
 
 
 class Gatherer:
-    workers: int
+    connector: Any
     session_class: Any
     logs_enabled: bool
     cancel_on_raise: bool
     statements: List
     responses: List
 
-    def __init__(self, workers: int = REGISTRY.GATHERER_SETTINGS["workers"], session_class: Any = REGISTRY.GATHERER_SETTINGS["session_class"],
+    def __init__(self, connector: Any = None, session_class: Any = REGISTRY.GATHERER_SETTINGS["session_class"],
         logs_enabled: bool = REGISTRY.GATHERER_SETTINGS["logs_enabled"], cancel_on_raise: bool = REGISTRY.GATHERER_SETTINGS["cancel_on_raise"]):
         """
         Scraper that wraps asyncio.gather, automatically create a session that 
         is reused across the statements provided to get data even faster
         """
-        self.workers = workers
+        self.connector = connector if connector is not None else aiohttp.TCPConnector(verify_ssl=False, limit=100)
         self.session_class = session_class
         self.cancel_on_raise = cancel_on_raise
         self.logs_enabled = logs_enabled
+        self.statements = []
 
     async def __aenter__(self):
         return self
@@ -51,7 +51,7 @@ class Gatherer:
         session_id = uuid.uuid4()
         if self.logs_enabled:
             LOGGER.warning(f"[Trace: Pyot Gatherer] Creating session '{session_id}', adding session id to statements ...")
-        async with self.session_class() as session, asyncio.Semaphore(self.workers) as _:
+        async with self.session_class(connector=self.connector) as session:
 
             for pipeline in REGISTRY.PIPELINES.values():
                 pipeline.sessions[session_id] = session
@@ -72,6 +72,9 @@ class Gatherer:
                         task.cancel()
                     if self.logs_enabled:
                         LOGGER.warning(f"[Trace: Pyot Gatherer] All statements of session '{session_id}' are cancelled due to exception: {e}")
+                        LOGGER.warning(f"[Trace: Pyot Gatherer] Closing session '{session_id}', cleaning up pipeline ...")
+                    for pipeline in REGISTRY.PIPELINES.values():
+                        pipeline.sessions.pop(session_id)
                     raise
             else:
                 self.responses = await asyncio.gather(*self.statements, return_exceptions=True)

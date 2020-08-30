@@ -159,8 +159,8 @@ class RiotAPIRateLimiter:
                         if not self._methods_rates[method][i][0] or method_count[i][0] < self._methods_rates[method][i][0]:
                             self._methods_rates[method][i][0] = method_count[i][0]
                     for i in range(2):
-                        app_top = date + timedelta(seconds=self._application_rates[server][i][3])
-                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3])
+                        app_top = date + timedelta(seconds=self._application_rates[server][i][3] + 0.5)
+                        method_top = date + timedelta(seconds=self._methods_rates[method][i][3] + 0.5)
                         if app_top < self._application_times[server][i] or token.flag:
                             self._application_times[server][i] = app_top
                         if method_top < self._methods_times[method][i] or token.flag:
@@ -315,7 +315,7 @@ class RiotAPI(PyotStoreObject):
                     LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] GET: {self._log_template(token)}")
                 response = await session.request("GET", url, headers=headers)
             except RuntimeError:
-                raise RuntimeError(f"Pyot coroutines need to be executed inside PyotPipeline loop")
+                raise RuntimeError("Pyot coroutines need to be executed inside PyotPipeline loop")
             except Exception as e:
                 LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
                 response = None
@@ -329,13 +329,14 @@ class RiotAPI(PyotStoreObject):
 
             code = response.status if response is not None else 408
             how = self._handler_map[code] if self._handler_map[code] else self._handler_map[888]
-            await self._check_backoff(response, server, method, code)
-            await request_token.stream(code, how)
+            await self._check_backoff(response, server, method, code, self._log_template(token))
+            await request_token.stream(code, how, self._log_template(token))
     
-    async def _check_backoff(self, response: Any, server: str, method: str, code: int):
+    async def _check_backoff(self, response: Any, server: str, method: str, code: int, origin: str):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
-            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] FATAL: The server responded with a non service 429, interrupts your task if this persists")
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
+            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] FATAL: The server responded with a non service 429, interrupts your task if this persists. "
+                           f"Origin: {origin}, Inmediate backoff: {seconds} seconds.")
             type_ = response.headers["X-Rate-Limit-Type"]
             await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, server+method)
 

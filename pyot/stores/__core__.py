@@ -148,27 +148,27 @@ class PyotRequestToken:
     _raise_at: int = 1
     _exception: Any = None
 
-    async def stream(self, code: int, how: Tuple):
+    async def stream(self, code: int, how: Tuple, origin: str):
         strategy = how[0]
         params = how[1]
 
         if self._exception is None:
             if code == 404:
-                self._exception = exc.NotFound()
+                self._exception = exc.NotFound(origin)
             elif code in [500, 502, 503, 504]:
-                self._exception = exc.ServerError(code)
+                self._exception = exc.ServerError(code, origin)
             elif code == 429:
-                self._exception = exc.RateLimited()
+                self._exception = exc.RateLimited(origin)
             elif code == 403:
-                self._exception = exc.Forbidden()
+                self._exception = exc.Forbidden(origin)
             elif code == 401:
-                self._exception = exc.Unauthorized()
+                self._exception = exc.Unauthorized(origin)
             elif code == 400:
-                self._exception = exc.BadRequest()
+                self._exception = exc.BadRequest(origin)
             elif code == 408:
-                self._exception = exc.Timeout()
+                self._exception = exc.Timeout(origin)
             elif code == 888:
-                self._exception = exc.UnidentifiedResponse(code)
+                self._exception = exc.UnidentifiedResponse(code, origin)
             else:
                 self._exception = Exception("Unexpected error. Please contact Pyot Dev")
 

@@ -153,5 +153,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 PYOT_SETTINGS = [
-    'test_djot.pyot'
+    'test_djot.djot'
 ]

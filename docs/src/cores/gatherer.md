@@ -28,7 +28,6 @@ For more in depth explanation of these params please refer to the Pyot Gatherer 
 :::
 ```python
 {
-    "workers": 200,
     "logs_enabled": True,
     "session_class": aiohttp.ClientSession,
     "cancel_on_raise": False,
@@ -48,9 +47,12 @@ async with Gatherer() as gatherer:
 :::warning
 This object is preferably used as a context manager because it will clean up the instance after the `with` statement freeing memory, although nothing stops you from doing `gatherer = pyot.Gatherer()`
 :::
-> ### `__init__(workers: int = 200, session_class: Any = aiohttp.ClientSession, logs_enabled: bool = True, cancel_on_raise: bool = False)`
+> ### `__init__(connector: Any = None, session_class: Any = aiohttp.ClientSession, logs_enabled: bool = True, cancel_on_raise: bool = False)`
 > Creates an instance of Gatherer with the respective params, these params are set when Pyot Settings was set if specified the `GATHERER` param, you can also override partial settings at runtime by passing the params on instance creation:
-> - `workers` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Maximum number of worker tasks allowed for this Gatherer to run concurrently, this is then set as `asyncio.Semaphore` for the gathering. Defaults to 200
+>:::warning
+>The `workers` param and settings for Pyot Gatherer is removed since 1.0.6, due to some shared instances flaws, the `connector` param will have a better control over the number of open connections per gatherer, or shared by many gatherer if the developer passes the same instance to the constructor. This param is not available on the settings, therefore removed.
+>:::
+> - `connector` <Badge text="param" type="warning" vertical="middle"/> -> `Any`: The connector instance to use, this is not configurable on settings to prevent unintended shared connector. If not provided, then it will create a new connector for the Gatherer `aiohttp.TCPConnector(verify_ssl=False, limit=100)`.
 > - `session_class` <Badge text="param" type="warning" vertical="middle"/> -> `Any`: The session class to be used for creating the session and used for gathering. Defaults to `aiohttp.ClientSession`
 > - `logs_enabled` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Enables logs for the Gatherer (has nothing to do with pipeline logs). Defaults to `True`.
 > - `cancel_on_raise` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Cancel all remaining tasks if one raises exception. Defaults to `False`.
@@ -63,6 +65,10 @@ This object is preferably used as a context manager because it will clean up the
 
 > ### `responses` <Badge text="property" type="error" vertical="middle"/>
 > Property where all the responses are saved, developers would want to assign this data to a variable before leaving the `async with` statement.
+
+:::tip
+You can use the same gatherer to `gather()` multiple list of statements by overriding it after saving the responses, this creates a nice way to do everything in a single Gatherer, For example: get ChallengerLeague -> all Summoner in the entries -> pull all MatchHistory of the gotten Summoners.
+:::
 
 ## Example Usage
 ```python{6-9}

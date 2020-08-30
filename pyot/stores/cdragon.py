@@ -248,5 +248,5 @@ class CDragon(PyotStoreObject):
 
             code = response.status if response is not None else 408
             how = self._handler_map[code] if self._handler_map[code] else self._handler_map[888]
-            await request_token.stream(code, how)
+            await request_token.stream(code, how, self._log_template(token))
 
