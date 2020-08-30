@@ -12,7 +12,7 @@ LOGGER = getLogger(__name__)
 class Registry:
     PIPELINES: Mapping[str, PyotPipeline] = {}
     GATHERER_SETTINGS: Mapping[str, Any] = {
-        "workers": 100,
+        "workers": 20,
         "logs_enabled": True,
         "session_class": aiohttp.ClientSession,
         "cancel_on_raise": False,
