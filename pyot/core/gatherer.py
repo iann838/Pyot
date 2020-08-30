@@ -27,6 +27,7 @@ class Gatherer:
         self.session_class = session_class
         self.cancel_on_raise = cancel_on_raise
         self.logs_enabled = logs_enabled
+        self.statements = []
 
     async def __aenter__(self):
         self.session_id = uuid.uuid4()
