@@ -147,13 +147,14 @@ class PyotRequestToken:
     _tries: int = 0
     _raise_at: int = 1
     _exception: Any = None
-    strategy = None
-    params = None
+    _code: int = 0
 
     async def stream(self, code: int, how: Tuple, origin: str):
-        if self.strategy is None:
-            self.strategy = how[0]
-            self.params = how[1]
+        strategy = how[0]
+        params = how[1]
+        if self._code != code:
+            self._exception = None
+            self._code = code
 
         if self._exception is None:
             if code == 404:
@@ -175,12 +176,14 @@ class PyotRequestToken:
             else:
                 self._exception = Exception("Unexpected error. Please contact Pyot Dev")
 
-            if self.strategy != "T":
-                self._raise_at = self.params[-1]+1
+            if strategy != "T":
+                self._raise_at = params[-1]+1
+            else:
+                self._raise_at = 1
         
         self._tries += 1
-        if self.strategy == "E":
-            await asyncio.sleep(self.params[0]**self._tries)
+        if strategy == "E" and self._tries < self._raise_at:
+            await asyncio.sleep(params[0]**self._tries)
 
     async def run_or_raise(self):
         if self._tries < self._raise_at:
@@ -195,12 +198,12 @@ class PyotErrorHandler:
         401 : ("T", []),
         404 : ("T", []),
         403 : ("T", []),
-        408 : ("E", [2, 3]),
-        429 : ("E", [2, 3]),
-        500 : ("E", [2, 3]),
-        502 : ("E", [2, 3]),
-        503 : ("E", [2, 3]),
-        504 : ("E", [2, 3]),
+        408 : ("E", [3, 3]),
+        429 : ("E", [3, 3]),
+        500 : ("E", [3, 3]),
+        502 : ("E", [3, 3]),
+        503 : ("E", [3, 3]),
+        504 : ("E", [3, 3]),
         888 : ("T", []),
     }
 
