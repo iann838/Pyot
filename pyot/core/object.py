@@ -16,19 +16,16 @@ class PyotLazyObject:
                 self.clas = clas.__args__[0]
         except Exception:
             self.clas = clas
-        server_map = {}
-        if issubclass(self.clas, PyotCoreObject):
-            server_map = {"platform": platform, "region": region, "locale": locale}
-            server_map = {k:v for (k,v) in server_map.items() if k not in obj}
-        else:
-            server_map = {"_platform": platform, "_region": region, "_locale": locale}
+        server_map = {"_platform": platform, "_region": region, "_locale": locale}
         for key, val in server_map.items():
             if val is not None and val != "":
                 if isinstance(obj, list):
                     for l in obj:
-                        l.update({key: val})
+                        if issubclass(self.clas, PyotCoreObject): l["data"].update({key: val})
+                        else: l.update({key: val})
                 else:
-                    obj.update({key: val})
+                    if issubclass(self.clas, PyotCoreObject): obj["data"].update({key: val})
+                    else: obj.update({key: val})
         self.obj = obj
 
     def __call__(self):
@@ -107,11 +104,14 @@ class PyotStaticObject:
     
     def _fill(self):
         data_ = self._normalize(self.Meta.data)
+        # RENAME > BIND SERVER > REMOVE > RAW > LAZY
         data_ = {attr if attr not in self.Meta.renamed else self.Meta.renamed[attr]: val for (attr, val) in data_.items()}
         for server in ["_platform", "_region", "_locale"]:
-            if server in data_ and server[1:] not in data_:
-                setattr(self, server[1:], data_[server])
-        for attr, val in data_.items():   # RENAME > REMOVE > RAW > LAZY
+            if server in data_:
+                val = data_.pop(server)
+                if server[1:] not in data_:
+                    data_[server[1:]] = val
+        for attr, val in data_.items():
             if attr in self.Meta.removed:
                 continue
             elif attr in self.Meta.raws:
@@ -120,13 +120,13 @@ class PyotStaticObject:
                 servers = []
                 for server in ["platform", "region", "locale"]:
                     try:
-                        servers.append(getattr(self, server).lower())
-                    except AttributeError:
-                        servers.append(None)
+                        servers.append(data_[server])
+                    except KeyError:
+                        servers.append(getattr(self, server, None))
                 setattr(self, attr, PyotLazyObject(self.Meta.types[attr], val, servers[0], servers[1], servers[2]))
             elif attr in ["platform", "region", "locale"]:
                 setattr(self, attr, val.lower())
-            elif attr not in ["_platform", "_region", "_locale"]:
+            else:
                 setattr(self, attr, val)
         return self
 

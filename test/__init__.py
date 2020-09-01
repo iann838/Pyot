@@ -13,6 +13,7 @@ pyot.Settings(
     DEFAULT_PLATFORM = "NA1",
     DEFAULT_REGION = "AMERICAS",
     DEFAULT_LOCALE= "EN_US",
+    LOCALE_MAP={"*": "EN_US"},
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
@@ -57,6 +58,7 @@ pyot.Settings(
     DEFAULT_PLATFORM = "NA1",
     DEFAULT_REGION = "AMERICAS",
     DEFAULT_LOCALE= "EN_US",
+    LOCALE_MAP={"*": "EN_US"},
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
@@ -72,7 +74,7 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": "RGAPI-c1e21786-4ec3-4b68-847b-d9df741e****",
+            "KEY": "RGAPI-0ae35474-d953-42a4-ab8d-f259b85f****",
             "LIMITING_SHARE": 1,
             "ERROR_HANDLING": {
                 400: ("T", []),

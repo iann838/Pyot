@@ -108,6 +108,7 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 1,
           children: [
+            'lol_core',
             'lol_account',
             'lol_champion',
             'lol_championmastery',
@@ -131,6 +132,7 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 1,
           children: [
+            'tft_core',
             'tft_account',
             'tft_champion',
             'tft_item',
@@ -147,6 +149,7 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 1,
           children: [
+            'val_core',
             'val_account',
             'val_content',
             'val_match',

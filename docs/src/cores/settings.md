@@ -38,6 +38,9 @@ Class object to declare Pyot Settings, it should be on your main module `__init_
 > - `DEFAULT_LOCALE` <Badge text="param" type="warning" vertical="middle"/> -> `str`: Default locale to use when no locale is passed to Pyot Core Objects, locale values varies from model, refer to each model at API section.
 >
 > - `LOCALE_MAP` <Badge text="param" type="warning" vertical="middle"/> -> `Mapping[str, str]`: A dictionary that contains the key value pairs to override the default mapping to locale, this mapping is used for converting platform and regions to locale when "bridges" are called, for example, calling a bridge that brings a `Champion` instance from a `ChampionMastery` instance with platform `"KR"` will bring `Champion` with locale `ko_kr` by default, you can override the region/platform/locale on runtime too, simply `x.locale = "en_us"` where x is a locale based Core Object. For values refer to each model at API section
+> :::tip INFO
+> Since v1.0.7 you can use the wildcard key (`"*"`) to identify "remaining" keys.
+> :::
 >
 > - `GATHERER` <Badge text="param" type="warning" vertical="middle"/> -> `Mapping[str, Any]`: A dict of values is passed for overriding the `PyotGatherer` settings, this is a context manager that speeds 3 ~ 5 times faster the normal calls because it implements session reusage. Please refer to Pyot Gatherer section for its accepted values.
 >

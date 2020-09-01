@@ -72,6 +72,11 @@ class Settings:
             raise AttributeError(f"Invalid 'locale' attribute, '{value}' was given")
 
     def _check_locale_map(self, locale, base):
+        if "*" in locale:
+            locale_val = locale.pop("*")
+            for key in base.Meta.to_locale:
+                if key not in locale:
+                    locale[key] = locale_val
         for key, val in locale.items():
             try:
                 self._check_platform(key, base)

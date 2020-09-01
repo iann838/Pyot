@@ -143,9 +143,9 @@ Model: Valorant
 >`spent: int`
 
 ## `MatchPlayerKillData` <Badge text="Pyot Static" vertical="middle"/>
->`game_time: timedelta`
+>`game_duration: timedelta`
 >
->`round_time: timedelta`
+>`round_duration: timedelta`
 >
 >`killer_puuid: str`
 >

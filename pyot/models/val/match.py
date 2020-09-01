@@ -128,8 +128,8 @@ class MatchPlayerFinishingDamageData(PyotStatic):
 
 
 class MatchPlayerKillData(PyotStatic):
-    game_time: timedelta
-    round_time: timedelta
+    game_duration: timedelta
+    round_duration: timedelta
     killer_puuid: str
     victim_puuid: str
     victim_location: MatchLocationData	
@@ -139,10 +139,11 @@ class MatchPlayerKillData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         raws = ["assistant_puuids"]
-        renamed = {"killer": "killer_puuid", "victim": "victim_puuid", "assistants": "assistant_puuids"}
+        renamed = {"killer": "killer_puuid", "victim": "victim_puuid", "assistants": "assistant_puuids",
+            "time_since_game_start_millis": "game_duration", "time_since_round_start_millis": "round_duration"}
 
     def __getattribute__(self, name):
-        if name in ["game_time", "round_time"]:
+        if name in ["game_duration", "round_duration"]:
             return timedelta(milliseconds=super().__getattribute__(name))
         return super().__getattribute__(name)
 
