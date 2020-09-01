@@ -430,8 +430,8 @@ class Match(PyotCore):
                     statset.append(st)
                 stats["runeVars"].append(statset)
             
-            stats["runeStyle"] = stats.pop("perkPrimaryStyle")
-            stats["runeSubStyle"] = stats.pop("perkSubStyle")
+            stats["runeStyle"] = stats.pop("perkPrimaryStyle", None)
+            stats["runeSubStyle"] = stats.pop("perkSubStyle", None)
 
             stats["statRuneIds"] = []
             for i in range(3):
