@@ -24,3 +24,10 @@ features:
   details: Meet a friendly docs that "should" be better to read and understand
 footer: Made by Paaksing with ❤️
 ---
+
+## Coming in 1.1.0 (Expected September/October)
+1. New Pyot Object for push the edges of session reusing, speeding up 80% CPU performance (I/O performance is fast enough already).
+2. Valorant static assets API Objects.
+3. Possible LoR API objects if announced.
+4. An attempt to introduce SQL db for pyot projects.
+5. An attempt to create a CLI to give startup project structure.

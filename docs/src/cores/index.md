@@ -24,6 +24,14 @@ Pyot is a Python Framework for the Riot Games API, including League of Legends, 
 - **_Perfect Rate Limiter_**: Rate Limiter is tested in asynchronous and multithreaded environments.
 - **_User Friendly Docs_**: Meet a friendly docs that "should" be better to read and understand
 
+:::tip COMING IN 1.1.0 (EXPECTED SEPTEMBER/OCTOBER)
+1. New Pyot Object for push the edges of session reusing, speeding up 80% CPU performance (I/O performance is fast enough already).
+2. Valorant static assets API Objects.
+3. Possible LoR API objects if announced.
+4. An attempt to introduce SQL db for pyot projects.
+5. An attempt to create a CLI to give startup project structure.
+:::
+
 ## Requirements
 
 - A computer/laptop with electricity and internet connection.
