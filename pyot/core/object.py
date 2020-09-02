@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Dict, List, Mapping, Any, get_type_hints
 from .pipeline import PyotPipeline, PyotPipelineToken
-import copy
+import pickle
 import re
 import json
 
@@ -10,22 +10,27 @@ class PyotLazyObject:
     obj: Any
     clas: Any
 
-    def __init__(self, clas, obj, platform, region, locale):
+    def __init__(self, clas, obj, server_type, server):
         try:
             if clas.__origin__ is list:
                 self.clas = clas.__args__[0]
         except Exception:
             self.clas = clas
-        server_map = {"_platform": platform, "_region": region, "_locale": locale}
-        for key, val in server_map.items():
-            if val is not None and val != "":
-                if isinstance(obj, list):
-                    for l in obj:
-                        if issubclass(self.clas, PyotCoreObject): l["data"].update({key: val})
-                        else: l.update({key: val})
+        server_map = {"server_type": [server_type, server]}
+        if isinstance(obj, list):
+            is_core = None
+            for l in obj:
+                if is_core is None:
+                    is_core = issubclass(self.clas, PyotCoreObject)
+                if is_core:
+                    l["data"].update(server_map)
                 else:
-                    if issubclass(self.clas, PyotCoreObject): obj["data"].update({key: val})
-                    else: obj.update({key: val})
+                    l.update(server_map)
+        else:
+            if issubclass(self.clas, PyotCoreObject):
+                obj["data"].update(server_map)
+            else:
+                obj.update(server_map)
         self.obj = obj
 
     def __call__(self):
@@ -34,7 +39,8 @@ class PyotLazyObject:
                 l = []
                 for obj in self.obj:
                     data = obj["data"]
-                    shallow = {k:v for (k,v) in obj.items() if k != "data"}
+                    shallow = obj.copy()
+                    shallow.pop("data")
                     instance = self.clas(**shallow)
                     instance.Meta.data = data
                     instance._fill()
@@ -42,7 +48,8 @@ class PyotLazyObject:
                 return l
             else:
                 data = self.obj["data"]
-                shallow = {k:v for (k,v) in self.obj.items() if k != "data"}
+                shallow = self.obj.copy()
+                shallow.pop("data")
                 instance = self.clas(**shallow)
                 instance.Meta.data = data
                 instance._fill()
@@ -104,27 +111,29 @@ class PyotStaticObject:
     
     def _fill(self):
         data_ = self._normalize(self.Meta.data)
-        # RENAME > BIND SERVER > REMOVE > RAW > LAZY
-        data_ = {attr if attr not in self.Meta.renamed else self.Meta.renamed[attr]: val for (attr, val) in data_.items()}
-        for server in ["_platform", "_region", "_locale"]:
-            if server in data_:
-                val = data_.pop(server)
-                if server[1:] not in data_:
-                    data_[server[1:]] = val
+        # BIND SERVER > RENAME > REMOVE > RAW > LAZY
+        try:
+            server_type = data_.pop("server_type")
+            self.Meta.server_type = server_type[0]
+            setattr(self, server_type[0], server_type[1].lower())
+        except KeyError:
+            pass
+        for original, renamed in self.Meta.renamed.items():
+            val = data_.pop(original, None)
+            if val is not None:
+                data_[renamed] = val
+        for remove in self.Meta.removed:
+            data_.pop(remove, None)
         for attr, val in data_.items():
-            if attr in self.Meta.removed:
-                continue
-            elif attr in self.Meta.raws:
+            if attr in self.Meta.raws:
                 setattr(self, attr, val)
             elif PyotLazyObject.need_lazy(val):
-                servers = []
-                for server in ["platform", "region", "locale"]:
-                    try:
-                        servers.append(data_[server])
-                    except KeyError:
-                        servers.append(getattr(self, server, None))
-                setattr(self, attr, PyotLazyObject(self.Meta.types[attr], val, servers[0], servers[1], servers[2]))
-            elif attr in ["platform", "region", "locale"]:
+                try:
+                    server = data_[self.Meta.server_type]
+                except KeyError:
+                    server = getattr(self, self.Meta.server_type)
+                setattr(self, attr, PyotLazyObject(self.Meta.types[attr], val, self.Meta.server_type, server))
+            elif attr == self.Meta.server_type:
                 setattr(self, attr, val.lower())
             else:
                 setattr(self, attr, val)
@@ -132,15 +141,12 @@ class PyotStaticObject:
 
     def dict(self, pyotify: bool = False, remove_server: bool = True):
         if not pyotify:
-            return copy.deepcopy(self.Meta.data)
+            return pickle.loads(pickle.dumps(self.Meta.data)) # USING PICKLE FOR FASTER COPY
         def recursive(obj):
-            dic = copy.deepcopy(obj.__dict__)
-            if "Meta" in dic:
-                del dic["Meta"]
+            dic = pickle.loads(pickle.dumps(obj.__dict__)) # USING PICKLE FOR FASTER COPY
+            del dic["Meta"]
             if remove_server:
-                for server in ["platform", "region", "locale"]:
-                    if server in dic:
-                        dic.pop(server)
+                dic.pop(self.Meta.server_type, None)
             for key, val in dic.items():
                 if type(val) is PyotLazyObject:
                     obj = val()
@@ -154,7 +160,6 @@ class PyotStaticObject:
                         dic[key] = inner
             return dic
         return recursive(self)
-
 
     def json(self, pyotify: bool = False, remove_server: bool = True):
         if not pyotify:
