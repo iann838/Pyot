@@ -10,7 +10,7 @@ You can add multiple stores of this type to the pipeline, but take in mind that 
 :::
 
 ## Pipeline Settings Reference
-### Backend: `pyot.stores.RedisCache`
+### Backend: `pyot.stores.DiskCache`
 ### Arguments:
 > #### `directory: Union[str, pathlib.Path] = None`
 > Directory of the Cache, it can accept a `pathlib.Path` object or a string to the directory.

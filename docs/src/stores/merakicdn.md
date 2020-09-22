@@ -9,7 +9,7 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 :::
 
 ## Pipeline Settings Reference
-### Backend: `pyot.stores.CDragon`
+### Backend: `pyot.stores.MerakiCDN`
 ### Arguments:
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
 > Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
@@ -32,7 +32,6 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 >
 >`"meraki_item_by_id"`
 
-## Example Usage
 ## Example Usage
 
 ```python
