@@ -15,6 +15,9 @@ install_requires = [
     "python-dateutil",
     "aiohttp",
     "pytz",
+    "redis",
+    "diskcache",
+    "asgiref",
 ]
 
 # Require python 3.7
@@ -23,16 +26,16 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="1.0.9", 
+    version="1.1.0", 
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
     description="2020 High level Python framework for the Riot Games API, support for AsyncIO and Django",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=["Django", "LoL", "League of Legends", "Riot Games", "API", "REST"],
+    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "Django"],
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3.7",
         "Environment :: Web Environment",
         "Operating System :: OS Independent",
