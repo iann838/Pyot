@@ -13,7 +13,7 @@ Don't forget to call `activate()` at the end of your settings instantiation.
 ## Pyot Settings API
 
 This object is imported ~~at Pyot's root level as `Settings`~~(Removed since v1.1.0) at the core module.
-```python{1,6}
+```python{1}
 from pyot.core import Settings
 
 Settings(

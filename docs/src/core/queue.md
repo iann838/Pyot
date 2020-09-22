@@ -13,7 +13,7 @@ Unlike Gatherer, Queue has real workers that acts like consumers.
 A session is created and accessible on 'sid' attribute, the maxsize will default to workers * 2.
 Normally the queue object will be passed down to coroutines to give access to session id or queue methods. 
 
-```python
+```python{1}
 from pyot.core import Queue
 
 async with Queue() as quque:

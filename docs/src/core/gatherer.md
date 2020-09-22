@@ -32,7 +32,7 @@ Pyot Settings for Gatherer has been removed since v1.1.0, due to confusing setti
 This object creates a manager that speeds up the normal data gathering, statements and responses are all instantiated to this object and can be referenced back.
 ~~This object is imported at Pyot's root level as `Gatherer`~~(Removed since v1.1) at the core module of pyot.
 
-```python
+```python{1}
 from pyot.core import Gatherer
 
 async with Gatherer() as gatherer:
