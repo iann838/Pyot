@@ -5,7 +5,7 @@ Rate limiter based on Redis. This Rate Limiter is async safe, thread safe, **_cr
 Limits on the db are expired after 1 hour if it isn't touched.
 
 ## Rate Limiter Settings Reference
-### Backend: `pyot.limiters.MemoryLimiter`
+### Backend: `pyot.limiters.RedisLimiter`
 ### Arguments:
 > #### `limiting_share: float = 1`
 > The amount of rate limits * `limiting_share` to use at most, receives a float between 0 and 1. Defaults to 1.
