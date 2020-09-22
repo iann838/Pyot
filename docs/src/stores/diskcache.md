@@ -4,7 +4,7 @@
 - Description: Store that uses Disk files (and Sqlite dbs) as Caches. This cache takes advantage of the disk space instead of RAM.
 
 :::tip INFO ABOUT THIS STORE
-This Cache is built on top of (diskcache)[http://www.grantjenks.com/docs/diskcache/index.html] on its `FanoutCache` to support multiple reads one write scheme to ensure speed.
+This Cache is built on top of [diskcache](http://www.grantjenks.com/docs/diskcache/index.html) on its `FanoutCache` to support multiple reads one write scheme to ensure speed.
 
 You can add multiple stores of this type to the pipeline, but take in mind that this store lives on RAM (hence the speed) so it might be limited if you want to cache bigger or more objects.
 :::
