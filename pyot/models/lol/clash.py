@@ -53,7 +53,7 @@ class ClashPlayers(PyotCore):
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         new_data = {}
         new_data["players"] = data
         return new_data
@@ -81,7 +81,7 @@ class ClashTeam(PyotCore):
     def __init__(self, id: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         for player in data["players"]:
             player["teamId"] = self.id
         return data
@@ -111,7 +111,7 @@ class ClashTournaments(PyotCore):
     def __iter__(self) -> List[ClashTournamentData]:
         return iter(self.tournaments)
 
-    async def _transform(self, data):
+    def _transform(self, data):
         new_data = {}
         new_data["tournaments"] = data
         return new_data

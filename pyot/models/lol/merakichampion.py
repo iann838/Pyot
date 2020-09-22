@@ -1,5 +1,5 @@
 from .__core__ import PyotStatic, PyotCore
-from ...stores.merakicdn import MerakiCDN
+from pyot.utils import champion_key_by_id, champion_key_by_name
 from typing import List
 
 
@@ -152,9 +152,9 @@ class MerakiChampion(PyotCore):
     async def _clean(self):
         if not hasattr(self, "key"):
             if hasattr(self, "id"):
-                self.key = await self.Meta.pipeline.transform_key(MerakiCDN, list(self.Meta.rules.keys())[0], "id", self.id)
+                self.key = await champion_key_by_id(self.id)
             elif hasattr(self, "name"):
-                self.key = await self.Meta.pipeline.transform_key(MerakiCDN, list(self.Meta.rules.keys())[0], "name", self.name)
+                self.key = await champion_key_by_name(self.name)
 
     @property
     def champion(self) -> "Champion":

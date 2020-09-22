@@ -5,7 +5,6 @@ from .match import Match, MatchTimeline, Timeline, MatchHistory
 from .profileicon import ProfileIcon, ProfileIcons
 from .spectator import FeaturedGames, CurrentGame
 from .championrotation import ChampionRotation
-from .account import Account, ActivePlatform
 from .thirdpartycode import ThirdPartyCode
 from .merakichampion import MerakiChampion
 from .merakiitem import MerakiItem

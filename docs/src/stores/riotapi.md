@@ -1,7 +1,7 @@
 # Riot API
 
-- Type: <Badge text="Pyot Source" vertical="middle" />
-- Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" /> <Badge text="VAL" type="error" vertical="middle" />
+- Type: <Badge text="Pyot Service" vertical="middle" />
+- Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" /> <Badge text="VAL" type="error" vertical="middle" /> <Badge text="RIOT" type="error" vertical="middle" />
 - Description: Store that provides data from the Riot Games API, this contains 70 % of all the endpoints for all the Pyot Core Objects, a list of the endpoints is found below. 
 
 :::tip INFO ABOUT THIS STORE
@@ -15,26 +15,35 @@ Some endpoints can return 403 due to api key policies restrictions. Official end
 > The Riot API key to be used for this model/pipeline.
 >
 > #### `limiting_share: float = 1`
-> How much of limit of you API key you want to consume in case you have multiple servers with the same key.
+> ::: danger DEPRECATED
+> Since v1.1.0: The `limiting_share` param, now is a sub setting of the new `rate_limiter` param.
+> :::
+> #### `rate_limiter: Mapping[str, str] = None`
+> Accepts a Dict containing the settings for the rate limiter. Please refer to Limiters tab section.
 >
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
 > Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
 >
-> #### `logs_enabled: bool = True`
-> Indicates if this stores is allowed to make logs.
+> #### `log_level: int = 20`
+> Set the log level for the store. Defaults to 20 (INFO level).
 
 ## Initialization
 
 > ### initialize() <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> RiotAPI will check if the key is valid by doing a preflight call to `status_v3_shard_data` endpoint.
+>::: danger DEPRECATED
+>Removed since v1.1.0, due to adding unnecessary delays on imports.
+>:::
 
 ## Endpoints
 
-> ### `LOL` <Badge text="Model" type="warning" vertical="middle" />
+> ### `RIOT` <Badge text="Model" type="warning" vertical="middle" /> <Badge text="Global" type="error" vertical="middle" />
 >`"account_v1_by_puuid"`
 >
->`"account_v1_active_shard"`
+>`"account_v1_by_riot_id"`
 >
+>`"account_v1_active_shard"`
+
+> ### `LOL` <Badge text="Model" type="warning" vertical="middle" />
 >`"champion_v3_rotation"`
 >
 >`"champion_mastery_v4_by_champion_id"`
@@ -86,10 +95,6 @@ Some endpoints can return 403 due to api key policies restrictions. Official end
 >`"third_party_code_v4_code"`
 
 > ### `TFT` <Badge text="Model" type="warning" vertical="middle" />
->`"account_v1_by_puuid"`
->
->`"account_v1_active_shard"`
->
 >`"league_v1_summoner_entries"`
 >
 >`"league_v1_challenger_league"`
@@ -115,14 +120,27 @@ Some endpoints can return 403 due to api key policies restrictions. Official end
 >`"summoner_v1_by_puuid"`
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
->`"account_v1_by_puuid"`
->
->`"account_v1_by_riot_id"`
->
->`"account_v1_active_shard"`
->
 >`"match_v1_match"`
 >
 >`"match_v1_matchlist"`
 >
+>`"match_v1_recent"`
+>
 >`"content_v1_contents"`
+
+## Example Usage
+
+```python
+{
+    "BACKEND": "pyot.stores.RiotAPI",
+    "API_KEY": os.environ["RIOT_API_KEY"],
+    "RATE_LIMITER": {
+        "BACKEND": "pyot.limiters.MemoryLimiter",
+        "LIMITING_SHARE": 1,
+    },
+    "ERROR_HANDLING": {
+        400: ("T", []),
+        503: ("E", [3,3])
+    }
+}
+```

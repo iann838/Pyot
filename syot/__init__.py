@@ -1,2 +1,2 @@
-from . import lol, val, tft
-from pyot.core.settings import Settings
+from . import core, models
+from pyot import utils

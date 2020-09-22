@@ -106,7 +106,7 @@ class SummonerLeague(PyotCore):
     def __iter__(self) -> Iterator[SummonerLeagueEntryData]:
         return iter(self.entries)
 
-    async def _transform(self, data):
+    def _transform(self, data):
         new_data = {}
         new_data["entries"] = data
         return new_data
@@ -132,8 +132,9 @@ class DivisionLeague(SummonerLeague):
         self._lazy_set(locals())
 
     def query(self, page: int = None):
+        '''Add query parameters to the object.'''
         if page == 0: raise AttributeError("Invalid 'page' attribute, it should be greater than 0")
-        self.Meta.query = self._parse_query(locals())
+        self.meta.query = self._parse_query(locals())
         return self
 
     @property

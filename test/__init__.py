@@ -1,27 +1,26 @@
-import pyot
+from pyot.core import Settings
+from pathlib import Path
 import os
-import aiohttp
 
 
-pyot.Settings(
+Settings(
     MODEL = "LOL",
-    GATHERER = {
-        "LOGS_ENABLED": True,
-        "SESSION_CLASS": aiohttp.ClientSession,
-        "CANCEL_ON_RAISE": False,
-    },
     DEFAULT_PLATFORM = "NA1",
     DEFAULT_REGION = "AMERICAS",
     DEFAULT_LOCALE= "EN_US",
-    LOCALE_MAP={"*": "EN_US"},
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
-            "LOGS_ENABLED": True,
+            "LOG_LEVEL": 30,
+        },
+        {
+            "BACKEND": "pyot.stores.RedisCache",
+            "LOG_LEVEL": 30,
+            "DB": 1,
         },
         {
             "BACKEND": "pyot.stores.MerakiCDN",
-            "LOGS_ENABLED": True,
+            "LOG_LEVEL": 30,
             "ERROR_HANDLING": {
                 404: ("T", []),
                 500: ("R", [3])
@@ -29,7 +28,7 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.CDragon",
-            "LOGS_ENABLED": True,
+            "LOG_LEVEL": 30,
             "ERROR_HANDLING": {
                 404: ("T", []),
                 500: ("R", [3])
@@ -37,8 +36,15 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": os.environ["RIOT_API_KEY"],
-            "LIMITING_SHARE": 1,
+            "LOG_LEVEL": 30,
+            "API_KEY": os.environ["RIOT_API_KEY"],
+            "RATE_LIMITER": {
+                "BACKEND": "pyot.limiters.RedisLimiter",
+                "LIMITING_SHARE": 1,
+                "HOST": "127.0.0.1",
+                "PORT": 6379,
+                "DB": 0,
+            },
             "ERROR_HANDLING": {
                 400: ("T", []),
                 503: ("E", [3,3])
@@ -48,25 +54,24 @@ pyot.Settings(
 ).activate()
 
 
-pyot.Settings(
+Settings(
     MODEL = "TFT",
-    GATHERER = {
-        "LOGS_ENABLED": True,
-        "SESSION_CLASS": aiohttp.ClientSession,
-        "CANCEL_ON_RAISE": False,
-    },
     DEFAULT_PLATFORM = "NA1",
     DEFAULT_REGION = "AMERICAS",
     DEFAULT_LOCALE= "EN_US",
-    LOCALE_MAP={"*": "EN_US"},
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
-            "LOGS_ENABLED": False,
+            "LOG_LEVEL": 30,
+        },
+        {
+            "BACKEND": "pyot.stores.DiskCache",
+            "LOG_LEVEL": 30,
+            "DIRECTORY": Path.cwd() / 'diskcache',
         },
         {
             "BACKEND": "pyot.stores.CDragon",
-            "LOGS_ENABLED": True,
+            "LOG_LEVEL": 30,
             "ERROR_HANDLING": {
                 404: ("T", []),
                 500: ("R", [3])
@@ -74,8 +79,11 @@ pyot.Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": "RGAPI-0ae35474-d953-42a4-ab8d-f259b85f****",
-            "LIMITING_SHARE": 1,
+            "API_KEY": "RGAPI-c8d5857c-0466-4dfb-b9cb-e9823a3*****", # <--- HEY CRACK THIS KEY
+            "RATE_LIMITER": {
+                "BACKEND": "pyot.limiters.MemoryLimiter",
+                "LIMITING_SHARE": 1,
+            },
             "ERROR_HANDLING": {
                 400: ("T", []),
                 503: ("E", [3,3])
@@ -85,25 +93,23 @@ pyot.Settings(
 ).activate()
 
 
-pyot.Settings(
+Settings(
     MODEL = "VAL",
-    GATHERER = {
-        "LOGS_ENABLED": True,
-        "SESSION_CLASS": aiohttp.ClientSession,
-        "CANCEL_ON_RAISE": False,
-    },
     DEFAULT_PLATFORM = "NA",
     DEFAULT_REGION = "AMERICAS",
     DEFAULT_LOCALE= "EN-US",
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
-            "LOGS_ENABLED": False,
+            "LOG_LEVEL": 30,
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": os.environ["VALORANT_DEV_KEY"],
-            "LIMITING_SHARE": 1,
+            "API_KEY": os.environ["VALORANT_DEV_KEY"],
+            "RATE_LIMITER": {
+                "BACKEND": "pyot.limiters.MemoryLimiter",
+                "LIMITING_SHARE": 1,
+            },
             "ERROR_HANDLING": {
                 400: ("T", []),
                 503: ("E", [3,3])

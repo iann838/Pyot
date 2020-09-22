@@ -1,10 +1,20 @@
+# Stores
+
+Specify the backend of the store on the pipeline
+```python
+{
+    "BACKEND": "pyot.stores.RiotAPI",
+    # ...
+}
+```
+
 # Legend
 
 -<Badge text="Pyot Cache" vertical="middle"/>: Identifies the store of type Cache.
 
--<Badge text="Pyot Source" vertical="middle"/>: Identifies the store of type Source.
+-<Badge text="Pyot Service" vertical="middle"/>: Identifies the store of type Service.
 
--<Badge text="Supports Multiple Instances" type="error" vertical="middle" />: This store supports multiple instances in the Pipeline.
+-<Badge text="Sharding" type="error" vertical="middle" />: This store supports multiple instances (hence sharding by separating multiple Cache to handle different type of objects) in the Pipeline.
 
 -<Badge text="Model" type="warning" vertical="middle" />: This is a Pyot model.
 

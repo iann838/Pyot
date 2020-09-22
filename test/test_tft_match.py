@@ -1,17 +1,18 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import tft
 from datetime import datetime, timedelta
 
 async def async_match_history():
-    summoner = await pyot.tft.Summoner(name="Morimorph", platform="na1").get()
+    summoner = await tft.Summoner(name="Morimorph", platform="na1").get()
     history = await summoner.match_history.get()
     assert isinstance(history.puuid, str)
     for i in history:
         assert isinstance(i, str)
 
 async def async_match():
-    summoner = await pyot.tft.Summoner(name="Morimorph", platform="na1").get()
+    summoner = await tft.Summoner(name="Morimorph", platform="na1").get()
     history = await summoner.match_history.get()
-    match = await pyot.tft.Match(id=history[0], region=history.region).get()
+    match = await tft.Match(id=history[0], region=history.region).get()
     info = match.info
     assert isinstance(info.creation, datetime)
     assert isinstance(info.duration, timedelta)
@@ -51,7 +52,7 @@ async def async_match():
 
 
 def test_match_history():
-    pyot.run(async_match_history())
+    loop_run(async_match_history())
 
 def test_match():
-    pyot.run(async_match())
+    loop_run(async_match())

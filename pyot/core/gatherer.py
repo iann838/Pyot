@@ -1,5 +1,5 @@
-from .__core__ import REGISTRY
 from typing import Any, List
+from pyot.pipeline import pipelines
 import aiohttp
 import asyncio
 import uuid
@@ -10,47 +10,49 @@ LOGGER = getLogger(__name__)
 
 
 class Gatherer:
+    '''
+    Scraper that wraps asyncio.gather, automatically create a session that
+    is reused across the statements provided to get data even faster.
+
+    For executing mass non-pyot coroutines, please use Queue instead.
+    Unlike Queue, workers are fake workers, they only represent the size of the chunk to gather.
+    '''
     workers: int
     session_class: Any
-    logs_enabled: bool
+    log_level: int
     cancel_on_raise: bool
     statements: List
     responses: List
 
-    def __init__(self, workers: int = REGISTRY.GATHERER_SETTINGS["workers"], session_class: Any = REGISTRY.GATHERER_SETTINGS["session_class"],
-        logs_enabled: bool = REGISTRY.GATHERER_SETTINGS["logs_enabled"], cancel_on_raise: bool = REGISTRY.GATHERER_SETTINGS["cancel_on_raise"]):
-        """
-        Scraper that wraps asyncio.gather, automatically create a session that 
-        is reused across the statements provided to get data even faster
-        """
+    def __init__(self, workers: int = 25, log_level: int = 20, cancel_on_raise: bool = False):
         self.workers = workers
-        self.session_class = session_class
         self.cancel_on_raise = cancel_on_raise
-        self.logs_enabled = logs_enabled
+        self.log_level = log_level
         self.statements = []
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "Gatherer":
         self.session_id = uuid.uuid4()
-        if self.logs_enabled:
-            LOGGER.warning(f"[Trace: Pyot Gatherer] Creating session '{self.session_id}', adding session id to statements ...")
-        self.session = self.session_class(connector=aiohttp.TCPConnector(verify_ssl=False, limit=self.workers))
-        for pipeline in REGISTRY.PIPELINES.values():
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, limit=self.workers))
+        for pipeline in pipelines.values():
             pipeline.sessions[self.session_id] = self.session
+        LOGGER.log(self.log_level, f"[Trace: Pyot Gatherer] Created session '{self.session_id}'")
         return self
 
     async def __aexit__(self, *args):
-        if self.logs_enabled:
-            LOGGER.warning(f"[Trace: Pyot Gatherer] Closing session '{self.session_id}', cleaning up pipeline ...")
         await self.session.close()
-        for pipeline in REGISTRY.PIPELINES.values():
+        for pipeline in pipelines.values():
             pipeline.sessions.pop(self.session_id)
+        LOGGER.log(self.log_level, f"[Trace: Pyot Gatherer] Closed session '{self.session_id}'")
         return
 
     async def gather(self):
-        """Awaitable, starts the scraping process and saves results to `responses`"""
+        '''Awaitable, starts the scraping process and saves results to `responses`.
+        
+        Gatherings are done by chunks, the size of the chunk is determined by the number of workers.
+        '''
         for i in range(len(self.statements)):
             try:
-                self.statements[i] = self.statements[i].set_session_id(self.session_id).get
+                self.statements[i] = self.statements[i].get
             except Exception:
                 raise RuntimeError(f"[Trace: Pyot Gatherer] Failed to add session id to statements at index {i}, "
                     "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
@@ -61,12 +63,12 @@ class Gatherer:
             for s in range(splits):
                 bucket = []
                 for st in self.statements[s*self.workers:(s+1)*self.workers if s+1 < splits else -1]:
-                    bucket.append(asyncio.create_task(st()))
+                    bucket.append(asyncio.create_task(st(sid=self.session_id)))
                     await asyncio.sleep(0.01)
                 self.responses.extend(await asyncio.gather(*bucket, return_exceptions=False if self.cancel_on_raise else True))
+            return self.responses
         except Exception as e:
             for task in bucket:
                 task.cancel()
-            if self.logs_enabled:
-                LOGGER.warning(f"[Trace: Pyot Gatherer] All statements of session '{self.session_id}' are cancelled due to exception: {e}")
+            LOGGER.warning(f"[Trace: Pyot Gatherer] All statements of session '{self.session_id}' are cancelled due to exception: {e}")
             raise

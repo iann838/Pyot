@@ -81,8 +81,9 @@ class Content(PyotCore):
         self._lazy_set(locals())
 
     def query(self, locale: str = None):
-        if locale.lower() not in self.Meta.locale_list:
+        '''Add query parameters to the object.'''
+        if locale.lower() not in self.meta.locale_list:
             raise RuntimeError(f"Query 'locale' is not valid, '{locale}' was passed")
-        self.Meta.query = self._parse_query(locals())
+        self.meta.query = self._parse_query(locals())
         return self
 

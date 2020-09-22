@@ -1,20 +1,21 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import val, riot
 from datetime import datetime, timedelta
 
 async def async_match_history():
-    account = await pyot.val.Account(name="stelar7", tag="stl7", region="AMERICAS").get()
-    history = await pyot.val.MatchHistory(puuid=account.puuid, platform="eu").get()
+    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS", pipeline="val").get()
+    history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
     for match in history:
         assert isinstance(match.id, str)
         assert isinstance(match.creation, datetime)
         assert isinstance(match.team_id, str)
-        assert isinstance(match.match, pyot.val.Match)
+        assert isinstance(match.match, val.Match)
 
 
 async def async_match():
-    account = await pyot.val.Account(name="stelar7", tag="stl7", region="AMERICAS").get()
-    history = await pyot.val.MatchHistory(puuid=account.puuid, platform="eu").get()
-    match = await pyot.val.Match(id=history[0].id, platform=history.platform).get()
+    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS", pipeline="val").get()
+    history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
+    match = await val.Match(id=history[0].id, platform=history.platform).get()
     info = match.info
     players = match.players
     teams = match.teams
@@ -122,8 +123,19 @@ async def async_match():
             assert isinstance(abi.ultimate_effects, int) if abi.ultimate_effects is not None else True
 
 
+async def async_recent():
+    recent = await val.RecentMatches(queue="competitive", platform="NA").get()
+    assert isinstance(recent.current_time, datetime)
+    for match in recent.matches:
+        assert isinstance(match, val.Match)
+        assert match.platform == recent.platform
+
+
 def test_match_history():
-    pyot.run(async_match_history())
+    loop_run(async_match_history())
 
 def test_match():
-    pyot.run(async_match())
+    loop_run(async_match())
+
+def test_recent():
+    loop_run(async_recent())

@@ -1,6 +1,6 @@
 # Meraki CDN
 
-- Type: <Badge text="Pyot Source" vertical="middle" />
+- Type: <Badge text="Pyot Service" vertical="middle" />
 - Models: <Badge text="LOL" type="error" vertical="middle" />
 - Description: Store that provides data from the Meraki CDN, this store provides the endpoints for the Pyot Core Objects that returns static data, a list of the endpoints is found below.
 
@@ -14,14 +14,16 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
 > Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
 >
-> #### `logs_enabled: bool = True`
-> Indicates if this stores is allowed to make logs.
+> #### `log_level: int = 20`
+> Set the log level for the store. Defaults to 20 (INFO level).
 
 
 ## Initialization
 
 > ### initialize() <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> MerakiCDN will make a preflight call to the CDragon (not a typo) raw and get a champion summary json for later transforming of champion keys.
+>::: danger DEPRECATED
+>Removed since v1.1.0, due to adding unnecessary delays on imports.
+>:::
 
 ## Endpoints
 
@@ -29,3 +31,17 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 >`"meraki_champion_by_key"`
 >
 >`"meraki_item_by_id"`
+
+## Example Usage
+## Example Usage
+
+```python
+{
+    "BACKEND": "pyot.stores.MerakiCDN",
+    "LOG_LEVEL": 30,
+    "ERROR_HANDLING": {
+        404: ("T", []),
+        500: ("R", [3])
+    }
+},
+```

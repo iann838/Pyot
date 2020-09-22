@@ -119,7 +119,7 @@ class Match(PyotCore):
     def __init__(self, id: str = None, region: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         platform = self.id.split("_")[0]
         for i in range(len(data["info"]["participants"])):
             data["info"]["participants"][i]["_pyot_calculated_platform"] = platform
@@ -145,7 +145,8 @@ class MatchHistory(PyotCore):
         self._lazy_set(locals())
 
     def query(self, count: int = 100000):
-        self.Meta.query = self._parse_query(locals())
+        '''Add query parameters to the object.'''
+        self.meta.query = self._parse_query(locals())
         return self
 
     @property
@@ -156,5 +157,5 @@ class MatchHistory(PyotCore):
         except (AttributeError, IndexError):
             raise AttributeError("Match history is empty, could not identify platform from list")
 
-    async def _transform(self, data):
+    def _transform(self, data):
         return {"ids": data}

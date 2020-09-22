@@ -11,7 +11,7 @@ class ThirdPartyCode(PyotCore):
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         new_data = {}
         new_data["code"] = data
         return new_data

@@ -1,16 +1,31 @@
 from typing import Mapping
 
 
+class NotFindable(Exception):
+    def __init__(self):
+        Exception.__init__(self, "[Trace: Pyot Pipeline] 600: Pipeline token matching pair not found")
+
+
 class SessionNotFound(Exception):
     def __init__(self, origin="Non Pyot Source Origin"):
-        Exception.__init__(self, f"[Trace: Pyot Pipeline] 661: Session Not Found, use 'pyot.run' to your coroutines. Origin: {origin}")
+        Exception.__init__(self, f"[Trace: Pyot Pipeline] 601: Session Not Found. Origin: {origin}")
+
+
+class DecodeError(Exception):
+    def __init__(self, origin="Non Pyot Source Origin"):
+        Exception.__init__(self, f"[Trace: Pyot Pipeline] 602: AioHttp took too long to decode the response. Origin: {origin}")
+
+
+class NoContent(Exception):
+    def __init__(self, origin="Non Pyot Source Origin"):
+        Exception.__init__(self, f"[Trace: Pyot Pipeline] 204: No Content. Origin: {origin}")
 
 
 class NotFound(Exception):
     def __init__(self, origin="Non Pyot Source Origin"):
         Exception.__init__(self, f"[Trace: Pyot Pipeline] 404: Data Not Found. Origin: {origin}")
-        
-        
+
+
 class ServerError(Exception):
     messages: Mapping[int, str] = {
         500: "Internal Server Error",

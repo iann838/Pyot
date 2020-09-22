@@ -1,6 +1,6 @@
 # Django Cache
 
-- Type: <Badge text="Pyot Cache" vertical="middle" /> <Badge text="Supports Multiple Instances" type="error" vertical="middle" />
+- Type: <Badge text="Pyot Cache" vertical="middle" /> <Badge text="Sharding" type="error" vertical="middle" />
 - Description: Store that uses the Django Cache Low Level API to take advantage of the production tested caches backend of Django.
 
 :::tip INFO ABOUT THIS STORE
@@ -16,10 +16,10 @@ You can add multiple stores of this type to the pipeline, but take in mind that 
 > The alias identifying the Django Cache defined in the `CACHES` variable of Django's `settings.py`, an example is provided below.
 >
 > #### `expirations: Dict[str, Any] = None`
-> Custom mapping for overriding the default expirations. For details and defaults refer to General -> Expirations section.
+> Custom mapping for overriding the default expirations. For details and defaults refer to Pipeline > Store Bases > Expirations section.
 >
-> #### `logs_enabled: bool = True`
-> Indicates if this stores is allowed to make logs.
+> #### `log_level: int = 20`
+> Set the log level for the store. Defaults to 20 (INFO level).
 
 ## Cached Endpoints
 

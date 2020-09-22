@@ -1,4 +1,12 @@
-from .core.__core__ import run, pipelines
-from .core.settings import Settings
-from .core.gatherer import Gatherer
-from .models import lol, val, tft
+from . import core, pipeline, utils, models, limiters, stores
+
+try:
+    from django.core.exceptions import ImproperlyConfigured
+    from django.conf import settings
+    from importlib import import_module
+    
+    paths = settings.PYOT_SETTINGS
+    
+    for path in paths:
+        import_module(path)
+except (ImportError, ImproperlyConfigured): pass

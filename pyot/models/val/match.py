@@ -91,13 +91,13 @@ class MatchPlayerData(PyotStatic):
 
     @property
     def account(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.puuid, pipeline="val", region=self.region)
 
     @property
     def active_platform(self) -> "ActivePlatform":
-        from .account import ActivePlatform
-        return ActivePlatform(puuid=self.puuid)
+        from ..riot.account import ActivePlatform
+        return ActivePlatform(puuid=self.puuid, pipeline="val", region=self.region)
 
 
 class MatchTeamData(PyotStatic):
@@ -149,18 +149,18 @@ class MatchPlayerKillData(PyotStatic):
 
     @property
     def killer(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.killer_puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.killer_puuid, pipeline="val", region=self.region)
 
     @property
     def victim(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.victim_puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.victim_puuid, pipeline="val", region=self.region)
 
     @property
     def assistants(self) -> List["Account"]:
-        from .account import Account
-        return [Account(puuid=i) for i in self.assistant_puuids]
+        from ..riot.account import Account
+        return [Account(puuid=i, pipeline="val", region=self.region) for i in self.assistant_puuids]
 
 
 class MatchPlayerDamageData(PyotStatic):
@@ -215,13 +215,13 @@ class MatchRoundResultData(PyotStatic):
 
     @property
     def bomb_planter(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.bomb_planter_puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.bomb_planter_puuid, pipeline="val", region=self.region)
 
     @property
     def bomb_defuser(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.bomb_defuser_puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.bomb_defuser_puuid, pipeline="val", region=self.region)
 
 
 # PYOT CORE OBJECTS
@@ -259,5 +259,32 @@ class MatchHistory(PyotCore):
 
     @property
     def account(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.puuid, pipeline="val", region=self.region)
+
+
+class RecentMatches(PyotCore):
+    current_time: datetime
+    match_ids: List[str]
+
+    class Meta(PyotCore.Meta):
+        raws = ["match_ids"]
+        rules = {"match_v1_recent": ["queue"]}
+
+    def __getattribute__(self, name):
+        if name == "current_time":
+            return datetime.fromtimestamp(super().__getattribute__(name))
+        return super().__getattribute__(name)
+
+    def __init__(self, queue: str = None, platform: str = None):
+        self._lazy_set(locals())
+
+    def __getitem__(self, item):
+        return self.matches[item]
+
+    def __iter__(self) -> Iterator["Match"]:
+        return iter(self.matches)
+
+    @property
+    def matches(self) -> List["Match"]:
+        return [Match(id=id_, platform=self.platform) for id_ in self.match_ids]

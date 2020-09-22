@@ -1,8 +1,9 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import val
 
 
 async def async_content_locale():
-    content = await pyot.val.Content(platform="NA").query(locale="en-US").get()
+    content = await val.Content(platform="NA").query(locale="en-US").get()
     assert isinstance(content.version, str)
     for item in [content.characters, content.maps, content.chromas, content.skins, 
         content.skin_levels, content.equips, content.game_modes, content.sprays, 
@@ -13,7 +14,7 @@ async def async_content_locale():
             assert isinstance(i.asset_name, str)
 
 async def async_content_full():
-    content = await pyot.val.Content(platform="NA").get()
+    content = await val.Content(platform="NA").get()
     assert isinstance(content.version, str)
     for item in [content.characters, content.maps, content.chromas, content.skins, 
         content.skin_levels, content.equips, content.game_modes, content.sprays, 
@@ -46,7 +47,7 @@ async def async_content_full():
 
 
 def test_content_locale():
-    pyot.run(async_content_locale())
+    loop_run(async_content_locale())
 
 def test_content_full():
-    pyot.run(async_content_full())
+    loop_run(async_content_full())

@@ -1,6 +1,6 @@
 # CDragon
 
-- Type: <Badge text="Pyot Source" vertical="middle" />
+- Type: <Badge text="Pyot Service" vertical="middle" />
 - Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" />
 - Description: Store that provides data from the Community Dragon Raws, this store provides the endpoints for the Pyot Core Objects that returns static data, a list of the endpoints is found below.
 
@@ -14,13 +14,15 @@ The CDragon has the data that the game uses, but it is highly unparsable, the ma
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
 > Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
 >
-> #### `logs_enabled: bool = True`
-> Indicates if this stores is allowed to make logs.
+> #### `log_level: int = 20`
+> Set the log level for the store. Defaults to 20 (INFO level).
 
 ## Initialization
 
 > ### initialize() <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> CDragon will make a preflight call to the CDragon raw and get a champion summary json for later transforming of champion keys.
+>::: danger DEPRECATED
+>Removed since v1.1.0, due to adding unnecessary delays on imports.
+>:::
 
 ## Endpoints
 
@@ -39,3 +41,16 @@ The CDragon has the data that the game uses, but it is highly unparsable, the ma
 >`"cdragon_tft_full"`
 >
 >`"cdragon_profile_icon_full"`
+
+## Example Usage
+
+```python
+{
+    "BACKEND": "pyot.stores.CDragon",
+    "LOG_LEVEL": 30,
+    "ERROR_HANDLING": {
+        404: ("T", []),
+        500: ("R", [3])
+    }
+},
+```

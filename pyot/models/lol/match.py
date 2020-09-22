@@ -380,7 +380,7 @@ class Match(PyotCore):
     def __init__(self, id: int = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         if data["teams"][0]["teamId"] == 100:
             blue_team = data["teams"][0]
             red_team = data["teams"][1]
@@ -477,23 +477,22 @@ class MatchTimeline(Match, PyotCore):
             "match_v4_timeline": ["id"],
         }
 
-    async def get(self):
+    async def get(self, sid: str = None):
+        '''Awaitable. Get this object from the pipeline.\n
+        `sid` may be passed to reuse a session on the pipeline.'''
         # pylint: disable=no-member
-        token1 = await self.create_token()
-        token2 = await self.create_token()
-        task1 = asyncio.create_task(self.Meta.pipeline.get(token1, self.filter, self.Meta.session_id))
-        task2 = asyncio.create_task(self.Meta.pipeline.get(token2, self.filter, self.Meta.session_id))
+        token1 = await self.create_token(search="match")
+        token2 = await self.create_token(search="timeline")
+        task1 = asyncio.create_task(self.meta.pipeline.get(token1, sid))
+        task2 = asyncio.create_task(self.meta.pipeline.get(token2, sid))
         data1 = await task1
         data2 = await task2
-        if "timeline" in token2.method:
-            self.Meta.data = await self._transform(data1, data2)
-        else:
-            self.Meta.data = await self._transform(data2, data1)
+        self.meta.data = self._transform(data1, data2)
         self._fill()
         return self
 
-    async def _transform(self, data1, data2):
-        data = await super()._transform(data1)
+    def _transform(self, data1, data2):
+        data = super()._transform(data1)
         teams = data["teams"]
         frames = {}
         events = {}
@@ -543,7 +542,7 @@ class Timeline(PyotCore):
     def __init__(self, id: int = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         new_data = {
             "frames": {},
             "events": {},
@@ -576,11 +575,12 @@ class MatchHistory(PyotCore):
         self._lazy_set(locals())
 
     def query(self, champion_ids: List[int] = None, queue_ids: List[int] = None, season_ids: List[int] = None, end_time: int = None, begin_time: int = None, end_index: int = None, begin_index: int = None):
+        '''Add query parameters to the object.'''
         kargs = {key if key[-3:] != "ids" else key[:-3] : val for (key,val) in locals().items()}
         for i in [champion_ids, queue_ids, season_ids]:
             if not isinstance(i, list) and i is not None:
                 raise RuntimeError("Query parameters 'champion_ids', 'queue_ids' and 'season_ids' must be a list of values")
-        self.Meta.query = self._parse_query(kargs)
+        self.meta.query = self._parse_query(kargs)
         return self
 
     @property

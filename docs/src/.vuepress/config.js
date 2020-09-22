@@ -36,19 +36,35 @@ module.exports = {
     editLinks: false,
     docsDir: '',
     editLinkText: '',
-    lastUpdated: false,
+    lastUpdated: 'Last Updated',
     nav: [
       {
-        text: 'Framework Cores',
-        link: '/cores/',
+        text: 'Core',
+        link: '/core/',
       },
       {
-        text: 'Models API',
-        link: '/api/',
+        text: 'Pipeline',
+        link: '/pipeline/',
       },
       {
-        text: 'Pipeline Stores',
+        text: 'Models',
+        link: '/models/',
+      },
+      {
+        text: 'Stores',
         link: '/stores/',
+      },
+      {
+        text: 'Limiters',
+        link: '/limiters/',
+      },
+      {
+        text: 'Utils',
+        link: '/utils/',
+      },
+      {
+        text: 'Developers',
+        link: '/devs/',
       },
       {
         text: 'Github',
@@ -60,47 +76,65 @@ module.exports = {
       }
     ],
     sidebar: {
-      '/cores/': [
+      '/core/': [
         {
           title: 'Introduction',
           collapsable: false,
           children: [
-            ''
+            '',
+            'syot',
+            'django',
           ]
         },
         {
-          title: 'Pyot',
+          title: 'Core',
           collapsable: false,
           sidebarDepth: 2,
           children: [
             'apiobjects',
             'settings',
-            'pipeline',
             'gatherer',
+            'queue',
             'exceptions',
           ]
         },
-        {
-          title: 'Syot',
-          collapsable: false,
-          children: [
-            'syot'
-          ]
-        },
-        {
-          title: 'Djot',
-          collapsable: false,
-          children: [
-            'djot'
-          ]
-        },
       ],
-      '/api/': [
+      '/pipeline/': [
         {
-          title: 'Introduction',
+          title: 'Low Level API',
+          collapsable: false,
+          sidebarDepth: 2,
+          children: [
+            '',
+            'token'
+          ]
+        },
+        {
+          title: 'Stores Bases',
+          collapsable: false,
+          sidebarDepth: 1,
+          children: [
+            'expiration',
+            'handler',
+            'object',
+          ]
+        }
+      ],
+      '/models/': [
+        {
+          title: 'General',
           collapsable: false,
           children: [
             ''
+          ]
+        },
+        {
+          title: 'Riot Service',
+          collapsable: false,
+          sidebarDepth: 1,
+          children: [
+            'riot_core',
+            'riot_account',
           ]
         },
         {
@@ -109,7 +143,6 @@ module.exports = {
           sidebarDepth: 1,
           children: [
             'lol_core',
-            'lol_account',
             'lol_champion',
             'lol_championmastery',
             'lol_championrotation',
@@ -133,7 +166,6 @@ module.exports = {
           sidebarDepth: 1,
           children: [
             'tft_core',
-            'tft_account',
             'tft_champion',
             'tft_item',
             'tft_league',
@@ -150,7 +182,6 @@ module.exports = {
           sidebarDepth: 1,
           children: [
             'val_core',
-            'val_account',
             'val_content',
             'val_match',
           ]
@@ -162,8 +193,6 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'expiration',
-            'handler',
           ]
         },
         {
@@ -172,11 +201,48 @@ module.exports = {
           children: [
             'omnistone',
             'djangocache',
+            'rediscache',
+            'diskcache',
             'cdragon',
             'merakicdn',
             'riotapi'
           ]
         }
+      ],
+      '/limiters/': [
+        {
+          title: "Low Level API",
+          collapsable: false,
+          sidebarDepth: 2,
+          children: [
+            '',
+            'token'
+          ]
+        },
+        {
+          title: "Rate Limiters",
+          collapsable: false,
+          children: [
+            'memory',
+            'redis'
+          ]
+        }
+      ],
+      '/utils/': [
+        {
+          title: "Utils",
+          collapsable: false,
+          sidebarDepth: 1,
+          initialOpenGroupIndex: 1,
+          children: [
+            '',
+            'objects',
+            'methods',
+          ]
+        }
+      ],
+      '/devs/': [
+        '',
       ]
     }
   },

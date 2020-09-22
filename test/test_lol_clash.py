@@ -1,4 +1,5 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import lol
 from datetime import datetime
 
 # NO ENOUGH SAMPLE TO DO CLASH TEST
@@ -9,7 +10,7 @@ from datetime import datetime
 
 
 async def async_tournaments_active():
-    clash = await pyot.lol.ClashTournaments(platform="NA1").get()
+    clash = await lol.ClashTournaments(platform="NA1").get()
     for tour in clash.tournaments:
         assert isinstance(tour.id, int)
         assert isinstance(tour.theme_id, int)
@@ -23,9 +24,9 @@ async def async_tournaments_active():
 
 
 async def async_tournament_by_id():
-    clash = await pyot.lol.ClashTournaments(platform="NA1").get()
+    clash = await lol.ClashTournaments(platform="NA1").get()
     TOURNAMENT_ID = clash.tournaments[0].id
-    tour = await pyot.lol.ClashTournament(id=TOURNAMENT_ID, platform="NA1").get()
+    tour = await lol.ClashTournament(id=TOURNAMENT_ID, platform="NA1").get()
     assert isinstance(tour.id, int)
     assert isinstance(tour.theme_id, int)
     assert isinstance(tour.name_key, str)
@@ -38,8 +39,8 @@ async def async_tournament_by_id():
 
 
 def test_tournaments_active():
-    pyot.run(async_tournaments_active())
+    loop_run(async_tournaments_active())
 
 def test_tournament_by_id():
-    pyot.run(async_tournament_by_id())
+    loop_run(async_tournament_by_id())
 

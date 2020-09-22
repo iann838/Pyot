@@ -1,3 +1,2 @@
-from .account import Account, ActivePlatform
-from .match import Match, MatchHistory
+from .match import Match, MatchHistory, RecentMatches
 from .content import Content

@@ -1,6 +1,7 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import lol
 
 
 def test_status():
-    status = pyot.run(pyot.lol.Status(platform="na1").get())
+    status = loop_run(lol.Status(platform="na1").get())
     status.dict(pyotify=True)

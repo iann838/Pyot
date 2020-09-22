@@ -1,4 +1,5 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import lol
 from datetime import datetime, timedelta
 
 
@@ -21,7 +22,7 @@ def assert_team(team):
     for ban in team.bans:
         assert isinstance(ban.champion_id, int)
         assert isinstance(ban.pick_turn, int)
-        assert isinstance(ban.champion, pyot.lol.Champion)
+        assert isinstance(ban.champion, lol.Champion)
     for p in team.participants:
         assert isinstance(p.id, int)
         assert isinstance(p.team_id, int)
@@ -29,23 +30,23 @@ def assert_team(team):
         for spell in p.spell_ids:
             assert isinstance(spell, int)
         for spell2 in p.spells:
-            assert isinstance(spell2, pyot.lol.Spell)
+            assert isinstance(spell2, lol.Spell)
         stats = p.stats
         assert isinstance(stats.participant_id, int)
         assert isinstance(stats.win, bool)
         assert len(stats.dominion_scores) == 10
         assert len(stats.spell_ids) == 2
         for it in stats.spells:
-            assert isinstance(it, pyot.lol.Spell)
+            assert isinstance(it, lol.Spell)
         assert len(stats.item_ids) == 7
         for it in stats.items:
-            assert isinstance(it, pyot.lol.Item)
+            assert isinstance(it, lol.Item)
         assert len(stats.rune_ids) == 6
         for it in stats.runes:
-            assert isinstance(it, pyot.lol.Rune)
+            assert isinstance(it, lol.Rune)
         assert len(stats.stat_rune_ids) == 3
         for it in stats.stat_runes:
-            assert isinstance(it, pyot.lol.Rune)
+            assert isinstance(it, lol.Rune)
         for num in stats.rune_vars:
             assert len(num) == 3
         assert isinstance(stats.rune_style, int)
@@ -120,7 +121,7 @@ def assert_team(team):
 
 
 async def async_match():
-    match = await pyot.lol.Match(id=3517707030, platform="NA1").get()
+    match = await lol.Match(id=3517707030, platform="NA1").get()
     assert isinstance(match.id, int)
     assert isinstance(match.type, str)
     assert isinstance(match.mode, str)
@@ -138,7 +139,7 @@ async def async_match():
 
 
 async def async_match_timeline():
-    match = await pyot.lol.MatchTimeline(id=3517707030, platform="NA1").get()
+    match = await lol.MatchTimeline(id=3517707030, platform="NA1").get()
     assert isinstance(match.id, int)
     assert isinstance(match.type, str)
     assert isinstance(match.mode, str)
@@ -156,9 +157,9 @@ async def async_match_timeline():
     for team in match.teams:
         for p in team.participants:
             for event in p.timeline.events:
-                assert isinstance(event, pyot.lol.match.MatchEventData)
+                assert isinstance(event, lol.match.MatchEventData)
             for frame in p.timeline.frames:
-                assert isinstance(frame, pyot.lol.match.MatchFrameData)
+                assert isinstance(frame, lol.match.MatchFrameData)
     blue_team = match.blue_team
     red_team = match.red_team
     blue_team2 = match.teams[0] if match.teams[0].team_id == 100 else match.teams[1]
@@ -180,18 +181,18 @@ async def async_match_timeline():
 
 
 async def async_timeline():
-    timeline = await pyot.lol.Timeline(id=3517707030, platform="NA1").get()
+    timeline = await lol.Timeline(id=3517707030, platform="NA1").get()
     assert isinstance(timeline.interval, timedelta)
     assert timeline.interval == timedelta(seconds=60)
     for event in timeline.events:
-        assert isinstance(event, pyot.lol.match.MatchEventData)
+        assert isinstance(event, lol.match.MatchEventData)
     for frame in timeline.frames:
-        assert isinstance(frame, pyot.lol.match.MatchFrameData)
+        assert isinstance(frame, lol.match.MatchFrameData)
 
 
 async def async_match_history():
-    summoner = await pyot.lol.Summoner(name="Morimorph", platform="NA1").get()
-    history = await pyot.lol.MatchHistory(account_id=summoner.account_id, platform="NA1").query(begin_index=0, end_index=60, champion_ids=[235]).get()
+    summoner = await lol.Summoner(name="Morimorph", platform="NA1").get()
+    history = await lol.MatchHistory(account_id=summoner.account_id, platform="NA1").query(begin_index=0, end_index=60, champion_ids=[235]).get()
     assert len(history.matches) == 60
     assert isinstance(history.start_index, int)
     assert isinstance(history.end_index, int)
@@ -206,19 +207,19 @@ async def async_match_history():
         assert isinstance(match.creation, datetime)
         assert isinstance(match.role, str)
         assert isinstance(match.lane, str)
-        assert isinstance(match.match, pyot.lol.Match)
-        assert isinstance(match.match_timeline, pyot.lol.MatchTimeline)
-        assert isinstance(match.champion, pyot.lol.Champion)
+        assert isinstance(match.match, lol.Match)
+        assert isinstance(match.match_timeline, lol.MatchTimeline)
+        assert isinstance(match.champion, lol.Champion)
 
 
 def test_match():
-    pyot.run(async_match())
+    loop_run(async_match())
 
 def test_match_timeline():
-    pyot.run(async_match_timeline())
+    loop_run(async_match_timeline())
 
 def test_timeline():
-    pyot.run(async_timeline())
+    loop_run(async_timeline())
 
 def test_match_history():
-    pyot.run(async_match_history())
+    loop_run(async_match_history())

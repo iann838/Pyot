@@ -1,4 +1,4 @@
-from ...core.object import PyotCoreObject, PyotStaticObject
+from pyot.core.objects import PyotCoreObject, PyotStaticObject
 
 
 class PyotBaseObject:
@@ -11,20 +11,20 @@ class PyotBaseObject:
             "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"]
 
         to_locale = {
-            "br1": "pt_br", 
-            "eun1": "en_gb", 
-            "euw1": "en_gb", 
-            "jp1": "ja_jp", 
-            "kr": "ko_kr", 
-            "la1": "es_es", 
-            "la2": "es_ar", 
-            "na1": "en_us", 
-            "oc1": "en_au", 
-            "tr1": "tr_tr", 
-            "ru": "ru_ru",
+            "br1": "en_us",
+            "eun1": "en_us",
+            "euw1": "en_us",
+            "jp1": "en_us",
+            "kr": "en_us",
+            "la1": "en_us",
+            "la2": "en_us",
+            "na1": "en_us",
+            "oc1": "en_us",
+            "tr1": "en_us",
+            "ru": "en_us",
             "americas": "en_us",
-            "europe": "en_gb",
-            "asia": "ko_kr",
+            "europe": "en_us",
+            "asia": "en_us",
         }
 
         to_region = {

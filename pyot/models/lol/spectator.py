@@ -165,7 +165,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         data["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
         data["observersKey"] = None
         for attr, val in data.items():
@@ -231,7 +231,7 @@ class FeaturedGames(PyotCore):
     def __init__(self, platform: str = None):
         self._lazy_set(locals())
 
-    async def _transform(self, data):
+    def _transform(self, data):
         for i in range(len(data["gameList"])):
             data["gameList"][i]["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
             data["gameList"][i]["observersKey"] = None

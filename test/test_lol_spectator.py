@@ -1,9 +1,10 @@
-import pyot
+from pyot.utils import loop_run
+from pyot.models import lol
 from datetime import datetime, timedelta
 
 
 async def async_featured_game():
-    featured = await pyot.lol.FeaturedGames(platform="NA1").get()
+    featured = await lol.FeaturedGames(platform="NA1").get()
     assert isinstance(featured.refresh_interval, timedelta)
     for game in featured.games:
         assert isinstance(game.id, int)
@@ -25,16 +26,16 @@ async def async_featured_game():
                 assert isinstance(p.profile_icon_id, int)
                 assert isinstance(p.is_bot, bool)
                 assert isinstance(p.summoner_name, str)
-                assert isinstance(p.summoner, pyot.lol.Summoner)
+                assert isinstance(p.summoner, lol.Summoner)
                 for i in p.spell_ids:
                     assert isinstance(i, int)
 
 
 async def async_current_game():
-    featured = await pyot.lol.FeaturedGames(platform="NA1").get()
+    featured = await lol.FeaturedGames(platform="NA1").get()
     s = await featured.games[0].teams[0].participants[0].summoner.get()
     s_id = s.id
-    game = await pyot.lol.CurrentGame(summoner_id=s_id, platform="NA1").get()
+    game = await lol.CurrentGame(summoner_id=s_id, platform="NA1").get()
     assert isinstance(game.id, int)
     assert isinstance(game.type, str)
     assert isinstance(game.mode, str)
@@ -64,7 +65,7 @@ async def async_current_game():
 
 
 def test_featured_games():
-    pyot.run(async_featured_game())
+    loop_run(async_featured_game())
 
 def test_current_game():
-    pyot.run(async_current_game())
+    loop_run(async_current_game())

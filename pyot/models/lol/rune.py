@@ -1,6 +1,6 @@
 from .__core__ import PyotCore
-from ...stores.cdragon import CDragon, CDragonTransformers
-from ...core.exceptions import NotFound
+from pyot.utils import cdragon_url, cdragon_sanitize
+from pyot.core.exceptions import NotFound
 from typing import List, Iterator
 
 
@@ -30,16 +30,15 @@ class Rune(PyotCore):
                 return item
         raise NotFound
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.Meta.server = "default"
-        load = getattr(self.Meta, "load")
+            self.meta.server = "default"
+        load = getattr(self.meta, "load")
         load.pop("id")
 
-    async def _transform(self, data):
-        tr = CDragonTransformers(self.locale)
-        data["iconPath"] = tr.url_assets(data["iconPath"])
-        data["cleanedDescription"] = tr.sanitize(data["longDesc"])
+    def _transform(self, data):
+        data["iconPath"] = cdragon_url(data["iconPath"])
+        data["cleanedDescription"] = cdragon_sanitize(data["longDesc"])
         return data
 
 
@@ -58,15 +57,14 @@ class Runes(PyotCore):
     def __iter__(self) -> Iterator[Rune]:
         return iter(self.runes)
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.Meta.server = "default"
+            self.meta.server = "default"
 
-    async def _transform(self, data_):
-        tr = CDragonTransformers(self.locale)
+    def _transform(self, data_):
         runes = []
         for data in data_:
-            data["iconPath"] = tr.url_assets(data["iconPath"])
-            data["cleanedDescription"] = tr.sanitize(data["longDesc"])
+            data["iconPath"] = cdragon_url(data["iconPath"])
+            data["cleanedDescription"] = cdragon_sanitize(data["longDesc"])
             runes.append({"data": data})
         return {"runes": runes}

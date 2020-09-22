@@ -1,6 +1,6 @@
 from .__core__ import PyotCore, PyotStatic
-from ...stores.cdragon import CDragon, CDragonTransformers
-from ...core.exceptions import NotFound
+from pyot.utils import tft_url, cdragon_sanitize
+from pyot.core.exceptions import NotFound
 from typing import List, Iterator, Mapping, Dict
 
 
@@ -50,16 +50,15 @@ class Trait(PyotCore):
                 return item
         raise NotFound
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "default":
-            self.Meta.server = "en_us"
-        load = getattr(self.Meta, "load")
+            self.meta.server = "en_us"
+        load = getattr(self.meta, "load")
         load.pop("key")
 
-    async def _transform(self, data):
-        tr = CDragonTransformers(self.locale)
-        data["iconPath"] = tr.tft_url_assets(data.pop("icon"))
-        data["cleanedDescription"] = tr.sanitize(data["desc"])
+    def _transform(self, data):
+        data["iconPath"] = tft_url(data.pop("icon"))
+        data["cleanedDescription"] = cdragon_sanitize(data["desc"])
         return data
 
 
@@ -79,9 +78,9 @@ class Traits(PyotCore):
     def __iter__(self) -> Iterator[Trait]:
         return iter(self.traits)
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "default":
-            self.Meta.server = "en_us"
+            self.meta.server = "en_us"
 
     def filter(self, data_):
         try:
@@ -90,11 +89,10 @@ class Traits(PyotCore):
             raise NotFound
         return data
 
-    async def _transform(self, data_):
-        tr = CDragonTransformers(self.locale)
+    def _transform(self, data_):
         traits = []
         for data in data_:
-            data["iconPath"] = tr.tft_url_assets(data.pop("icon"))
-            data["cleanedDescription"] = tr.sanitize(data["desc"])
+            data["iconPath"] = tft_url(data.pop("icon"))
+            data["cleanedDescription"] = cdragon_sanitize(data["desc"])
             traits.append({"data": data})
         return {"traits": traits}

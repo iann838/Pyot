@@ -11,7 +11,7 @@ This Cache doesn't expire data after it _expired_, to prevent memory overflow, a
 ### Backend: `pyot.stores.Omnistone`
 ### Arguments:
 > #### `expirations: Dict[str, Any] = None`
-> Custom mapping for overriding the default expirations. For details and defaults refer to General -> Expirations section.
+> Custom mapping for overriding the default expirations. For details and defaults refer to Pipeline > Store Bases > Expirations section.
 >
 > #### `max_entries: int = 10000`
 > The maximum amount of items to hold before expiring
@@ -19,8 +19,8 @@ This Cache doesn't expire data after it _expired_, to prevent memory overflow, a
 > #### `cull_frecuency: int = 2`
 > The 1/x ratio of max_entries to be culled in case it still passes this amount after expiring. Manual expiring will not trigger culling.
 >
-> #### `logs_enabled: bool = True`
-> Indicates if this stores is allowed to make logs.
+> #### `log_level: int = 20`
+> Set the log level for the store. Defaults to 20 (INFO level).
 
 
 ## Cached Endpoints

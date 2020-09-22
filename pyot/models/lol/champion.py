@@ -1,5 +1,6 @@
 from .__core__ import PyotCore, PyotStatic
-from ...stores.cdragon import CDragon, CDragonTransformers
+from pyot.utils import champion_id_by_key, champion_id_by_name
+from pyot.utils.cdragon import cdragon_url, start_k, cdragon_sanitize
 from typing import Any, List
 
 
@@ -124,43 +125,42 @@ class Champion(PyotCore):
     async def _clean(self):
         if not hasattr(self, "id"):
             if hasattr(self, "key"):
-                self.id = await self.Meta.pipeline.transform_key(CDragon, list(self.Meta.rules.keys())[0], "key", self.key)
+                self.id = await champion_id_by_key(self.key)
             elif hasattr(self, "name"):
-                self.id = await self.Meta.pipeline.transform_key(CDragon, list(self.Meta.rules.keys())[0], "name", self.name)
+                self.id = await champion_id_by_name(self.name)
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.Meta.server = "default"
+            self.meta.server = "default"
 
-    async def _transform(self, data):
-        tr = CDragonTransformers(self.locale)
-        data["squarePortraitPath"] = tr.url_assets(data["squarePortraitPath"])
-        data["tacticalInfo"]["damageType"] = tr.start_k(data["tacticalInfo"]["damageType"])
+    def _transform(self, data):
+        data["squarePortraitPath"] = cdragon_url(data["squarePortraitPath"])
+        data["tacticalInfo"]["damageType"] = start_k(data["tacticalInfo"]["damageType"])
         skins = []
         for skin in data["skins"]:
-            skin["splashPath"] = tr.url_assets(skin["splashPath"])
-            skin["uncenteredSplashPath"] = tr.url_assets(skin["uncenteredSplashPath"])
-            skin["tilePath"] = tr.url_assets(skin["tilePath"])
-            skin["loadScreenPath"] = tr.url_assets(skin["loadScreenPath"])
-            skin["rarity"] = tr.start_k(skin["rarity"])
-            skin["chromaPath"] = tr.url_assets(skin["chromaPath"])
+            skin["splashPath"] = cdragon_url(skin["splashPath"])
+            skin["uncenteredSplashPath"] = cdragon_url(skin["uncenteredSplashPath"])
+            skin["tilePath"] = cdragon_url(skin["tilePath"])
+            skin["loadScreenPath"] = cdragon_url(skin["loadScreenPath"])
+            skin["rarity"] = start_k(skin["rarity"])
+            skin["chromaPath"] = cdragon_url(skin["chromaPath"])
             if "chromas" in skin:
                 chromas = []
                 for chroma in skin["chromas"]:
-                    chroma["chromaPath"] = tr.url_assets(chroma["chromaPath"])
+                    chroma["chromaPath"] = cdragon_url(chroma["chromaPath"])
                     chromas.append(chroma)
                 skin["chromas"] = chromas
             if skin["skinLines"] is not None:
                 skin["skinLines"] = skin["skinLines"][0]["id"]
             skins.append(skin)
         data["skins"] = skins
-        data["passive"]["abilityIconPath"] = tr.url_assets(data["passive"]["abilityIconPath"])
+        data["passive"]["abilityIconPath"] = cdragon_url(data["passive"]["abilityIconPath"])
         spells = {}
         for spell in data["spells"]:
-            spell["abilityIconPath"] = tr.url_assets(spell["abilityIconPath"])
+            spell["abilityIconPath"] = cdragon_url(spell["abilityIconPath"])
             spell["cost"] = spell.pop("costCoefficients")[:5]
             spell["cooldown"] = spell.pop("cooldownCoefficients")[:5]
-            spell["cleanedDescription"] = tr.sanitize(spell["dynamicDescription"])
+            spell["cleanedDescription"] = cdragon_sanitize(spell["dynamicDescription"])
             spell.pop("formulas", None)
             spell.pop("coefficients", None)
             spell.pop("effectAmounts", None)

@@ -1,6 +1,6 @@
 from .__core__ import PyotCore
-from ...stores.cdragon import CDragonTransformers
-from ...core.exceptions import NotFound
+from pyot.utils.cdragon import cdragon_url
+from pyot.core.exceptions import NotFound
 from typing import List, Iterator
 
 
@@ -20,15 +20,14 @@ class ProfileIcon(PyotCore):
                 return item
         raise NotFound
     
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.Meta.server = "default"
-        load = getattr(self.Meta, "load")
+            self.meta.server = "default"
+        load = getattr(self.meta, "load")
         load.pop("id")
 
-    async def _transform(self, data):
-        tr = CDragonTransformers(self.locale)
-        data["iconPath"] = tr.url_assets(data["iconPath"])
+    def _transform(self, data):
+        data["iconPath"] = cdragon_url(data["iconPath"])
         return data
 
 
@@ -47,14 +46,13 @@ class ProfileIcons(PyotCore):
     def __iter__(self) -> Iterator[ProfileIcon]:
         return iter(self.icons)
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.Meta.server = "default"
+            self.meta.server = "default"
 
-    async def _transform(self, data_):
-        tr = CDragonTransformers(self.locale)
+    def _transform(self, data_):
         icons = []
         for data in data_:
-            data["iconPath"] = tr.url_assets(data["iconPath"])
+            data["iconPath"] = cdragon_url(data["iconPath"])
             icons.append({"data": data})
         return {"icons": icons}

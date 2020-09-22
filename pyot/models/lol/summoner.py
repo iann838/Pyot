@@ -1,6 +1,5 @@
 from .__core__ import PyotCore
 from datetime import datetime
-from ...core.object import PyotLazyObject
 
 
 # PYOT CORE OBJECTS
@@ -63,8 +62,8 @@ class Summoner(PyotCore):
 
     @property
     def account(self) -> "Account":
-        from .account import Account
-        return Account(puuid=self.puuid)
+        from ..riot.account import Account
+        return Account(puuid=self.puuid, pipeline="lol", region=self.region)
 
     @property
     def match_history(self) -> "MatchHistory":

@@ -1,6 +1,7 @@
 from .__core__ import PyotCore, PyotStatic
-from ...stores.cdragon import CDragon, CDragonTransformers
-from ...core.exceptions import NotFound
+from pyot.utils.cdragon import tft_champ_sanitize, tft_url
+from pyot.utils import champion_key_by_id, champion_key_by_name
+from pyot.core.exceptions import NotFound
 from typing import List, Iterator
 
 
@@ -78,23 +79,22 @@ class Champion(PyotCore):
     async def _clean(self):
         if not hasattr(self, "key"):
             if hasattr(self, "lol_id"):
-                key = await self.Meta.pipeline.transform_key(CDragon, list(self.Meta.rules.keys())[0], "lol_id", self.lol_id)
+                key = await champion_key_by_id(self.lol_id)
                 self.key = f"TFT{self.set}_{key}"
             elif hasattr(self, "name"):
-                key = await self.Meta.pipeline.transform_key(CDragon, list(self.Meta.rules.keys())[0], "name", self.name)
+                key = await champion_key_by_name(self.name)
                 self.key = f"TFT{self.set}_{key}"
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "default":
-            self.Meta.server = "en_us"
-        load = getattr(self.Meta, "load")
+            self.meta.server = "en_us"
+        load = getattr(self.meta, "load")
         load.pop("key")
 
-    async def _transform(self, data):
-        tr = CDragonTransformers(self.locale)
-        data["iconPath"] = tr.tft_url_assets(data.pop("icon"))
-        data["ability"]["cleanedDescription"] = tr.tft_champ_sanitize(data["ability"]["desc"], data["ability"]["variables"])
-        data["ability"]["iconPath"] = tr.tft_url_assets(data["ability"].pop("icon"))
+    def _transform(self, data):
+        data["iconPath"] = tft_url(data.pop("icon"))
+        data["ability"]["cleanedDescription"] = tft_champ_sanitize(data["ability"]["desc"], data["ability"]["variables"])
+        data["ability"]["iconPath"] = tft_url(data["ability"].pop("icon"))
         return data
 
     @property
@@ -118,9 +118,9 @@ class Champions(PyotCore):
     def __iter__(self) -> Iterator[Champion]:
         return iter(self.champions)
 
-    async def _refactor(self):
+    def _refactor(self):
         if self.locale.lower() == "default":
-            self.Meta.server = "en_us"
+            self.meta.server = "en_us"
 
     def filter(self, data_):
         try:
@@ -129,12 +129,11 @@ class Champions(PyotCore):
             raise NotFound
         return data
 
-    async def _transform(self, data_):
-        tr = CDragonTransformers(self.locale)
+    def _transform(self, data_):
         champions = []
         for data in data_:
-            data["iconPath"] = tr.tft_url_assets(data.pop("icon"))
-            data["ability"]["cleanedDescription"] = tr.tft_champ_sanitize(data["ability"]["desc"], data["ability"]["variables"])
-            data["ability"]["iconPath"] = tr.tft_url_assets(data["ability"].pop("icon"))
+            data["iconPath"] = tft_url(data.pop("icon"))
+            data["ability"]["cleanedDescription"] = tft_champ_sanitize(data["ability"]["desc"], data["ability"]["variables"])
+            data["ability"]["iconPath"] = tft_url(data["ability"].pop("icon"))
             champions.append({"data": data})
         return {"champions": champions}

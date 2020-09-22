@@ -1,4 +1,4 @@
-from ...core.object import PyotCoreObject, PyotStaticObject
+from pyot.core.objects import PyotCoreObject, PyotStaticObject
 
 
 class PyotBaseObject:
@@ -11,11 +11,11 @@ class PyotBaseObject:
             "vi-vn", "zh-cn", "zh-tw"]
 
         to_locale = {
-            "ap": "zh-cn",
-            "br": "pt-br",
-            "eu": "en-gb",
-            "kr": "ko-kr",
-            "latam": "es-es",
+            "ap": "en-us",
+            "br": "en-us",
+            "eu": "en-us",
+            "kr": "en-us",
+            "latam": "en-us",
             "na": "en-us",
         }
 
