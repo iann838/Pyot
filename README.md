@@ -90,7 +90,7 @@ loop_run(main())
 Plugging Pyot into Django is really easy.
 
 > ### DEPRECATED
-> Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be natively installed.
+> Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be installed natively.
 
 ## Installation
 
@@ -167,7 +167,7 @@ The rest of the API please refer to Pyot documentation by replacing `pyot` with 
 
 ## Example Usage
 Activate the settings before you script entry point or module `__init__.py`
-```python{1,4,15,18}
+```python
 from syot.core import Settings
 import os
 
@@ -188,7 +188,7 @@ Settings(
 ).activate() # <- DON'T FORGET TO ACTIVATE THE SETTINGS
 ```
 Example of Syot code
-```python{1,3,7}
+```python
 from syot.models import lol
 
 summoner = lol.Summoner(name="Morimorph", platform="NA1").get()

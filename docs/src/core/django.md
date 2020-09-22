@@ -3,7 +3,7 @@
 Plugging Pyot into Django is really easy.
 
 :::danger DEPRECATED
-Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be natively installed.
+Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be installed natively.
 :::
 
 ## Installation
