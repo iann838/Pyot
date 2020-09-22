@@ -11,7 +11,7 @@ This is main type of objects that developers works with. Below is a list of gene
 > ### `__init__(**kwargs)` <Badge text="Pyot Core" vertical="middle"/>
 > Creates an instance of the Pyot Core Object. Parameters varies per API.
 
-> ### `get()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> ### `get(sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
 > This is an awaitable that makes a `get` to the pipeline, searching for what it needs and returns the found data.
 > - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
 

@@ -12,7 +12,7 @@ Create a file (the example will use `pyoter.py`) under any of the Django modules
 
 This example has `test` as the project directory and `pyoter.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
-```python{11}
+```python{21}
 #test/pyoter.py
 
 from pyot.core import Settings
