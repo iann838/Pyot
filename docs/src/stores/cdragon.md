@@ -14,8 +14,8 @@ The CDragon has the data that the game uses, but it is highly unparsable, the ma
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
 > Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
 >
-> #### `log_level: int = 20`
-> Set the log level for the store. Defaults to 20 (INFO level).
+> #### `log_level: int = 10`
+> Set the log level for the store. Defaults to 10 (DEBUG level).
 
 ## Initialization
 

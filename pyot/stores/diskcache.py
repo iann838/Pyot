@@ -20,7 +20,7 @@ class DiskCache(StoreObject):
     unique = False
     store_type = "CACHE"
 
-    def __init__(self, game: str, directory: str, expirations: Any = None, log_level: int = 20, **kwargs) -> None:
+    def __init__(self, game: str, directory: str, expirations: Any = None, log_level: int = 10, **kwargs) -> None:
         self._game = game
         kwargs = {key.lower():val for (key,val) in kwargs.items()}
         if "timeout" not in kwargs: kwargs["timeout"] = 1

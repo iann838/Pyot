@@ -19,8 +19,8 @@ This Cache doesn't expire data after it _expired_, to prevent memory overflow, a
 > #### `cull_frecuency: int = 2`
 > The 1/x ratio of max_entries to be culled in case it still passes this amount after expiring. Manual expiring will not trigger culling.
 >
-> #### `log_level: int = 20`
-> Set the log level for the store. Defaults to 20 (INFO level).
+> #### `log_level: int = 10`
+> Set the log level for the store. Defaults to 10 (DEBUG level).
 
 
 ## Cached Endpoints

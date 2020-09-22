@@ -18,8 +18,8 @@ You can add multiple stores of this type to the pipeline, but take in mind that 
 > #### `expirations: Dict[str, Any] = None`
 > Custom mapping for overriding the default expirations. For details and defaults refer to Pipeline > Store Bases > Expirations section.
 >
-> #### `log_level: int = 20`
-> Set the log level for the store. Defaults to 20 (INFO level).
+> #### `log_level: int = 10`
+> Set the log level for the store. Defaults to 10 (DEBUG level).
 
 ## Cached Endpoints
 

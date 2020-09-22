@@ -18,7 +18,7 @@ class DjangoCache(StoreObject):
     unique = False
     store_type = "CACHE"
 
-    def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 20) -> None:
+    def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 10) -> None:
         if alias is None: raise RuntimeError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' because Pyot will not guess which cache is used")
         self._game = game
         self._alias = alias

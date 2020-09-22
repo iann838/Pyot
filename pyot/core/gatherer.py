@@ -24,7 +24,7 @@ class Gatherer:
     statements: List
     responses: List
 
-    def __init__(self, workers: int = 25, log_level: int = 20, cancel_on_raise: bool = False):
+    def __init__(self, workers: int = 25, log_level: int = 10, cancel_on_raise: bool = False):
         self.workers = workers
         self.cancel_on_raise = cancel_on_raise
         self.log_level = log_level

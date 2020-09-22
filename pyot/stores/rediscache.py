@@ -19,7 +19,7 @@ class RedisCache(StoreObject):
     unique = False
     store_type = "CACHE"
 
-    def __init__(self, game: str, expirations: Any = None, log_level: int = 20, host='127.0.0.1', port=6379, db=0, **kwargs) -> None:
+    def __init__(self, game: str, expirations: Any = None, log_level: int = 10, host='127.0.0.1', port=6379, db=0, **kwargs) -> None:
         self._game = game
         kwargs = {key.lower():val for (key,val) in kwargs.items()}
         self._pool = redis.ConnectionPool(host=host, port=port, db=db, **kwargs)

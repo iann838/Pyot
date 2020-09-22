@@ -18,7 +18,7 @@ class CDragon(StoreObject):
     unique = True
     store_type = "SERVICE"
 
-    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, log_level: int = 20):
+    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, log_level: int = 10):
         handler = ErrorHandler()
         self._game = game
         self._handler_map = handler.create_handler(error_handling)

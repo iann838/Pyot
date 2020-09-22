@@ -20,9 +20,9 @@ async with Queue() as quque:
     # DO STUFF
 ```
 
-> ### `__init__(workers: int = 25, maxsize: int = None, log_level: int = 20)`
+> ### `__init__(workers: int = 25, maxsize: int = None, log_level: int = 10)`
 > - `workers` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Maximum number of workers to spawn for the queue. Increasing the number of workers may increase or decrease performance. Defaults to 25.
-> - `log_level` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Set the log level for the Gatherer (does not affect pipeline logs). Defaults to 20 (INFO level).
+> - `log_level` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Set the log level for the Gatherer (does not affect pipeline logs). Defaults to 10 (DEBUG level).
 > - `maxsize` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Max size of the queue. Defaults to `workers * 2`.
 
 > ### `put(coro: Coroutine, delay: float = 0)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>

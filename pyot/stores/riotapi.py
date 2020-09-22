@@ -19,7 +19,7 @@ class RiotAPI(StoreObject):
     unique = True
     store_type = "SERVICE"
 
-    def __init__(self, game: str, api_key: str, rate_limiter: Mapping[str, str] = None, error_handling: Mapping[int, Any] = None, log_level: int = 20):
+    def __init__(self, game: str, api_key: str, rate_limiter: Mapping[str, str] = None, error_handling: Mapping[int, Any] = None, log_level: int = 10):
         handler = ErrorHandler()
         self._game = game
         self._api_key = api_key

@@ -9,4 +9,4 @@ try:
     
     for path in paths:
         import_module(path)
-except (ImportError, ImproperlyConfigured): pass
+except (ImportError, ImproperlyConfigured, ModuleNotFoundError, NameError): pass

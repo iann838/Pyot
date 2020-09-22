@@ -41,13 +41,13 @@ async with Gatherer() as gatherer:
 :::warning
 This object is preferably used as a context manager because it will clean up the instance after the `with` statement freeing memory, although nothing stops you from doing `gatherer = pyot.Gatherer()`.
 :::
-> ### `__init__(workers: int = 25, log_level: int = 20, cancel_on_raise: bool = False)`
+> ### `__init__(workers: int = 25, log_level: int = 10, cancel_on_raise: bool = False)`
 > Creates an instance of Gatherer with the respective params, these params are set when Pyot Settings was set if specified the `GATHERER` param, you can also override partial settings at runtime by passing the params on instance creation:
 > - `workers` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Maximum number of concurrent connections and tasks allowed for this Gatherer. Increasing the number of workers may increase or decrease performance. Defaults to 25.
 >:::danger DEPRECATED
 > Since v1.1.0: The `session_class` param is removed, due to useless param.
 >:::
-> - `log_level` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Set the log level for the Gatherer (does not affect pipeline logs). Defaults to 20 (INFO level).
+> - `log_level` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Set the log level for the Gatherer (does not affect pipeline logs). Defaults to 10 (DEBUG level).
 > - `cancel_on_raise` <Badge text="param" type="warning" vertical="middle"/> -> `bool`: Cancel all remaining tasks if one raises exception. Defaults to `False`.
 
 > ### `statements` <Badge text="property" type="error" vertical="middle"/>

@@ -24,7 +24,7 @@ class Queue:
     workers: List
     sid: str
 
-    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 20):
+    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 10):
         if workers < 1: raise RuntimeError('Number of workers must be an integer greater than 0')
         self.workers_num = workers
         if maxsize is None:
