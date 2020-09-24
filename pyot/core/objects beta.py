@@ -22,22 +22,7 @@ class PyotLazyObject:
                 self.clas = clas.__args__[0]
         except Exception:
             self.clas = clas
-        # server_map = {"server_type": [server_type, server]}
         self.server_map = [server_type, server]
-        # if isinstance(obj, list):
-        #     is_core = None
-        #     for l in obj:
-        #         if is_core is None:
-        #             is_core = issubclass(self.clas, PyotCoreObject)
-        #         if is_core:
-        #             l["data"].update(server_map)
-        #         else:
-        #             l.update(server_map)
-        # else:
-        #     if issubclass(self.clas, PyotCoreObject):
-        #         obj["data"].update(server_map)
-        #     else:
-        #         obj.update(server_map)
         self.obj = obj
 
     def __call__(self):
@@ -76,12 +61,6 @@ class PyotLazyObject:
                 return instance._fill()
         raise RuntimeError(f"Unable to lazy load '{self.clas}'")
 
-    @staticmethod
-    def need_lazy(obj):
-        if isinstance(obj, list) or isinstance(obj, dict):
-            return True
-        return False
-
 
 class PyotStaticObject:
 
@@ -91,6 +70,7 @@ class PyotStaticObject:
         server_map: List[str]
         types: Dict[str, Any]
         data: Dict[str, Any]
+        ata: Dict[str, Any]
         raws: List[str] = []
         removed: List[str] = []
         renamed: Dict[str, str] = {}
@@ -103,19 +83,23 @@ class PyotStaticObject:
         # META CLASS UNIQUE MUTABLE OBJECTS
         self.meta = self.Meta()
         self.meta.data = data
+        self.meta.ata = {}
         self.meta.types = typing_cache.get(self.__class__, partial(get_type_hints, self.__class__))
 
     def __getattribute__(self, name):
+        if name == "meta":
+            return super().__getattribute__(name)
         try:
-            attr = super().__getattribute__(name)
-            if type(attr) is PyotLazyObject:
-                obj = attr()
-                setattr(self, name, obj)
-                return obj
-            else:
-                return attr
+            val = self.meta.ata[name]
+            if isinstance(val, list) or isinstance(val, dict):
+                if name in self.meta.raws:
+                    return val
+                server = self.meta.ata[self.meta.server_type]
+                self.meta.ata[name] = PyotLazyObject(self.meta.types[name], val, self.meta.server_type, server)()
+                return self.meta.ata[name]
+            return val
         except (KeyError, AttributeError):
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+            return super().__getattribute__(name)
 
     def _rename(self, data):
         # SNAKECASE > RENAME > REMOVE
@@ -158,23 +142,24 @@ class PyotStaticObject:
         data_ = self._normalize(self.meta.data)
 
         if self.meta.server_type in data_:
-            has_server = True
-        else:
-            has_server = False
+            data_[self.meta.server_type] = data_[self.meta.server_type].lower()
+            setattr(self, self.meta.server_type, data_[self.meta.server_type].lower())
 
-        for attr, val in data_.items():
-            if attr in self.meta.raws:
-                setattr(self, attr, val)
-            elif PyotLazyObject.need_lazy(val):
-                if has_server:
-                    server = data_[self.meta.server_type]
-                else:
-                    server = getattr(self, self.meta.server_type)
-                setattr(self, attr, PyotLazyObject(self.meta.types[attr], val, self.meta.server_type, server))
-            elif attr == self.meta.server_type:
-                setattr(self, attr, val.lower())
-            else:
-                setattr(self, attr, val)
+        self.meta.ata = data_
+        self.meta.ata.update(self.__dict__)
+        # for attr, val in data_.items():
+        #     if attr in self.meta.raws:
+        #         setattr(self, attr, val)
+        #     elif PyotLazyObject.need_lazy(val):
+        #         if has_server:
+        #             server = data_[self.meta.server_type]
+        #         else:
+        #             server = getattr(self, self.meta.server_type)
+        #         setattr(self, attr, PyotLazyObject(self.meta.types[attr], val, self.meta.server_type, server))
+        #     elif attr == self.meta.server_type:
+        #         setattr(self, attr, val.lower())
+        #     else:
+        #         setattr(self, attr, val)
         return self
 
     def dict(self, pyotify: bool = False, remove_server: bool = True):

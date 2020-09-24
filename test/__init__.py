@@ -79,7 +79,7 @@ Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "API_KEY": "RGAPI-c8d5857c-0466-4dfb-b9cb-e9823a3*****", # <--- HEY CRACK THIS KEY
+            "API_KEY": "RGAPI-5d51ad95-e77c-4f30-987a-bc0db2a*****", # <--- HEY CRACK THIS KEY
             "RATE_LIMITER": {
                 "BACKEND": "pyot.limiters.MemoryLimiter",
                 "LIMITING_SHARE": 1,

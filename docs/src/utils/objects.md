@@ -1,5 +1,9 @@
 # Objects
 
+:::warning
+Asynchronous callbacks are only runable on a-prefixed methods, e.g. `aget`.
+:::
+
 Submodule: `objects`
 
 ## `ArrowCache`
@@ -15,7 +19,7 @@ Submodule: `objects`
 > - `func` <Badge text="param" type="warning" vertical="middle"/> will be called when provided and if object doesn't exist, put the returned value to the cache and return it.
 > ### `aget(name: str, coro = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Async get an object from the cache.
-> - `coro` <Badge text="param" type="warning" vertical="middle"/> will be awaited when provided and if object doesn't exist, put the returned value to the cache and return it.
+> - `coro` <Badge text="param" type="warning" vertical="middle"/> will be awaited when provided and if object doesn't exist, put the returned value to the cache and return it. If the `coro` doesn't need to be awaited it will be closed and not raise warnings.
 > ### `set(name: str, val)` <Badge text="function" type="error" vertical="middle"/>
 > Put an object to the cache.
 > ### `clear()` <Badge text="function" type="error" vertical="middle"/>
@@ -62,6 +66,13 @@ Submodule: `dicts`
 :::tip INFO
 For these dict to use the default coroutine, call `aget` instead of `get`.
 :::
+
+:::warning
+For using functions as their default callback, if args and kwargs needs to be passed please wrap them in `functools.partial`.
+
+For using coroutines as their default callback, please pass the coroutine as it (as a coroutine function and not as coroutine object) if args and kwargs needs to be passed please wrap them in `functools.partial`. This is needed because the same coroutine cannot be awaited more than once.
+:::
+
 
 ## `MultiDefaultDict`
 > A default dict that supports coroutines as default callback and multiple get and sets. This dict can be subcripted or assign key values using regular dict syntax.

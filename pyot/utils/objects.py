@@ -8,10 +8,11 @@ class ArrowCache:
     Be aware that this cache is NOT isolated, hence the performance difference from Omnistone.
     This cache will not copy the objects on get/put, modification to objects affects cached objects.
     '''
-    objects = dict()
-    max_entries = 2000
+    objects: dict
+    max_entries: int
 
     def __init__(self, expiration=60*60*3, max_entries=2000):
+        self.objects = {}
         self.expiration = expiration
         self.max_entries = max_entries
 
@@ -41,12 +42,15 @@ class ArrowCache:
 
         `coro` will be awaited when provided and if object doesn't exist,
         put the returned value to the cache and return it.
+        If the `coro` doesn't need to be awaited it will be closed and not raise warnings.
         '''
         try:
             data = self.objects[name]
             if data[1] is not None and data[1] < datetime.now():
                 del self.objects[name]
                 raise KeyError(name)
+            if coro:
+                coro.close()
             return data[0]
         except KeyError:
             if coro is None:

@@ -86,13 +86,15 @@ Responses (All the champions) will be cached for 3 hours
 
 Submodule: `time`
 
-> ## `timeit(func_or_coro, iters: int = 1)` <Badge text="function" type="error" vertical="middle"/>
-> Measures the running time of a function or coroutine. Functions with arguments should be passed using `functools.partial`.
+> ## `timeit(func_or_coro, iters: int = 1 concurrent: bool = True)` <Badge text="function" type="error" vertical="middle"/>
+> Measures the running time of a function or coroutine. Functions/Coroutines with arguments should be passed using `functools.partial`.
 > - `iters` <Badge text="param" type="warning" vertical="middle"/> may be passed to specify the amount of repeat executions.
+> - `concurrent`<Badge text="param" type="warning" vertical="middle"/> to signify concurrent running of coroutines.
 
-> ## `atimeit(coro, iters: int = 1)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> Awaitable, measures the running time of a coroutine.
+> ## `atimeit(coro, iters: int = 1, concurrent: bool = True)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
+> Awaitable, measures the running time of a coroutine. Coroutines with arguments should be passed using `functools.partial`.
 > - `iters` <Badge text="param" type="warning" vertical="middle"/> may be passed to specify the amount of repeat executions.
+> - `concurrent`<Badge text="param" type="warning" vertical="middle"/> to signify concurrent running of coroutines.
 
 Submodule: `objects`
 

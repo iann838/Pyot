@@ -1,27 +1,38 @@
 from datetime import datetime, timedelta
-from asyncio import iscoroutine
-from pyot.utils import loop_run
+import asyncio
+
+from .common import loop_run
 
 
-def timeit(func_or_coro, iters: int = 1):
+def timeit(func_or_coro, iters: int = 1, concurrent: bool = True):
     '''
     Measures the running time of a function or coroutine.
-    Functions with arguments should be passed using `functools.partial`.
+    Functions/Coroutines with arguments should be passed using `functools.partial`.
     `iters` may be passed to specify the amount of repeat executions.
+    `concurrent` to signify concurrent running of coroutines.
     '''
     now = datetime.now()
-    if iscoroutine(func_or_coro):
-        [loop_run(func_or_coro)]*iters
+    if asyncio.iscoroutinefunction(func_or_coro):
+        if not concurrent:
+            for _ in range(iters): loop_run(func_or_coro())
+        else:
+            loop_run(asyncio.gather(*[func_or_coro() for _ in range(iters)]))
     else:
-        [func_or_coro()]*iters
+        for _ in range(iters): func_or_coro()
     return str(datetime.now() - now)
 
 
-async def atimeit(coro, iters: int = 1):
+async def atimeit(coro, iters: int = 1, concurrent: bool = True):
     '''
     Awaitable, measures the running time of a coroutine.
+    Coroutines with arguments should be passed using `functools.partial`.
     `iters` may be passed to specify the amount of repeat executions.
+    `concurrent` to signify concurrent running of coroutines.
     '''
     now = datetime.now()
-    [await coro]*iters
+    if concurrent:
+        await asyncio.gather(*[coro() for _ in range(iters)])
+        return str(datetime.now() - now)
+    for _ in range(iters):
+        await coro()
     return str(datetime.now() - now)

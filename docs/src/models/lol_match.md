@@ -1,6 +1,30 @@
 # Match
 Model: League of Legends
 
+:::tip WHY IS PYOT SO SLOW AT MATCHTIMELINE ???
+Objects like `frames` and `events` are **_really large at numbers (hundreds per timeline)_**, Pyot **_might be slow_** when serializing these objects to `PyotStatic` objects, it is 12x faster compared to the beta testing v1.0, but it is still not satisfying. **_The recommended solution_** would be to access it as a dict to avoid the serializing process of these objects:
+```python
+for event in timeline.dict()["events"]:
+    # Do stuff with the event
+```
+The **_dict keys and values_** are the same as returned by the Riot API.
+:::
+:::tip WHY IS PYOT STILL SLOW ???
+Another cause of slowness on MatchTimeline might be caused by security measurement of Pyot stores.
+
+If you want to iterate for all the items in events of `lol.MatchTimeline` and get its cost, then **_it would be very innefficient_** if you do `await event.item.get()` every time, even if it is cached on Omnistone, because Pyot's stores should be **_safe_** from any type mutation, so Omnistone will automatically copy the object before retrieving it, which adds up huge amount of CPU time. Solution would be a local cache that doesn't copy the objects but instead keeping an _arrow_ referencing the object, which is the use case of an `ArrowCache` from the utils module.
+```python
+from pyot.utils import ArrowCache
+from pyot.models import lol
+
+async def somefunc():
+    cache = ArrowCache()
+    # ...
+    for event in participant.timeline.dict()["events"]:
+        item = await cache.aget(f"item{event['itemId']}", lol.Item(id=event['itemId']).get())
+```
+:::
+
 ## `Match` <Badge text="Pyot Core" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
@@ -344,12 +368,13 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 >`role: str`
 >
 >`lane: str`
-> :::warning
-> `frames` and `events` are only available for `MatchTimeline` Objects.
-> :::
+>
 >`frames: List[MatchFrameData]`
 >
 >`events: List[MatchEventData]`
+> :::warning
+> `frames` and `events` are only available for `MatchTimeline` Objects.
+> :::
 
 ## `MatchEventData` <Badge text="Pyot Static" vertical="middle"/>
 >:::warning

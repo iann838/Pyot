@@ -46,10 +46,9 @@ class MultiDefaultDict:
 
     async def aget(self, name: str):
         '''Async get'''
-        try:
-            return self._object[name]
-        except:
-            pass
+        val = self._object[name]
+        if not asyncio.iscoroutine(val):
+            return val
         val = await self.default
         await self.aset(name, val)
         return val
@@ -118,7 +117,7 @@ class RedisDefaultDict:
         resp = await loop.run_in_executor(None, partial(self.__getitem__, f'{self._prefix}{name}'))
         if resp: return resp
         if self.default is None: raise KeyError(name)
-        val = await self.default
+        val = await self.default()
         await self.aset(name, val)
         return val
 
