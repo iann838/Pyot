@@ -94,12 +94,12 @@ Plugging Pyot into Django is really easy.
 
 ## Installation
 
-Create a file (the example will use `pyoter.py`) under any of the Django modules (either under an app folder or project folder):
+Create a file (the example will use `pipelines.py`) under any of the Django modules (either under an app folder or project folder):
 
-This example has `test` as the project directory and `pyoter.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
+This example has `test` as the project directory and `pipelines.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
 ```python
-#test/pyoter.py
+#test/pipelines.py
 
 from pyot.core import Settings
 from datetime import timedelta as td
@@ -135,10 +135,10 @@ INSTALLED_APPS = [
 ```
 In the same `settings.py` file, add the file path to a reserved variable for Pyot called `PYOT_SETTINGS`.
 ```python
-# Supposing the pyot settings file is at: test/pyoter.py
+# Supposing the pyot settings file is at: test/pipelines.py
 
 PYOT_SETTINGS = [
-    'test.pyoter'
+    'test.pipelines'
 ]
 ```
 You can define multiple settings in different files if you want to keep 1 setting per app (supposing you have 1 app per game model).
@@ -155,7 +155,7 @@ Below documentation only applies to Syot.
 The rest of the API please refer to Pyot documentation by replacing `pyot` with `syot` instead, awaitables needs to be executed with `loop_run()`.
 
 ## Similarities
-1. All Pyot Object's methods that are not marked with <Badge text="awaitable" type="error" vertical="middle"/> are usable in Syot, that includes Pyot Object's `dict()`, `json()` and others not mentioned.
+1. All Pyot Object's methods that are not marked with "awaitable" are usable in Syot, that includes Pyot Object's `dict()`, `json()` and others not mentioned.
 2. All the models API are available on Syot, with some minor changes listed below.
 
 ## Differences

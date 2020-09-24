@@ -12,7 +12,7 @@ The **_dict keys and values_** are the same as returned by the Riot API.
 :::tip WHY IS PYOT STILL SLOW ???
 Another cause of slowness on MatchTimeline might be caused by security measurement of Pyot stores.
 
-If you want to iterate for all the items in events of `lol.MatchTimeline` and get its cost, then **_it would be very innefficient_** if you do `await event.item.get()` every time, even if it is cached on Omnistone, because Pyot's stores should be **_safe_** from any type mutation, so Omnistone will automatically copy the object before retrieving it, which adds up huge amount of CPU time. Solution would be a local cache that doesn't copy the objects but instead keeping an _arrow_ referencing the object, which is the use case of an `ArrowCache` from the utils module.
+If you want to iterate for all the items in events of `lol.MatchTimeline` and get its cost, then **_it would be very innefficient_** if you do `await event.item.get()` every time, even if it is cached on Omnistone, because Pyot's stores should be **_safe_** from any type of mutation, so Omnistone will automatically copy the object before retrieving it, which adds up huge amount of CPU time. Solution would be a local cache that doesn't copy the objects but instead keeping an _arrow_ referencing the object, which is the use case of an `ArrowCache` from the utils module.
 ```python
 from pyot.utils import ArrowCache
 from pyot.models import lol

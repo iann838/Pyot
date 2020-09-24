@@ -8,12 +8,12 @@ Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be i
 
 ## Installation
 
-Create a file (the example will use `pyoter.py`) under any of the Django modules (either under an app folder or project folder):
+Create a file (the example will use `pipelines.py`) under any of the Django modules (either under an app folder or project folder):
 
-This example has `test` as the project directory and `pyoter.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
+This example has `test` as the project directory and `pipelines.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
 ```python{21}
-#test/pyoter.py
+#test/pipelines.py
 
 from pyot.core import Settings
 from datetime import timedelta as td
@@ -49,10 +49,10 @@ INSTALLED_APPS = [
 ```
 In the same `settings.py` file, add the file path to a reserved variable for Pyot called `PYOT_SETTINGS`.
 ```python
-# Supposing the pyot settings file is at: test/pyoter.py
+# Supposing the pyot settings file is at: test/pipelines.py
 
 PYOT_SETTINGS = [
-    'test.pyoter'
+    'test.pipelines'
 ]
 ```
 You can define multiple settings in different files if you want to keep 1 setting per app (supposing you have 1 app per game model).
