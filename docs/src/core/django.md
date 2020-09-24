@@ -30,7 +30,7 @@ Settings(
         {"BACKEND": "pyot.stores.CDragon"},
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "KEY": os.environ["RIOT_API_KEY"],
+            "API_KEY": os.environ["RIOT_API_KEY"],
         }
     ]
 ).activate()
