@@ -112,7 +112,7 @@ Settings(
     DEFAULT_LOCALE= "EN_US",
     PIPELINE = [
         {"BACKEND": "pyot.stores.Omnistone"},
-        {"BACKEND": "pyot.stores.MerakiCDN"}
+        {"BACKEND": "pyot.stores.MerakiCDN"},
         {"BACKEND": "pyot.stores.CDragon"},
         {
             "BACKEND": "pyot.stores.RiotAPI",

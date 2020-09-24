@@ -16,7 +16,6 @@ This example has `test` as the project directory and `pipelines.py` as the modul
 #test/pipelines.py
 
 from pyot.core import Settings
-from datetime import timedelta as td
 import os
 
 Settings(
@@ -26,7 +25,7 @@ Settings(
     DEFAULT_LOCALE= "EN_US",
     PIPELINE = [
         {"BACKEND": "pyot.stores.Omnistone"},
-        {"BACKEND": "pyot.stores.MerakiCDN"}
+        {"BACKEND": "pyot.stores.MerakiCDN"},
         {"BACKEND": "pyot.stores.CDragon"},
         {
             "BACKEND": "pyot.stores.RiotAPI",
