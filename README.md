@@ -102,7 +102,6 @@ This example has `test` as the project directory and `pipelines.py` as the modul
 #test/pipelines.py
 
 from pyot.core import Settings
-from datetime import timedelta as td
 import os
 
 Settings(
