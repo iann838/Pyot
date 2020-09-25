@@ -15,6 +15,9 @@
 
 Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Valorant and Legend of Runeterra (soon). It specializes at doing task in async environment to get the expected result faster than synchronous code. Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cassiopeia), you will notice that it has similar approach and structure.
 
+> #### WARNING
+> For all users that has Pyot version v1.1.3 or lower please update to v1.1.4 or higher which contains potential fixes to rate limiters. 
+
 ## Features
 
 Read this entirely to get a better idea of what is Pyot possible at.
@@ -89,7 +92,7 @@ loop_run(main())
 
 Plugging Pyot into Django is really easy.
 
-> ### DEPRECATED
+> #### DEPRECATED
 > Since v1.1.0: The module `djot` for Django has been removed, now `pyot` can be installed natively.
 
 ## Installation
