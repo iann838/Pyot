@@ -26,7 +26,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="1.1.3", 
+    version="1.1.4", 
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
