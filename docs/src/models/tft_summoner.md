@@ -1,7 +1,7 @@
 # Summoner
 Model: Teamfight Tactics
 
-## `Summoner` <Badge text="Pyot Core" vertical="middle"/>
+## `Summoner` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`account_id: str = None` <Badge text="param" type="warning" vertical="middle"/>

@@ -106,10 +106,15 @@ class ClashTournaments(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, name):
+        if not isinstance(name, int):
+            return super().__getitem__(name)
         return self.tournaments[name]
 
     def __iter__(self) -> List[ClashTournamentData]:
         return iter(self.tournaments)
+
+    def __len__(self):
+        return len(self.tournaments)
 
     def _transform(self, data):
         new_data = {}

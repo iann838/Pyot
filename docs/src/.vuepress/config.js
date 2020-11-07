@@ -129,12 +129,13 @@ module.exports = {
           ]
         },
         {
-          title: 'Riot Service',
+          title: 'Riot Services',
           collapsable: false,
           sidebarDepth: 1,
           children: [
             'riot_core',
             'riot_account',
+            'riot_rso',
           ]
         },
         {
@@ -158,6 +159,7 @@ module.exports = {
             'lol_spell',
             'lol_summoner',
             'lol_thirdpartycode',
+            'lol_tournaments',
           ]
         },
         {
@@ -174,6 +176,17 @@ module.exports = {
             'tft_summoner',
             'tft_thirdpartycode',
             'tft_trait',
+          ]
+        },
+        {
+          title: 'Legends of Runeterra',
+          collapsable: false,
+          sidebarDepth: 1,
+          children: [
+            'lor_core',
+            'lor_card',
+            'lor_match',
+            'lor_ranked',
           ]
         },
         {
@@ -203,9 +216,11 @@ module.exports = {
             'djangocache',
             'rediscache',
             'diskcache',
+            'mongodb',
             'cdragon',
+            'ddragon',
             'merakicdn',
-            'riotapi'
+            'riotapi',
           ]
         }
       ],

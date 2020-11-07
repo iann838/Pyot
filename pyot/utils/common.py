@@ -26,6 +26,8 @@ def snakecase(attr: str) -> str:
 def camelcase(snake_str):
     '''Convert string to json camelcase.'''
     components = snake_str.split('_')
+    if len(components) == 1:
+        return components[0]
     return components[0] + ''.join(x.title() for x in components[1:])
 
 

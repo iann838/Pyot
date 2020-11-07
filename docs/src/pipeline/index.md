@@ -42,18 +42,28 @@ This object is created per `Settings` instance created. Below is a list of metho
 > - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
 > - `sid` <Badge text="param" type="warning" vertical="middle"/> -> str: The sid identifying the session to reuse.
 >
->::: danger DEPRECATED
->Removed since v1.1.0: the `filter` param, now `filter` is called at pyot object level.
+>::: warning DEPRECATED
+>Removed since v1.1.0: the `filter` param, now `_filter` is called at pyot object level.
 >:::
 
 > ## `set(self, token: PipelineToken, value: Any, stop=None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
-> - `value` <Badge text="param" type="warning" vertical="middle"/> -> Any: The data body to be `set` on the pipeline Stores of type <Badge text="Pyot Cache" vertical="middle" />. Required
+> - `value` <Badge text="param" type="warning" vertical="middle"/> -> Any: The data value to be cached on the pipeline Stores of type <Badge text="Pyot Cache" vertical="middle" />. Required
 > - `stop` <Badge text="param" type="warning" vertical="middle"/> -> PyotStoreObject: The instance of the store that it should stop (hence not sink further).
 >
 >::: warning DEPRECATED
 > This method has been renamed from the original `put` since v1.1.0, it is a reserved method for pyot's future undisclosable implementation.
 >:::
+
+> ## `post(self, token: PipelineToken, body: Any, sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
+> - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
+> - `body` <Badge text="param" type="warning" vertical="middle"/> -> Any: The data body to be used for requesting in Stores of type <Badge text="Pyot Service" vertical="middle" />. Required
+> - `sid` <Badge text="param" type="warning" vertical="middle"/> -> str: The sid identifying the session to reuse.
+
+> ## `put(self, token: PipelineToken, body: Any, sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
+> - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
+> - `body` <Badge text="param" type="warning" vertical="middle"/> -> Any: The data body to be used for requesting in Stores of type <Badge text="Pyot Service" vertical="middle" />. Required
+> - `sid` <Badge text="param" type="warning" vertical="middle"/> -> str: The sid identifying the session to reuse.
 
 > ## `clear()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Clear all the stores of type <Badge text="Pyot Cache" vertical="middle" />.

@@ -1,7 +1,7 @@
 # League
 Model: League of Legends
 
-## `League` <Badge text="Pyot Core" vertical="middle"/>
+## `League` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -18,7 +18,7 @@ Model: League of Legends
 >
 >`entries: List[LeagueEntryData]`
 
-## `ChallengerLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `ChallengerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`queue: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -41,7 +41,7 @@ Model: League of Legends
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `GrandmasterLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `GrandmasterLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`queue: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -64,7 +64,7 @@ Model: League of Legends
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `MasterLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `MasterLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`queue: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -87,7 +87,7 @@ Model: League of Legends
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `DivisionLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `DivisionLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`queue: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`division: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -109,7 +109,7 @@ Model: League of Legends
 >`entries: List[SummonerLeagueEntryData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 
-## `SummonerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `SummonerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>

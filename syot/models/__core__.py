@@ -1,4 +1,4 @@
-from pyot.core.object import PyotCoreObject
+from pyot.core.objects import PyotCoreObject
 from inspect import signature
 
 class SyotBaseObject:

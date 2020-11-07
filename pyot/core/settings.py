@@ -15,10 +15,10 @@ class Settings:
     `activate()` needs to be called to take effect the settings.
     '''
     MODEL: str
-    PIPELINE: Mapping[str, Any]
-    DEFAULT_REGION: str = "AMERICAS"
-    DEFAULT_PLATFORM: str = "NA1"
-    DEFAULT_LOCALE: str = "EN_US"
+    PIPELINE: Mapping[str, Any] = None
+    DEFAULT_REGION: str = None
+    DEFAULT_PLATFORM: str = None
+    DEFAULT_LOCALE: str = None
     LOCALE_MAP: Mapping[str, str] = field(default_factory=dict)
 
     def activate(self):
@@ -27,21 +27,26 @@ class Settings:
         module = import_module(f"pyot.models.{self.MODEL.lower()}.__core__")
         # GET PYOT BASE FROM MODULE
         pyot_base = getattr(module, "PyotBaseObject")
-        # CHECK THAT DEFAULTS MATCHES THE BASE
-        self._check_platform(self.DEFAULT_PLATFORM, pyot_base)
-        self._check_region(self.DEFAULT_REGION, pyot_base)
-        self._check_locale(self.DEFAULT_LOCALE, pyot_base)
+        # CHECK THAT DEFAULTS MATCHES THE BASE AND SET IT
+        if self.DEFAULT_PLATFORM:
+            self._check_platform(self.DEFAULT_PLATFORM, pyot_base)
+            pyot_base.set_platform(self.DEFAULT_PLATFORM)
+        if self.DEFAULT_REGION:
+            self._check_region(self.DEFAULT_REGION, pyot_base)
+            pyot_base.set_region(self.DEFAULT_REGION)
+        if self.DEFAULT_LOCALE:
+            self._check_locale(self.DEFAULT_LOCALE, pyot_base)
+            pyot_base.set_locale(self.DEFAULT_LOCALE)
         self._check_locale_map(self.LOCALE_MAP, pyot_base)
-        # GET PYOT CORE FROM MODULE
-        pyot_obj = getattr(module, "PyotCore")
-        # MAKE PIPELINE AND SETUP DEFAULTS
-        self.pipeline = Pipeline(self.MODEL.lower(), self._make_pipeline(self.PIPELINE))
-        pyot_obj.set_pipeline(self.pipeline)
-        pyot_base.set_platform(self.DEFAULT_PLATFORM)
-        pyot_base.set_region(self.DEFAULT_REGION)
-        pyot_base.set_locale(self.DEFAULT_LOCALE)
         self.LOCALE_MAP = {key.lower(): val.lower() for (key, val) in self.LOCALE_MAP.items()}
         pyot_base.override_locale(self.LOCALE_MAP)
+        if self.PIPELINE is None:
+            return
+        # GET PYOT CORE FROM MODULE
+        pyot_obj = getattr(module, "PyotCore")
+        # MAKE PIPELINE AND APPEND IT
+        self.pipeline = Pipeline(self.MODEL.lower(), self._make_pipeline(self.PIPELINE))
+        pyot_obj.bind_pipeline(self.pipeline)
         # REGISTER THE PIPELINE
         pipelines[self.MODEL.lower()] = self.pipeline
 

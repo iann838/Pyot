@@ -62,7 +62,7 @@ class Gatherer:
             splits = int(len(self.statements)/self.workers)+1
             for s in range(splits):
                 bucket = []
-                for st in self.statements[s*self.workers:(s+1)*self.workers if s+1 < splits else -1]:
+                for st in self.statements[s*self.workers:(s+1)*self.workers if s+1 < splits else None]:
                     bucket.append(asyncio.create_task(st(sid=self.session_id)))
                     await asyncio.sleep(0.01)
                 self.responses.extend(await asyncio.gather(*bucket, return_exceptions=False if self.cancel_on_raise else True))

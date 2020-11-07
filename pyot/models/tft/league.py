@@ -101,10 +101,15 @@ class SummonerLeague(PyotCore):
         self._lazy_set(locals())
     
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.entries[item]
     
     def __iter__(self) -> Iterator[SummonerLeagueEntryData]:
         return iter(self.entries)
+
+    def __len__(self):
+        return len(self.entries)
 
     def _transform(self, data):
         new_data = {}
@@ -134,7 +139,7 @@ class DivisionLeague(SummonerLeague):
     def query(self, page: int = None):
         '''Add query parameters to the object.'''
         if page == 0: raise AttributeError("Invalid 'page' attribute, it should be greater than 0")
-        self.meta.query = self._parse_query(locals())
+        self._meta.query = self._parse_camel(locals())
         return self
 
     @property

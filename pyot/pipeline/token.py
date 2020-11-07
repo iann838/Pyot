@@ -29,6 +29,8 @@ class RequestToken:
                 self._exception = exc.RateLimited(origin)
             elif code == 403:
                 self._exception = exc.Forbidden(origin)
+            elif code == 405:
+                self._exception = exc.MethodNotAllowed(origin)
             elif code == 401:
                 self._exception = exc.Unauthorized(origin)
             elif code == 400:

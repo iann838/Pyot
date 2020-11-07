@@ -1,7 +1,7 @@
 # Third Party Code
 Model: League of Legends
 
-## `ThirdPartyCode` <Badge text="Pyot Core" vertical="middle"/>
+## `ThirdPartyCode` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>

@@ -95,7 +95,7 @@ class RedisDefaultDict:
         return val
 
     def __setitem__(self, name: str, val: Any):
-        self._redis.set(f'{self._prefix}{name}', pickle.dumps(val, protocol=-1))
+        return self._redis.set(f'{self._prefix}{name}', pickle.dumps(val, protocol=-1))
 
     def get(self, name: str):
         return self.__getitem__(name)
@@ -124,7 +124,7 @@ class RedisDefaultDict:
     async def aset(self, name: str, val: Any):
         '''Async set'''
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, partial(self.__setitem__, f'{self._prefix}{name}', pickle.dumps(val, protocol=-1)))
+        return await loop.run_in_executor(None, partial(self.__setitem__, f'{self._prefix}{name}', pickle.dumps(val, protocol=-1)))
 
     def mget(self, li: List[str]):
         '''Get many objects'''

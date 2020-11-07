@@ -1,7 +1,7 @@
 # Content
 Model: Valorant
 
-## `Content` <Badge text="Pyot Core" vertical="middle"/>
+## `Content` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`locale: str = None` <Badge text="query" type="error" vertical="middle"/>
@@ -35,18 +35,29 @@ Model: Valorant
 >`player_cards: List[ContentItemData]`
 >
 >`player_titles: List[ContentItemData]`
+>
+>`acts: List[ContentActData]`
+
+## `ContentActData` <Badge text="Pyot Static" vertical="middle"/>
+>`id: str`
+>
+>`name: str`
+>
+>`localized_names: ContentLocalizedNamesData`
+>
+>`is_active: bool`
 
 ## `ContentItemData` <Badge text="Pyot Static" vertical="middle"/>
 >`name: str`
 >
 >`asset_name: str`
 >
->`localized_names: ContentItemLocalizedData`
+>`localized_names: ContentLocalizedNamesData`
 > :::warning
 > Some values will not yield `localized_names`, iterating over each attr might raise `AttributeError`
 > :::
 
-## `ContentItemLocalizedData` <Badge text="Pyot Static" vertical="middle"/>
+## `ContentLocalizedNamesData` <Badge text="Pyot Static" vertical="middle"/>
 >`ar_ae: str`
 >
 >`de_de: str`

@@ -10,8 +10,12 @@ Settings(
     DEFAULT_LOCALE= "EN_US",
     PIPELINE = [
         {
-            "BACKEND": "pyot.stores.Omnistone",
+            "BACKEND": "pyot.stores.MongoDB",
             "LOG_LEVEL": 30,
+            "DB": 'pyot_lol',
+            "EXPIRATIONS": {
+                "summoner_v4_by_name": 100,
+            }
         },
         {
             "BACKEND": "pyot.stores.RedisCache",
@@ -55,6 +59,43 @@ Settings(
 
 
 Settings(
+    MODEL = "LOR",
+    DEFAULT_REGION = "AMERICAS",
+    DEFAULT_LOCALE = "EN_US",
+    PIPELINE = [
+        {
+            "BACKEND": "pyot.stores.Omnistone",
+            "LOG_LEVEL": 30,
+            "EXPIRATIONS": {
+                "match_v1_match": 10
+            }
+        },
+        {
+            "BACKEND": "pyot.stores.DDragon",
+            "LOG_LEVEL": 30,
+            "ERROR_HANDLING": {
+                404: ("T", []),
+                500: ("R", [3])
+            }
+        },
+        {
+            "BACKEND": "pyot.stores.RiotAPI",
+            "API_KEY": os.environ["LOR_API_KEY"],
+            "LOG_LEVEL": 30,
+            "RATE_LIMITER": {
+                "BACKEND": "pyot.limiters.MemoryLimiter",
+                "LIMITING_SHARE": 1,
+            },
+            "ERROR_HANDLING": {
+                400: ("T", []),
+                503: ("E", [3,3])
+            }
+        }
+    ]
+).activate()
+
+
+Settings(
     MODEL = "TFT",
     DEFAULT_PLATFORM = "NA1",
     DEFAULT_REGION = "AMERICAS",
@@ -63,11 +104,6 @@ Settings(
         {
             "BACKEND": "pyot.stores.Omnistone",
             "LOG_LEVEL": 30,
-        },
-        {
-            "BACKEND": "pyot.stores.DiskCache",
-            "LOG_LEVEL": 30,
-            "DIRECTORY": Path.cwd() / 'diskcache',
         },
         {
             "BACKEND": "pyot.stores.CDragon",
@@ -79,7 +115,7 @@ Settings(
         },
         {
             "BACKEND": "pyot.stores.RiotAPI",
-            "API_KEY": "RGAPI-5d51ad95-e77c-4f30-987a-bc0db2a*****", # <--- HEY CRACK THIS KEY
+            "API_KEY": os.environ["TFT_API_KEY"],
             "RATE_LIMITER": {
                 "BACKEND": "pyot.limiters.MemoryLimiter",
                 "LIMITING_SHARE": 1,

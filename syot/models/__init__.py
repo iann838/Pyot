@@ -1,1 +1,1 @@
-from . import lol, tft, val, riot
+from . import lol, tft, val, riot, lor

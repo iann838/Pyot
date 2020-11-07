@@ -14,7 +14,7 @@ class ProfileIcon(PyotCore):
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def filter(self, data):
+    def _filter(self, data):
         for item in data:
             if item["id"] == self.id:
                 return item
@@ -22,8 +22,8 @@ class ProfileIcon(PyotCore):
     
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
-        load = getattr(self.meta, "load")
+            self._meta.server = "default"
+        load = getattr(self._meta, "load")
         load.pop("id")
 
     def _transform(self, data):
@@ -41,18 +41,19 @@ class ProfileIcons(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.icons[item]
 
     def __iter__(self) -> Iterator[ProfileIcon]:
         return iter(self.icons)
 
+    def __len__(self):
+        return len(self.icons)
+
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
+            self._meta.server = "default"
 
-    def _transform(self, data_):
-        icons = []
-        for data in data_:
-            data["iconPath"] = cdragon_url(data["iconPath"])
-            icons.append({"data": data})
-        return {"icons": icons}
+    def _transform(self, data):
+        return {"icons": data}

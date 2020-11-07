@@ -1,7 +1,7 @@
 # Meraki Item
 Model: League of Legends
 
-## `MerakiItem` <Badge text="Pyot Core" vertical="middle"/>
+## `MerakiItem` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"meraki_item_by_id": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/>

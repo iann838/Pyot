@@ -2,7 +2,7 @@
 Model: League of Legends
 
 
-## `CurrentGame` <Badge text="Pyot Core" vertical="middle"/>
+## `CurrentGame` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -37,7 +37,7 @@ Model: League of Legends
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `FeaturedGames` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `FeaturedGames` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"spectator_v4_featured_games": []` <Badge text="endpoint" type="error" vertical="middle"/>

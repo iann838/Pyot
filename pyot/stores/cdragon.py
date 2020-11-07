@@ -18,11 +18,11 @@ class CDragon(StoreObject):
     unique = True
     store_type = "SERVICE"
 
-    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, log_level: int = 10):
+    def __init__(self, game: str, error_handling: Dict[int, Tuple] = None, version: str = 'latest', log_level: int = 10):
         handler = ErrorHandler()
         self._game = game
         self._handler_map = handler.create_handler(error_handling)
-        self._endpoints = CDragonEndpoints(game)
+        self._endpoints = CDragonEndpoints(game, version)
         self._log_level = log_level
         self._last_updated = datetime.now()
 
@@ -53,23 +53,24 @@ class CDragon(StoreObject):
 class CDragonEndpoints:
     _endpoints = {
         "lol": {
-            "cdragon_champion_by_id": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/champions/{id}.json",
-            "cdragon_item_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/items.json",
-            "cdragon_rune_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/perks.json",
-            "cdragon_spells_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/summoner-spells.json",
-            "cdragon_profile_icon_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
+            "cdragon_champion_by_id": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/champions/{id}.json",
+            "cdragon_item_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/items.json",
+            "cdragon_rune_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/perks.json",
+            "cdragon_spells_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/summoner-spells.json",
+            "cdragon_profile_icon_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
         },
         "tft": {
-            "cdragon_tft_full": "/latest/cdragon/tft/{locale}.json",
-            "cdragon_profile_icon_full": "/latest/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
+            "cdragon_tft_full": "/cdragon/tft/{locale}.json",
+            "cdragon_profile_icon_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/profile-icons.json",
         }
     }
 
-    _base_url = "https://raw.communitydragon.org"
+    _base_url = "https://raw.communitydragon.org/{version}"
 
-    def __init__(self, game):
+    def __init__(self, game, version):
         try:
             self.endpoints = self._endpoints[game]
+            self._base_url = self._base_url.format(version=version)
         except KeyError as e:
             raise NotImplementedError(f"CDragon does not support '{e}' model")
 

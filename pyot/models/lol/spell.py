@@ -23,7 +23,7 @@ class Spell(PyotCore):
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def filter(self, data):
+    def _filter(self, data):
         for item in data:
             if item["id"] == self.id:
                 return item
@@ -31,8 +31,8 @@ class Spell(PyotCore):
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
-        load = getattr(self.meta, "load")
+            self._meta.server = "default"
+        load = getattr(self._meta, "load")
         load.pop("id")
 
     def _transform(self, data):
@@ -50,18 +50,19 @@ class Spells(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.spells[item]
 
     def __iter__(self) -> Iterator[Spell]:
         return iter(self.spells)
 
+    def __len__(self):
+        return len(self.spells)
+
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
+            self._meta.server = "default"
 
-    def _transform(self, data_):
-        spells = []
-        for data in data_:
-            data["iconPath"] = cdragon_url(data["iconPath"])
-            spells.append({"data": data})
-        return {"spells": spells}
+    def _transform(self, data):
+        return {"spells": data}

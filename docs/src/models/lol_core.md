@@ -31,6 +31,8 @@ API references for League of Legends
 > `"tr1"`
 >
 > `"ru"`
+>
+> `"pbe"` (Unofficial)
 
 ## Locale Values
 > `"cs_cz"`

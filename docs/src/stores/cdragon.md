@@ -16,6 +16,14 @@ The CDragon has the data that the game uses, but it is highly unparsable, the ma
 >
 > #### `log_level: int = 10`
 > Set the log level for the store. Defaults to 10 (DEBUG level).
+>
+> #### `version: str = 'latest'`
+> Set the version used to make requests. Defaults to `latest`.
+
+:::tip NEW
+Starting v1.2.0
+- `version` param is added. Now you can set the version used to make requests on the settings.
+:::
 
 ## Initialization
 
@@ -48,6 +56,7 @@ The CDragon has the data that the game uses, but it is highly unparsable, the ma
 {
     "BACKEND": "pyot.stores.CDragon",
     "LOG_LEVEL": 30,
+    "VERSION": "pbe",
     "ERROR_HANDLING": {
         404: ("T", []),
         500: ("R", [3])

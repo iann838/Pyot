@@ -1,7 +1,7 @@
 # Meraki Champion
 Model: League of Legends
 
-## `MerakiChampion` <Badge text="Pyot Core" vertical="middle"/>
+## `MerakiChampion` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`key: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -45,6 +45,8 @@ Model: League of Legends
 >`price: MerakiChampionPriceData`
 >
 >`lore: str`
+>
+>`skins: List[MerakiChampionSkinData]`
 
 >`champion -> "Champion"` <Badge text="bridge" type="error" vertical="middle"/>
 
@@ -224,3 +226,80 @@ Model: League of Legends
 >`blue_essence: int`
 >
 >`rp: int`
+
+## `MerakiChampionSkinData` <Badge text="Pyot Static" vertical="middle"/>
+> `name: str`
+>
+> `id: int`
+>
+> `is_base: bool`
+>
+> `availability: str`
+>
+> `format_name: str`
+>
+> `loot_eligible: bool`
+>
+> `cost: int`
+>
+> `distribution: str`
+>
+> `rarity: str`
+>
+> `chromas: List[MerakiChampionSkinChromaData]`
+>
+> `lore: str`
+>
+> `release: str`
+>
+> `set: List[str]`
+>
+> `splash_path: str`
+>
+> `uncentered_splash_path: str`
+>
+> `tile_path: str`
+>
+> `load_screen_path: str`
+>
+> `load_screen_vintage_path: str`
+>
+> `new_effects: bool`
+>
+> `new_animations: bool`
+>
+> `new_recall: bool`
+>
+> `new_voice: bool`
+>
+> `new_quotes: bool`
+>
+> `voice_actor: List[str]`
+>
+> `splash_artist: List[str]`
+
+## `MerakiChampionSkinChromaData` <Badge text="Pyot Static" vertical="middle"/>
+> `id: int`
+>
+> `name: str`
+>
+> `chroma_path: str`
+>
+> `colors: List[str]`
+>
+> `descriptions: List[MerakiChampionChromaDescriptionsData]`
+>
+> `rarities: List[MerakiChampionChromaRaritiesData]`
+>
+
+## `MerakiChampionChromaDescriptionsData` <Badge text="Pyot Static" vertical="middle"/>
+> `region: str`
+>
+> `description: str`
+>
+
+## `MerakiChampionChromaRaritiesData` <Badge text="Pyot Static" vertical="middle"/>
+> `region: str`
+>
+> `description: str`
+>

@@ -1,7 +1,7 @@
 # Champion
 Model: League of Legends
 
-## `Champion` <Badge text="Pyot Core" vertical="middle"/>
+## `Champion` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 > `id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 > `key: str = None` <Badge text="param" type="warning" vertical="middle"/>

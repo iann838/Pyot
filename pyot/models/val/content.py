@@ -5,7 +5,7 @@ from typing import List
 # PYOT STATIC OBJECTS
 
 
-class ContentItemLocalizedData(PyotStatic):
+class ContentLocalizedNamesData(PyotStatic):
     ar_ae: str
     de_de: str
     en_gb: str
@@ -53,7 +53,14 @@ class ContentItemLocalizedData(PyotStatic):
 class ContentItemData(PyotStatic):
     name: str
     asset_name: str
-    localized_names: ContentItemLocalizedData
+    localized_names: ContentLocalizedNamesData
+
+
+class ContentActData(PyotStatic):
+    id: str
+    name: str
+    localized_names: ContentLocalizedNamesData
+    is_active: bool
 
 
 # PYOT CORE OBJECTS
@@ -73,6 +80,7 @@ class Content(PyotCore):
     charm_levels: List[ContentItemData]
     player_cards: List[ContentItemData]
     player_titles: List[ContentItemData]
+    acts: List[ContentActData]
 
     class Meta(PyotCore.Meta):
         rules = {"content_v1_contents": []}
@@ -82,8 +90,8 @@ class Content(PyotCore):
 
     def query(self, locale: str = None):
         '''Add query parameters to the object.'''
-        if locale.lower() not in self.meta.locale_list:
+        if locale.lower() not in self._meta.locale_list:
             raise RuntimeError(f"Query 'locale' is not valid, '{locale}' was passed")
-        self.meta.query = self._parse_query(locals())
+        self._meta.query = self._parse_camel(locals())
         return self
 

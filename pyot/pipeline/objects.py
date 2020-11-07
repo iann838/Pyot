@@ -11,7 +11,10 @@ class StoreObject:
     async def set(self, token, response):
         raise NotImplementedError
 
-    async def post(self, token, value):
+    async def post(self, token, body, *args):
+        raise NotImplementedError
+
+    async def put(self, token, body, *args):
         raise NotImplementedError
 
     async def clear(self):

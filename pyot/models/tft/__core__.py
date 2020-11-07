@@ -70,7 +70,7 @@ class PyotCore(PyotBaseObject, PyotCoreObject):
         pass
 
     @classmethod
-    def set_pipeline(cls, pipeline):
+    def bind_pipeline(cls, pipeline):
         cls.Meta.pipeline = pipeline
 
 

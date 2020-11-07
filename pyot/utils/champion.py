@@ -1,7 +1,7 @@
 import aiohttp
-from .objects import ArrowCache
+from .objects import PtrCache
 
-_utils_inner_cache = ArrowCache()
+_utils_inner_cache = PtrCache()
 
 
 async def _gather_summary(cache):

@@ -40,6 +40,9 @@ class ExpirationManager:
             "summoner_v4_by_account_id": 0,
             "summoner_v4_by_puuid": 0,
             "third_party_code_v4_code": 0,
+            "tournament_v4_codes_by_code": 0,
+            "tournament_v4_lobby_events": 0,
+            "tournament_stub_v4_lobby_events": 0,
 
             "cdragon_champion_by_id": td(hours=3),
             "cdragon_item_full": td(hours=3),
@@ -49,6 +52,12 @@ class ExpirationManager:
 
             "meraki_champion_by_key": td(hours=3),
             "meraki_item_by_id": td(hours=3),
+        },
+        "lor": {
+            "ranked_v1_leaderboards": 0,
+            "match_v1_matchlist": 0,
+            "match_v1_match": 0,
+            "ddragon_lor_set_data": td(hours=3),
         },
         "tft": {
             "league_v1_summoner_entries": 0,
@@ -103,3 +112,9 @@ class ExpirationManager:
         except KeyError:
             LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined expiration token was passed, returned 0 by default")
             return 0
+
+    def __iter__(self):
+        return iter(self.expirations)
+
+    def __len__(self):
+        return len(self.expirations)

@@ -70,7 +70,7 @@ class ApexLeague(League):
         self._lazy_set(locals())
     
     async def _clean(self):
-        if self.queue not in self.meta.queue_list:
+        if self.queue not in self._meta.queue_list:
             raise AttributeError(f"Invalid 'queue' attribute, '{self.queue}' was given")
 
     @property
@@ -107,10 +107,15 @@ class SummonerLeague(PyotCore):
         self._lazy_set(locals())
     
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.entries[item]
     
     def __iter__(self) -> Iterator[SummonerLeagueEntryData]:
         return iter(self.entries)
+
+    def __len__(self):
+        return len(self.entries)
 
     def _transform(self, data):
         new_data = {}
@@ -141,15 +146,15 @@ class DivisionLeague(SummonerLeague):
     def query(self, page: int = None):
         '''Add query parameters to the object.'''
         if page == 0: raise AttributeError("Invalid 'page' attribute, it should be greater than 0")
-        self.meta.query = self._parse_query(locals())
+        self._meta.query = self._parse_camel(locals())
         return self
 
     async def _clean(self):
-        if self.queue not in self.meta.queue_list:
+        if self.queue not in self._meta.queue_list:
             raise AttributeError(f"Invalid 'queue' attribute, '{self.queue}' was given")
-        if self.division not in self.meta.division_list:
+        if self.division not in self._meta.division_list:
             raise AttributeError(f"Invalid 'division' attribute, '{self.division}' was given")
-        if self.tier not in self.meta.tier_list:
+        if self.tier not in self._meta.tier_list:
             raise AttributeError(f"Invalid 'tier' attribute, '{self.tier}' was given")
 
     @property

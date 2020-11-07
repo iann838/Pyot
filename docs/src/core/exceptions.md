@@ -23,6 +23,10 @@ A list of catchable exceptions used by Pyot. Bases at `pyot.core.exceptions`
 ### `NotFound` <Badge type="error" text="Exception" vertical="middle" />
 > `"[Trace: Pyot Pipeline] 404: Data Not Found"`
 
+
+### `MethodNotAllowed` <Badge type="error" text="Exception" vertical="middle" />
+> `"[Trace: Pyot Pipeline] 405: Method Not Allowed"`
+
         
 ### `ServerError` <Badge type="error" text="Exception" vertical="middle" />
 > `500: "Internal Server Error"`

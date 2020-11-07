@@ -129,6 +129,7 @@ class Match(PyotCore):
 class MatchHistory(PyotCore):
     ids: List[str]
     puuid: str
+    _matches: List[Match]
 
     class Meta(PyotCore.Meta):
         rules = {"match_v1_matchlist": ["puuid"]}
@@ -136,18 +137,30 @@ class MatchHistory(PyotCore):
         allow_query = True
     
     def __getitem__(self, item):
-        return self.ids[item]
+        if not isinstance(item, int):
+            return super().__getitem__(item)
+        return self.matches[item]
 
-    def __iter__(self) -> Iterator[str]:
-        return iter(self.ids)
+    def __iter__(self) -> Iterator[Match]:
+        return iter(self.matches)
+
+    def __len__(self):
+        return len(self.matches)
 
     def __init__(self, puuid: str = None, region: str = None):
         self._lazy_set(locals())
 
     def query(self, count: int = 100000):
         '''Add query parameters to the object.'''
-        self.meta.query = self._parse_query(locals())
+        self._meta.query = self._parse_camel(locals())
         return self
+
+    @property
+    def matches(self) -> List[Match]:
+        if hasattr(self, "_matches"):
+            return self._matches
+        self._matches = [Match(id=id_, region=self.region) for id_ in self.ids]
+        return self._matches
 
     @property
     def summoner(self) -> "Summoner":

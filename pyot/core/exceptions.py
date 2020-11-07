@@ -26,6 +26,11 @@ class NotFound(Exception):
         Exception.__init__(self, f"[Trace: Pyot Pipeline] 404: Data Not Found. Origin: {origin}")
 
 
+class MethodNotAllowed(Exception):
+    def __init__(self, origin="Non Pyot Source Origin"):
+        Exception.__init__(self, f"[Trace: Pyot Pipeline] 405: Method Not Allowed. Origin: {origin}")
+
+
 class ServerError(Exception):
     messages: Mapping[int, str] = {
         500: "Internal Server Error",

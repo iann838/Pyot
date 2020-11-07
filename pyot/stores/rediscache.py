@@ -1,8 +1,6 @@
 import datetime
-from datetime import timedelta as td
 from typing import Callable, Any, TypeVar, Dict
 from logging import getLogger
-import copy
 import redis
 
 from asgiref.sync import sync_to_async

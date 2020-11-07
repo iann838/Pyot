@@ -40,7 +40,7 @@ class Trait(PyotCore):
                 raise RuntimeError("Could not parse 'set' value from key")
         self._lazy_set(a)
 
-    def filter(self, data_):
+    def _filter(self, data_):
         try:
             data = data_["sets"][str(self.set)]["traits"]
         except KeyError:
@@ -52,8 +52,8 @@ class Trait(PyotCore):
 
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
-        load = getattr(self.meta, "load")
+            self._meta.server = "en_us"
+        load = getattr(self._meta, "load")
         load.pop("key")
 
     def _transform(self, data):
@@ -73,26 +73,26 @@ class Traits(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.traits[item]
 
     def __iter__(self) -> Iterator[Trait]:
         return iter(self.traits)
 
+    def __len__(self):
+        return len(self.traits)
+
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
+            self._meta.server = "en_us"
 
-    def filter(self, data_):
+    def _filter(self, data_):
         try:
             data = data_["sets"][str(self.set)]["traits"]
         except KeyError:
             raise NotFound
         return data
 
-    def _transform(self, data_):
-        traits = []
-        for data in data_:
-            data["iconPath"] = tft_url(data.pop("icon"))
-            data["cleanedDescription"] = cdragon_sanitize(data["desc"])
-            traits.append({"data": data})
-        return {"traits": traits}
+    def _transform(self, data):
+        return {"traits": data}

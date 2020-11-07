@@ -1,3 +1,5 @@
+# THIS IS ONLY A CONCEPT, NOT IMPLEMENTED
+
 from functools import wraps, partial
 from typing import Dict, List, Mapping, Any, get_type_hints
 import pickle
@@ -6,10 +8,10 @@ import json
 
 from pyot.pipeline.core import Pipeline
 from pyot.pipeline.token import PipelineToken
-from pyot.utils import ArrowCache
+from pyot.utils import PtrCache
 
-normalizer_cache = ArrowCache()
-typing_cache = ArrowCache()
+normalizer_cache = PtrCache()
+typing_cache = PtrCache()
 
 
 class PyotLazyObject:

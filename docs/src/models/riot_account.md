@@ -1,7 +1,7 @@
 # Account
 Model: Riot
 
-## `Account` <Badge text="Pyot Core" vertical="middle"/>
+## `Account` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`puuid: str = None`<Badge text="param" type="warning" vertical="middle"/>
 >
 >`name: str = None`<Badge text="param" type="warning" vertical="middle"/>
@@ -9,13 +9,10 @@ Model: Riot
 >`tag: str = None`<Badge text="param" type="warning" vertical="middle"/>
 >
 >`region: str = None`<Badge text="param" type="warning" vertical="middle"/>
->
->`pipeline: str = None`<Badge text="pipeline" type="warning" vertical="middle"/>
 
 >`"account_v1_by_puuid": ["puuid"]`<Badge text="endpoint" type="error" vertical="middle"/>
 >
 >`"account_v1_by_riot_id": ["name", "tag"]`<Badge text="endpoint" type="error" vertical="middle"/>
->
 
 >`puuid`: `str`
 >
@@ -24,14 +21,12 @@ Model: Riot
 >`tag`: `str`
 >
 
-## `ActivePlatform` <Badge text="Pyot Core" vertical="middle"/>
+## `ActivePlatform` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`puuid: str = None` <Badge text="param" type="warning" vertical="middle"/>
 > 
 >`game: str = None` <Badge text="param" type="warning" vertical="middle"/>
 > 
 >`region: str = None` <Badge text="param" type="warning" vertical="middle"/>
->
->`pipeline: str = None`<Badge text="pipeline" type="warning" vertical="middle"/>
 
 >`"account_v1_active_shard": ["game", "puuid"]` <Badge text="endpoint" type="error" vertical="middle"/>
 

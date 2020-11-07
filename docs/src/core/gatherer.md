@@ -20,7 +20,7 @@ async with Gatherer() as gatherer:
     gatherer.statements = matches
     await gatherer.gather() # <-- This will load aprox. 10 GB to memory
 ```
-The why of this is because `matches` is a mutable object, so it will be passed to the gatherer by reference, it will endup filling up the  30k matches on that list, a workaround would be to load your matches in a loop scope so Python can garbage collect it, or better use the utils `CloneGenerator` plus the other gathering tool `Queue`.
+The why of this is because `matches` is a mutable object, so it will be passed to the gatherer by reference, it will endup filling up the  30k matches on that list, a workaround would be to load your matches in a loop scope so Python can garbage collect it, or better use the utils `FrozenGenerator` plus the other gathering tool `Queue`.
 :::
 
 ## Pyot Settings Reference

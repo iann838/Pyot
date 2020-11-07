@@ -7,12 +7,12 @@ async def async_match_history():
     history = await summoner.match_history.get()
     assert isinstance(history.puuid, str)
     for i in history:
-        assert isinstance(i, str)
+        assert isinstance(i, tft.Match)
 
 async def async_match():
     summoner = await tft.Summoner(name="Morimorph", platform="na1").get()
     history = await summoner.match_history.get()
-    match = await tft.Match(id=history[0], region=history.region).get()
+    match = await history[0].get()
     info = match.info
     assert isinstance(info.creation, datetime)
     assert isinstance(info.duration, timedelta)

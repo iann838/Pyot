@@ -14,18 +14,18 @@ class Account(PyotCore):
         }
         renamed = {"game_name": "name", "tag_line": "tag"}
 
-    def __init__(self, puuid: str = None, name: str = None, tag: str = None, region: str = None, pipeline: str = None):
+    def __init__(self, puuid: str = None, name: str = None, tag: str = None, region: str = None):
         self._lazy_set(locals())
 
 
-class ActivePlatform(PyotCore):
+class ActiveShard(PyotCore):
     puuid: str
     game: str
-    platform_id: str
+    shard: str
 
     class Meta(PyotCore.Meta):
-        renamed = {"active_shard": "platform_id"}
+        renamed = {"active_shard": "shard"}
         rules = {"account_v1_active_shard": ["puuid", "game"]}
 
-    def __init__(self, puuid: str = None, game: str = None, region: str = None, pipeline: str = None):
+    def __init__(self, puuid: str = None, game: str = None, region: str = None):
         self._lazy_set(locals())

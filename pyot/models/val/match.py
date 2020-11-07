@@ -5,24 +5,6 @@ from typing import List, Iterator
 
 # PYOT STATIC OBJECTS
 
-class MatchHistoryData(PyotStatic):
-    id: str
-    creation: datetime
-    team_id: str
-
-    class Meta(PyotStatic.Meta):
-        renamed = {"game_start_time_millis": "creation", "match_id": "id"}
-
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
-
-    @property
-    def match(self) -> "Match":
-        return Match(id=self.id, platform=self.platform)
-
-
 class MatchInfoData(PyotStatic):
     id: str
     map_id: str
@@ -92,12 +74,7 @@ class MatchPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, pipeline="val", region=self.region)
-
-    @property
-    def active_platform(self) -> "ActivePlatform":
-        from ..riot.account import ActivePlatform
-        return ActivePlatform(puuid=self.puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.puuid, region=self.region).set_pipeline("val")
 
 
 class MatchTeamData(PyotStatic):
@@ -150,17 +127,17 @@ class MatchPlayerKillData(PyotStatic):
     @property
     def killer(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.killer_puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.killer_puuid, region=self.region).set_pipeline("val")
 
     @property
     def victim(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.victim_puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.victim_puuid, region=self.region).set_pipeline("val")
 
     @property
     def assistants(self) -> List["Account"]:
         from ..riot.account import Account
-        return [Account(puuid=i, pipeline="val", region=self.region) for i in self.assistant_puuids]
+        return [Account(puuid=i, region=self.region).set_pipeline("val") for i in self.assistant_puuids]
 
 
 class MatchPlayerDamageData(PyotStatic):
@@ -216,12 +193,12 @@ class MatchRoundResultData(PyotStatic):
     @property
     def bomb_planter(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_planter_puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.bomb_planter_puuid, region=self.region).set_pipeline("val")
 
     @property
     def bomb_defuser(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_defuser_puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.bomb_defuser_puuid, region=self.region).set_pipeline("val")
 
 
 # PYOT CORE OBJECTS
@@ -232,10 +209,18 @@ class Match(PyotCore):
     players: List[MatchPlayerData]
     teams: List[MatchTeamData]
     round_results: List[MatchRoundResultData]
+    # <~> MatchHistory
+    creation: datetime
+    team_id: str
 
     class Meta(PyotCore.Meta):
-        renamed = {"match_info": "info"}
+        renamed = {"match_info": "info", "game_start_time_millis": "creation", "match_id": "id"}
         rules = {"match_v1_match": ["id"]}
+
+    def __getattribute__(self, name):
+        if name == "creation":
+            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
+        return super().__getattribute__(name)
 
     def __init__(self, id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -243,7 +228,7 @@ class Match(PyotCore):
 
 class MatchHistory(PyotCore):
     puuid: str
-    history: List[MatchHistoryData]
+    history: List[Match]
 
     class Meta(PyotCore.Meta):
         rules = {"match_v1_matchlist": ["puuid"]}
@@ -252,15 +237,20 @@ class MatchHistory(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.history[item]
 
-    def __iter__(self) -> Iterator[MatchHistoryData]:
+    def __iter__(self) -> Iterator[Match]:
         return iter(self.history)
+
+    def __len__(self):
+        return len(self.history)
 
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, pipeline="val", region=self.region)
+        return Account(puuid=self.puuid, region=self.region).set_pipeline("val")
 
 
 class RecentMatches(PyotCore):
@@ -280,10 +270,15 @@ class RecentMatches(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.matches[item]
 
     def __iter__(self) -> Iterator["Match"]:
         return iter(self.matches)
+
+    def __len__(self):
+        return len(self.matches)
 
     @property
     def matches(self) -> List["Match"]:

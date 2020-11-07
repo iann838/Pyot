@@ -119,6 +119,59 @@ class MerakiChampionPriceData(PyotStatic):
     rp: int
 
 
+class MerakiChampionChromaDescriptionsData(PyotStatic):
+    region: str
+    description: str
+
+
+class MerakiChampionChromaRaritiesData(PyotStatic):
+    region: str
+    description: str
+
+
+class MerakiChampionSkinChromaData(PyotStatic):
+    id: int
+    name: str
+    chroma_path: str
+    colors: List[str]
+    descriptions: List[MerakiChampionChromaDescriptionsData]
+    rarities: List[MerakiChampionChromaRaritiesData]
+
+    class Meta(PyotStatic.Meta):
+        raws = ["colors"]
+
+
+class MerakiChampionSkinData(PyotStatic):
+    name: str
+    id: int
+    is_base: bool
+    availability: str
+    format_name: str
+    loot_eligible: bool
+    cost: int
+    distribution: str
+    rarity: str
+    chromas: List[MerakiChampionSkinChromaData]
+    lore: str
+    release: str
+    set: List[str]
+    splash_path: str
+    uncentered_splash_path: str
+    tile_path: str
+    load_screen_path: str
+    load_screen_vintage_path: str
+    new_effects: bool
+    new_animations: bool
+    new_recall: bool
+    new_voice: bool
+    new_quotes: bool
+    voice_actor: List[str]
+    splash_artist: List[str]
+
+    class Meta(PyotStatic.Meta):
+        raws = ["set", "voice_actor", "splash_artist"]
+
+
 # PYOT CORE OBJECTS
 
 class MerakiChampion(PyotCore):
@@ -139,6 +192,7 @@ class MerakiChampion(PyotCore):
     release_patch: str
     patch_last_changed: str
     price: MerakiChampionPriceData
+    skins: List[MerakiChampionSkinData]
     lore: str
 
     class Meta(PyotCore.Meta):
@@ -155,10 +209,15 @@ class MerakiChampion(PyotCore):
                 self.key = await champion_key_by_id(self.id)
             elif hasattr(self, "name"):
                 self.key = await champion_key_by_name(self.name)
+        if self.key == "FiddleSticks":  # MERAKI HAS LOWERCASE S ON FIDDLE
+            self.key = "Fiddlesticks"
 
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
-        return Champion(id=self.id if hasattr(self,"id") else None, name=self.name if hasattr(self,"name") else None, 
-            key=self.key if hasattr(self,"key") else None, locale="en_us")
+        return Champion(key=self.key, locale="en_us")
 
+    def _transform(self, data):
+        if data["key"] == "Fiddlesticks":  # MERAKI HAS LOWERCASE S ON FIDDLE, GO BACK
+            data["key"] = "FiddleSticks"
+        return data

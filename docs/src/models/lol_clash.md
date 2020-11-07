@@ -1,7 +1,7 @@
 # Clash
 Model: League of Legends
 
-## `ClashTournament` <Badge text="Pyot Core" vertical="middle"/>
+## `ClashTournament` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`team_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -26,14 +26,14 @@ Model: League of Legends
 
 >`team -> "ClashTeam"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `ClashTournaments` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `ClashTournaments` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"clash_v1_tournaments_all": []` <Badge text="endpoint" type="error" vertical="middle"/>
 
 >`tournaments: List[ClashTournamentData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
-## `ClashTeam` <Badge text="Pyot Core" vertical="middle"/>
+## `ClashTeam` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -60,7 +60,7 @@ Model: League of Legends
 >
 >`tournament -> "ClashTournament"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `ClashPlayers` <Badge text="Pyot Core" vertical="middle"/>
+## `ClashPlayers` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>

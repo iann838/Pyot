@@ -45,7 +45,7 @@ You can use the same queue to `join()` as many time as you want, this creates a 
 from typing import List
 from pyot.models import lol
 from pyot.core import Queue
-from pyot.utils import CloneGenerator, shuffle_list, loop_run
+from pyot.utils import FrozenGenerator, shuffle_list, loop_run
 
 async def get_puuid(queue: Queue, summoner: lol.Summoner):
     summoner = await summoner.get(sid=queue.sid)
@@ -61,7 +61,7 @@ async def pull_puuids():
         for league in leagues:
             for entry in league.entries:
                 _summoners.append(entry.summoner)
-        summoners = CloneGenerator(shuffle_list(_summoners, "platform"))
+        summoners = FrozenGenerator(shuffle_list(_summoners, "platform"))
 
         for summoner in summoners:
             await queue.put(get_puuid(queue, summoner))
@@ -70,7 +70,7 @@ async def pull_puuids():
 loop_run(pull_puuids)
 ```
 :::tip DETAILS
-* `CloneGenerator` was used to isolate the summoners objects so it doesn't pass by reference and therefore not filling up the original list and prevent possible memory leak.
+* `FrozenGenerator` was used to isolate the summoners objects so it doesn't pass by reference and therefore not filling up the original list and prevent possible memory leak.
 * `shuffle_list` was used to shuffle the list by `"platform"` to take advantage of crossing the waiting time on the rate limiters for the different regions.
 * A good use of inline type hinting can help you with IDE autocompletion. Note: You might not use this if responses contains more than 1 type of Pyot Core objects.
 :::

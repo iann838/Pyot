@@ -1,7 +1,7 @@
 # Trait
 Model: Teamfight Tactics
 
-## `Traits` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `Traits` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`set: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`locale: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -12,7 +12,7 @@ Model: Teamfight Tactics
 >
 >`traits: List[Trait]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
-## `Trait` <Badge text="Pyot Core" vertical="middle"/>
+## `Trait` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`key: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`set: int = None` <Badge text="param" type="warning" vertical="middle"/>

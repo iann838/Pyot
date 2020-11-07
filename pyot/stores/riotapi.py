@@ -1,5 +1,5 @@
-from json.decoder import JSONDecodeError
 from typing import Mapping, Dict, Any, Tuple, List
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from datetime import datetime, timedelta
 import asyncio
@@ -29,27 +29,34 @@ class RiotAPI(StoreObject):
         self._log_level = log_level
 
     async def get(self, token: PipelineToken, session: aiohttp.ClientSession) -> Dict:
+        return await self._request("GET", token, session)
+
+    async def post(self, token: PipelineToken, body: Dict[str, Any], session: aiohttp.ClientSession) -> Any:
+        return await self._request("POST", token, session, body)
+
+    async def put(self, token: PipelineToken, body: Dict[str, Any], session: aiohttp.ClientSession) -> Any:
+        return await self._request("PUT", token, session, body)
+
+    async def _request(self, request_method: str, token: PipelineToken, session: aiohttp.ClientSession, body: Dict = None) -> Dict:
         method = token.method
         server = token.server
+        regmethod = server + method
         url = await self._endpoints.resolve(token)
-        headers = {
-            "X-Riot-Token": self._api_key,
-            "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-        }
+        headers = {"X-Riot-Token": self._api_key}
         request_token = RequestToken()
         while await request_token.run_or_raise():
             try:
-                limit_token = await self._rate_limiter.get_limit_token(server, server+method)
+                limit_token = await self._rate_limiter.get_limit_token(server, regmethod)
                 if await limit_token.run_or_wait():
-                    self._rate_limiter.validate_bucket(server, server+method, limit_token)
+                    self._rate_limiter.validate_bucket(server, regmethod, limit_token)
                     continue
-                response = await session.request(method="GET", url=url, headers=headers)
-                LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > RiotAPI] GET: {self._log_template(token)}")
+                response = await session.request(method=request_method, url=url, headers=headers, json=body)
+                LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > RiotAPI] {request_method}: {self._log_template(token)}")
             except Exception as e:
                 LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
                 response = None
 
-            await self._rate_limiter.stream(response, server, server+method, limit_token)
+            await self._rate_limiter.stream(response, server, regmethod, limit_token)
             code = response.status if response is not None else 408
 
             if response and response.status == 200:
@@ -66,16 +73,16 @@ class RiotAPI(StoreObject):
             except KeyError:
                 how = self._handler_map[800]
 
-            await self._check_backoff(response, server, method, code, self._log_template(token))
+            await self._check_backoff(response, server, regmethod, code, self._log_template(token))
             await request_token.stream(code, how, self._log_template(token))
     
-    async def _check_backoff(self, response: Any, server: str, method: str, code: int, origin: str):
+    async def _check_backoff(self, response: Any, server: str, regmethod: str, code: int, origin: str):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
             LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupts your task if this persists. "
                            f"Origin: {origin}, Inmediate backoff: {seconds} seconds.")
             type_ = response.headers["X-Rate-Limit-Type"]
-            await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, server+method)
+            await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, regmethod)
 
     def create_rate_limiter(self, dic) -> BaseLimiter:
         config = {key.lower(): val for (key, val) in dic.items()}
@@ -122,6 +129,15 @@ class RiotAPIEndpoint:
             "summoner_v4_by_account_id": "/lol/summoner/v4/summoners/by-account/{account_id}",
             "summoner_v4_by_puuid": "/lol/summoner/v4/summoners/by-puuid/{puuid}",
             "third_party_code_v4_code": "/lol/platform/v4/third-party-code/by-summoner/{summoner_id}",
+            "tournament_v4_codes": "/lol/tournament/v4/codes",
+            "tournament_v4_codes_by_code": "/lol/tournament/v4/codes/{code}",
+            "tournament_v4_lobby_events": "/lol/tournament/v4/lobby-events/by-code/{code}",
+            "tournament_v4_providers": "/lol/tournament/v4/providers",
+            "tournament_v4_tournaments": "/lol/tournament/v4/tournaments",
+            "tournament_stub_v4_codes": "/lol/tournament-stub/v4/codes",
+            "tournament_stub_v4_lobby_events": "/lol/tournament-stub/v4/lobby-events/by-code/{code}",
+            "tournament_stub_v4_providers": "/lol/tournament-stub/v4/providers",
+            "tournament_stub_v4_tournaments": "/lol/tournament-stub/v4/tournaments",
         },
         "tft": {
             "league_v1_summoner_entries": "/tft/league/v1/entries/by-summoner/{summoner_id}",
@@ -136,6 +152,11 @@ class RiotAPIEndpoint:
             "summoner_v1_by_id": "/tft/summoner/v1/summoners/{id}",
             "summoner_v1_by_account_id": "/tft/summoner/v1/summoners/by-account/{account_id}",
             "summoner_v1_by_puuid": "/tft/summoner/v1/summoners/by-puuid/{puuid}",
+        },
+        "lor": {
+            "ranked_v1_leaderboards": "/lor/ranked/v1/leaderboards",
+            "match_v1_matchlist": "/lor/match/v1/matches/by-puuid/{puuid}/ids",
+            "match_v1_match": "/lor/match/v1/matches/{id}",
         },
         "val": {
             "match_v1_match": "/val/match/v1/matches/{id}",

@@ -30,6 +30,9 @@ from datetime import timedelta as td
 
 Models with <Badge text="Global" type="error" vertical="middle" /> badge will be available to all objects, meaning that can you still modify the `"account_v1_by_puuid"` in the `LOL` model and such object called from the `LOL` pipeline will use that pipeline expirations.
 :::
+::: tip INFO
+Only data returned by the `get()` method is sinked through the pipeline, and thus the only ones to have expirations in place.
+:::
 
 > ### `RIOT` <Badge text="Model" type="warning" vertical="middle" /> <Badge text="Global" type="error" vertical="middle" />
 >`"account_v1_by_puuid": 0`
@@ -89,6 +92,12 @@ Models with <Badge text="Global" type="error" vertical="middle" /> badge will be
 >
 >`"third_party_code_v4_code": 0`
 >
+> `"tournament_v4_codes_by_code": 0`
+>
+> `"tournament_v4_lobby_events": 0`
+>
+> `"tournament_stub_v4_lobby_events": 0`
+>
 >`"cdragon_champion_by_id": td(hours=3)`
 >
 >`"cdragon_item_full": td(hours=3)`
@@ -131,6 +140,17 @@ Models with <Badge text="Global" type="error" vertical="middle" /> badge will be
 >`"cdragon_tft_full": td(hours=3)`
 >
 >`"cdragon_profile_icon_full": td(hours=3)`
+
+> ### `LOR` <Badge text="Model" type="warning" vertical="middle" />
+> `"ranked_v1_leaderboards": 0`
+>
+> `"match_v1_matchlist": 0`
+>
+> `"match_v1_match": 0`
+>
+> `"ddragon_lor_set_data": td(hours=3)`
+>
+
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
 >`"match_v1_match": 0`

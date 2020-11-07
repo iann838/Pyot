@@ -48,7 +48,7 @@ class Summoner(PyotCore):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, pipeline="tft", region=self.region)
+        return Account(puuid=self.puuid, region=self.region).set_pipeline("tft")
 
     @property
     def match_history(self) -> "MatchHistory":

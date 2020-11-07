@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import pickle
 
 
-class ArrowCache:
+class PtrCache:
     '''
     A high performance mini local cache based on reference keeping.
     Be aware that this cache is NOT isolated, hence the performance difference from Omnistone.
@@ -73,20 +73,21 @@ class ArrowCache:
                     number += 1
                     continue
                 break
+        return name
 
     def clear(self):
         '''Clear the cache.'''
         self.objects = dict()
 
 
-def arrow_cache(expiration=60*60*3, max_entries=2000):
-    '''Create an ArrowCache and return it.'''
-    return ArrowCache(expiration, max_entries)
+def ptr_cache(expiration=60*60*3, max_entries=2000):
+    '''Create an PtrCache and return it.'''
+    return PtrCache(expiration, max_entries)
 
 
-class CloneGenerator:
+class FrozenGenerator:
     '''
-    Generator that isolates the original list by copying each iterated object.
+    Generator that isolates the original list by returning a copy of the object when iterated.
     Used for preventing memory leaks of self-filled objects with the price of more CPU time.
     '''
 
@@ -97,6 +98,6 @@ class CloneGenerator:
         return (pickle.loads(pickle.dumps(obj)) for obj in self.objects)
 
 
-def clone_generator(li):
-    '''Create a CloneGenerator and return it.'''
-    return CloneGenerator(li)
+def frozen_generator(li):
+    '''Create a FrozenGenerator and return it.'''
+    return FrozenGenerator(li)

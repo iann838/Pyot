@@ -1,10 +1,10 @@
-# Developing around Pyot
+# Developers
 
-Developing around Pyot is nice and helps our community !
+Help make our community better.
 
 ## Plugins
 
-Pyot is made to be very flexible and mokey patchable. Developers can freely build Plugins for Pyot (e.g. the so wanted SQL cache store). Please DM me or open an issue if you want to add your plugin to this documentation.
+Pyot is made to be very flexible and mokey patchable. Developers can freely build Plugins for Pyot (e.g. SQL cache store). Please DM me or open an issue if you want to add your plugin to this documentation.
 
 Take advantage of all the low level API from pyot, and also the base classes for the objects.
 
@@ -19,8 +19,10 @@ As a user you get to ignore the details and just use the features of Pyot. But a
 ## Wanted Features
 
 1. Valorant static assets API Objects (?).
-2. Possible LoR API objects if announced, with all the static assets provided.
-3. An attempt to introduce SQL db for pyot projects (only a PR for a store that can be ported to all big databases is accepted, otherwise please submit as a Plugin).
+2. Dynamic caching based on object content, e.g. if match is older than x, then cache for less/more time.
+5. Command line interface (similar to `djangoadmin startproject project` to build the base structure).
+3. LCU API.
+4. Ingame API.
 
 ## Issue Tracker
 

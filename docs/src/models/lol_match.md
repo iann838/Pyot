@@ -1,31 +1,7 @@
 # Match
 Model: League of Legends
 
-:::tip WHY IS PYOT SO SLOW AT MATCHTIMELINE ???
-Objects like `frames` and `events` are **_really large at numbers (hundreds per timeline)_**, Pyot **_might be slow_** when serializing these objects to `PyotStatic` objects, it is 12x faster compared to the beta testing v1.0, but it is still not satisfying. **_The recommended solution_** would be to access it as a dict to avoid the serializing process of these objects:
-```python
-for event in timeline.dict()["events"]:
-    # Do stuff with the event
-```
-The **_dict keys and values_** are the same as returned by the Riot API.
-:::
-:::tip WHY IS PYOT STILL SLOW ???
-Another cause of slowness on MatchTimeline might be caused by security measurement of Pyot stores.
-
-If you want to iterate for all the items in events of `lol.MatchTimeline` and get its cost, then **_it would be very innefficient_** if you do `await event.item.get()` every time, even if it is cached on Omnistone, because Pyot's stores should be **_safe_** from any type of mutation, so Omnistone will automatically copy the object before retrieving it, which adds up huge amount of CPU time. Solution would be a local cache that doesn't copy the objects but instead keeping an _arrow_ referencing the object, which is the use case of an `ArrowCache` from the utils module.
-```python
-from pyot.utils import ArrowCache
-from pyot.models import lol
-
-async def somefunc():
-    cache = ArrowCache()
-    # ...
-    for event in participant.timeline.dict()["events"]:
-        item = await cache.aget(f"item{event['itemId']}", lol.Item(id=event['itemId']).get())
-```
-:::
-
-## `Match` <Badge text="Pyot Core" vertical="middle"/>
+## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -58,7 +34,8 @@ async def somefunc():
 >
 >`red_team: MatchTeamData`
 
-## `Timeline` <Badge text="Pyot Core" vertical="middle"/>
+## `Timeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
+
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -71,21 +48,77 @@ async def somefunc():
 >
 >`interval: timedelta`
 
-## `MatchTimeline` <Badge text="Pyot Core" vertical="middle"/>
-:::tip INFO
-This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeline objects for each participants is under each participant's timeline `events` and `frames`. Some events are not included because it belongs to the general team based.
+:::warning OVERHEAD OF SERIALIZATION
+Objects like `frames` and `events` are **_really large in numbers (hundreds per timeline)_**, Pyot **_might be slow_** when serializing these objects to `PyotStatic` objects. If you are bothered by performance issues, **_the recommended solution_** would be to access it as a dict to avoid the serializing process:
+
+```python
+for event in timeline["events"]:
+    # Do stuff with the event (as dictionary). Tested 10x faster.
+```
+The **_dict keys and values_** are the same as returned by the Riot API.
+
+Another cause of slowness on `MatchTimeline` might be caused by data integrity protection of Pyot stores.
+
+If you want to iterate for all the items in events, **_it would be innefficient_** doing `await event.item.get()` for every loop, even if it is cached, because Pyot's stores makes sure that any data is **_safe_** from any type of mutation, so stores will automatically copy the object before retrieving it, which adds up significant amount of CPU time. Solution would be a local cache that saves a reference to the object, one of the use case of a `PtrCache` from the utils module.
+```python{8}
+from pyot.utils import PtrCache
+from pyot.models import lol
+
+async def somefunc():
+    cache = PtrCache()
+    # ...
+    for event in participant.timeline["events"]:
+        item = await cache.aget(f"item{event['itemId']}", lol.Item(id=event['itemId']).get())
+```
+Do not mutate objects saved on PtrCache, the cached object will be affected too.
 :::
+
+## `MatchTimeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
+
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
->`"match_v4_match": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/>
+>`"match_v4_match": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
 >
->`"match_v4_timeline": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/>
+>`"match_v4_timeline": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
 
-> **_All variables and attributes are the same as Match, please reference above instead_**
+>`id: int`
+>
+>`type: str`
+>
+>`mode: str`
+>
+>`version: str`
+>
+>`map_id: int`
+>
+>`season_id: int`
+>
+>`queue_id: int`
+>
+>`creation: datetime`
+>
+>`duration: timedelta`
+>
+>`platform: str`
+>
+>`teams: List[MatchTeamData]`
+>
+>`blue_team: MatchTeamData`
+>
+>`red_team: MatchTeamData`
 
-## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+:::tip INFO
+Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
+
+This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeline objects for each participants is under each participant's timeline `events` and `frames`. Some events are not included because it belongs to the general team based.
+:::
+:::warning OVERHEAD OF SERIALIZATION
+It suffers from the same overhead of Timeline on the `events` and `frames` objects.
+:::
+
+## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`account_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -106,7 +139,7 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 
 >`"match_v4_matchlist": ["account_id"]` <Badge text="endpoint" type="error" vertical="middle"/>
 
->`matches: List[MatchHistoryMatchData]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`entries: List[MatchHistoryMatchData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 >
 >`start_index: int`
 >
@@ -115,8 +148,28 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 >`total_games: int`
 >
 >`account_id: str`
+>
+>`matches: List[Match]`
+>
+>`match_timelines: List[MatchTimeline]`
+>
+>`timelines: List[Timeline]`
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
+
+:::tip NEW
+Starting v1.2.0:
+- `matches` is renamed to `entries`.
+- `matches` returns a list of instantiated `Match` objects.
+- `match_timelines` returns a list of instantiated `MatchTimeline` objects.
+- `timelines` returns a list of instantiated `Timeline` objects.
+
+Example of iterating over `MatchTimeline` objects of the match history please now do:
+```python
+for match in history.match_timelines:
+    await match.get()
+```
+:::
 
 ## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`frame: List[MatchFrameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
@@ -198,6 +251,23 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 >`stats: MatchParticipantStatData`
 >
 >`timeline: MatchParticipantTimelineData`
+>
+>`profile_icon_id: int`
+>
+>`account_id: str`
+>
+>`match_history_uri: str`
+>
+>`current_account_id: str`
+>
+>`current_platform: str`
+>
+>`summoner_name: str`
+>
+>`summoner_id: str`
+>
+>`platform: str`
+>
 
 >`champion -> "Champion"` <Badge text="bridge" type="error" vertical="middle"/>
 >
@@ -372,12 +442,12 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 >`frames: List[MatchFrameData]`
 >
 >`events: List[MatchEventData]`
-> :::warning
+> :::tip INFO 
 > `frames` and `events` are only available for `MatchTimeline` Objects.
 > :::
 
 ## `MatchEventData` <Badge text="Pyot Static" vertical="middle"/>
->:::warning
+>:::tip INFO
 >Not every field is filled, different event type yields different available fields. Getting an attr from a blank field will raise `AttributeError`.
 >:::
 >`lane_type: str`
@@ -465,6 +535,7 @@ This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeli
 >`pick_turn: int`
 
 >`champion -> "Champion"` <Badge text="bridge" type="error" vertical="middle"/>
+>
 >`meraki_champion -> "MerakiChampion"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `MatchPositionData` <Badge text="Pyot Static" vertical="middle"/>

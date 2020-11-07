@@ -4,7 +4,7 @@
 - Description: Store that uses Redis servers as Caches. This cache provides similar speeds to Omnistone while preserving data even if the pipeline is down.
 
 :::tip INFO ABOUT THIS STORE
-The Cache is built on top of Python integration of [redis](https://pypi.org/project/redis/).
+This Cache is built on top of Python integration of [redis](https://pypi.org/project/redis/).
 
 You can add multiple stores of this type to the pipeline, but take in mind that this store lives on RAM (hence the speed) so it might be limited if you want to cache bigger or more objects.
 :::

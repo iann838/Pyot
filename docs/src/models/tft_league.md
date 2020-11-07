@@ -1,7 +1,7 @@
 # League
 Model: Teamfight Tactics
 
-## `League` <Badge text="Pyot Core" vertical="middle"/>
+## `League` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -18,7 +18,7 @@ Model: Teamfight Tactics
 >
 >`entries: List[LeagueEntryData]`
 
-## `ChallengerLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `ChallengerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"league_v1_challenger_league": []` <Badge text="endpoint" type="error" vertical="middle"/>
@@ -39,7 +39,7 @@ Model: Teamfight Tactics
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `GrandmasterLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `GrandmasterLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"league_v1_grandmaster_league": []` <Badge text="endpoint" type="error" vertical="middle"/>
@@ -60,7 +60,7 @@ Model: Teamfight Tactics
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `MasterLeague` <Badge text="Pyot Core" vertical="middle"/>
+## `MasterLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"league_v1_master_league": []` <Badge text="endpoint" type="error" vertical="middle"/>
@@ -81,7 +81,7 @@ Model: Teamfight Tactics
 
 >`league -> "League"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `DivisionLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `DivisionLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`division: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`tier: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -101,7 +101,7 @@ Model: Teamfight Tactics
 >`entries: List[SummonerLeagueEntryData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 
-## `SummonerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `SummonerLeague` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>

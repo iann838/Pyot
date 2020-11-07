@@ -1,7 +1,7 @@
 # Champion Mastery
 Model: League of Legends
 
-## `ChampionMasteries` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `ChampionMasteries` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`summoner_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -16,7 +16,7 @@ Model: League of Legends
 
 >` summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `ChampionMastery` <Badge text="Pyot Core" vertical="middle"/>
+## `ChampionMastery` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`summoner_id: str = None`<Badge text="param" type="warning" vertical="middle"/>
 >
 >`champion_id: int = None`<Badge text="param" type="warning" vertical="middle"/>

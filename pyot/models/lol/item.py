@@ -1,8 +1,11 @@
 from .__core__ import PyotCore, PyotStatic
 from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
 from pyot.core.exceptions import NotFound
+from pyot.utils import PtrCache
+from functools import partial
 from typing import List, Iterator
 
+indexer = PtrCache()
 
 # PYOT CORE OBJECT
 
@@ -38,16 +41,24 @@ class Item(PyotCore):
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def filter(self, data):
-        for item in data:
+    def filter_func(self, data):
+        for ind, item in enumerate(data):
             if item["id"] == self.id:
-                return item
+                return ind
         raise NotFound
+
+    def _filter(self, data): # BE VERY CAREFUL
+        ind = indexer.get(self.id, partial(self.filter_func, data))
+        if data[ind]["id"] == self.id: # RETURN ONLY IF ID MATCHES
+            return data[ind]
+        ind = self.filter_func(data)
+        indexer.set(self.id, ind)
+        return data[ind]
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
-        load = getattr(self.meta, "load")
+            self._meta.server = "default"
+        load = getattr(self._meta, "load")
         load.pop("id")
 
     def _transform(self, data):
@@ -90,24 +101,19 @@ class Items(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.items[item]
 
     def __iter__(self) -> Iterator[Item]:
         return iter(self.items)
 
+    def __len__(self):
+        return len(self.items)
+
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
+            self._meta.server = "default"
 
-    def _transform(self, data_):
-        items = []
-        for data in data_:
-            data["iconPath"] = cdragon_url(data["iconPath"])
-            data["cleanedDescription"] = cdragon_sanitize(data["description"])
-            if data["requiredChampion"] == "":
-                data["requiredChampion"] = None
-            if data["requiredBuffCurrencyName"] == "":
-                data["requiredBuffCurrencyName"] = "GOLD"
-                data["requiredBuffCurrencyCost"] = data["price"]
-            items.append({"data": data})
-        return {"items": items}
+    def _transform(self, data):
+        return {"items": data}

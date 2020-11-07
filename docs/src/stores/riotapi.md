@@ -1,11 +1,13 @@
 # Riot API
 
 - Type: <Badge text="Pyot Service" vertical="middle" />
-- Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" /> <Badge text="VAL" type="error" vertical="middle" /> <Badge text="RIOT" type="error" vertical="middle" />
+- Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" /> <Badge text="LOR" type="error" vertical="middle" /> <Badge text="VAL" type="error" vertical="middle" /> <Badge text="RIOT" type="error" vertical="middle" />
 - Description: Store that provides data from the Riot Games API, this contains 70 % of all the endpoints for all the Pyot Core Objects, a list of the endpoints is found below. 
 
 :::tip INFO ABOUT THIS STORE
-Some endpoints can return 403 due to api key policies restrictions. Official endpoints are found at the [Riot Developer Portal](https://developer.riotgames.com/). 
+Service Store integrated from the official Riot Games API. Official endpoints are found at the [Riot Developer Portal](https://developer.riotgames.com/). 
+
+Some endpoints may return 403 due to api key policies restrictions. During late night PST the riot API will experience 5xx due to daily maintainance.
 :::
 
 ## Pipeline Settings Reference
@@ -93,6 +95,25 @@ Some endpoints can return 403 due to api key policies restrictions. Official end
 >`"summoner_v4_by_puuid"`
 >
 >`"third_party_code_v4_code"`
+>
+>`"tournament_v4_codes"`
+>
+>`"tournament_v4_codes_by_code"`
+>
+>`"tournament_v4_lobby_events"`
+>
+>`"tournament_v4_providers"`
+>
+>`"tournament_v4_tournaments"`
+>
+>`"tournament_stub_v4_codes"`
+>
+>`"tournament_stub_v4_lobby_events"`
+>
+>`"tournament_stub_v4_providers"`
+>
+>`"tournament_stub_v4_tournaments"`
+
 
 > ### `TFT` <Badge text="Model" type="warning" vertical="middle" />
 >`"league_v1_summoner_entries"`
@@ -118,6 +139,13 @@ Some endpoints can return 403 due to api key policies restrictions. Official end
 >`"summoner_v1_by_account_id"`
 >
 >`"summoner_v1_by_puuid"`
+
+> ### `LOL` <Badge text="Model" type="warning" vertical="middle" />
+>`"ranked_v1_leaderboards"`
+>
+>`"match_v1_matchlist"`
+>
+>`"match_v1_match"`
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
 >`"match_v1_match"`

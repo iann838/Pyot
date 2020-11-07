@@ -14,6 +14,12 @@ class StoreObject:
     async def set(self, token, response):
         raise NotImplementedError
 
+    async def post(self, token, body, *args):
+        raise NotImplementedError
+
+    async def put(self, token, body, *args):
+        raise NotImplementedError
+
     async def clear(self):
         raise NotImplementedError
 
@@ -27,20 +33,26 @@ class StoreObject:
         raise NotImplementedError
 ```
 
-## `get(self, token, *args)`
-> Get the object from the store.
+## `get(self, token, *args)` <Badge text="Pyot Cache" vertical="middle" /> <Badge text="Pyot Service" vertical="middle" />
+> Make a Get request to the store.
 
-## `set(self, token, response)`
-> Set the object to the store.
+## `set(self, token, response)` <Badge text="Pyot Cache" vertical="middle" />
+> Make a Set request to the store.
 
-## `clear(self)`
+## `post(self, token, body, *args)` <Badge text="Pyot Service" vertical="middle" />
+> Make a Post request to the store.
+
+## `put(self, token, body, *args)` <Badge text="Pyot Service" vertical="middle" />
+> Make a Put request to the store.
+
+## `delete(self, token)` <Badge text="Pyot Cache" vertical="middle" /> <Badge text="Pyot Service" vertical="middle" />
+> Make a Delete request to the store.
+
+## `clear(self)` <Badge text="Pyot Cache" vertical="middle" />
 > Clear the store.
 
-## `expire(self)`
+## `expire(self)` <Badge text="Pyot Cache" vertical="middle" />
 > Expire the store.
 
-## `delete(self, token)`
-> Delete an object from the store.
-
-## `contains(self, token)`
+## `contains(self, token)` <Badge text="Pyot Cache" vertical="middle" />
 > Check if object exist on the store.

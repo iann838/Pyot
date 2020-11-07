@@ -3,19 +3,19 @@ from pyot.models import val, riot
 from datetime import datetime, timedelta
 
 async def async_match_history():
-    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS", pipeline="val").get()
+    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS").get(pipeline="val")
     history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
     for match in history:
+        assert isinstance(match, val.Match)
         assert isinstance(match.id, str)
         assert isinstance(match.creation, datetime)
         assert isinstance(match.team_id, str)
-        assert isinstance(match.match, val.Match)
 
 
 async def async_match():
-    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS", pipeline="val").get()
+    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS").get(pipeline="val")
     history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
-    match = await val.Match(id=history[0].id, platform=history.platform).get()
+    match = await history[0].get()
     info = match.info
     players = match.players
     teams = match.teams
@@ -97,7 +97,7 @@ async def async_match():
                 assert isinstance(k.victim_location.y, int)
                 for pl in k.player_locations:
                     assert isinstance(pl.puuid, str)
-                    assert isinstance(pl.view_radians, float)
+                    assert isinstance(pl.view_radians, float) or pl.view_radians == 0
                     assert isinstance(pl.location.x, int)
                     assert isinstance(pl.location.y, int)
                 fd = k.finishing_damage

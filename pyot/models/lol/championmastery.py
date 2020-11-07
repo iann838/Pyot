@@ -53,10 +53,15 @@ class ChampionMasteries(PyotCore):
         rules = {"champion_mastery_v4_all_mastery": ["summoner_id"]}
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.masteries[item]
 
     def __iter__(self) -> Iterator[ChampionMastery]:
         return iter(self.masteries)
+
+    def __len__(self):
+        return len(self.masteries)
 
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -64,11 +69,9 @@ class ChampionMasteries(PyotCore):
     def _transform(self, data):
         new_data = {}
         new_data["totalScore"] = 0
-        masteries = []
         for a in data:
             new_data["totalScore"] += a["championLevel"]
-            masteries.append({"data": a})
-        new_data["masteries"] = masteries
+        new_data["masteries"] = data
         return new_data
 
     @property

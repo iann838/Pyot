@@ -1,7 +1,7 @@
 # Match
 Model: Teamfight Tactics
 
-## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`puuid: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`region: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -10,13 +10,15 @@ Model: Teamfight Tactics
 
 >`"match_v1_matchlist": ["puuid"]` <Badge text="endpoint" type="error" vertical="middle"/>
 
->`ids: List[str]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`matches: List[Match]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>
+>`ids: List[str]`
 >
 >`puuid: str`
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `Match` <Badge text="Pyot Core" vertical="middle"/>
+## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`region: str = None` <Badge text="param" type="warning" vertical="middle"/>

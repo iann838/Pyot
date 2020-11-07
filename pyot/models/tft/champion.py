@@ -66,7 +66,7 @@ class Champion(PyotCore):
                 raise RuntimeError("Could not parse 'set' value from key")
         self._lazy_set(a)
 
-    def filter(self, data_):
+    def _filter(self, data_):
         try:
             data = data_["sets"][str(self.set)]["champions"]
         except KeyError:
@@ -87,8 +87,8 @@ class Champion(PyotCore):
 
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
-        load = getattr(self.meta, "load")
+            self._meta.server = "en_us"
+        load = getattr(self._meta, "load")
         load.pop("key")
 
     def _transform(self, data):
@@ -113,27 +113,26 @@ class Champions(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.champions[item]
 
     def __iter__(self) -> Iterator[Champion]:
         return iter(self.champions)
 
+    def __len__(self):
+        return len(self.champions)
+
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
+            self._meta.server = "en_us"
 
-    def filter(self, data_):
+    def _filter(self, data_):
         try:
             data = data_["sets"][str(self.set)]["champions"]
         except KeyError:
             raise NotFound
         return data
 
-    def _transform(self, data_):
-        champions = []
-        for data in data_:
-            data["iconPath"] = tft_url(data.pop("icon"))
-            data["ability"]["cleanedDescription"] = tft_champ_sanitize(data["ability"]["desc"], data["ability"]["variables"])
-            data["ability"]["iconPath"] = tft_url(data["ability"].pop("icon"))
-            champions.append({"data": data})
-        return {"champions": champions}
+    def _transform(self, data):
+        return {"champions": data}

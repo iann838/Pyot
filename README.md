@@ -26,11 +26,11 @@ Read this entirely to get a better idea of what is Pyot possible at.
 - **_Synchronous Compatible_**: An adapted version of Pyot that runs on synchronous environment, **Pyot will expose part of its API synchronously in its secondary module called Syot**.
 - **_Django Support_**: Full support for Django Caches Framework and its new 3.1 async Views, just add `pyot` to the installed apps and point your setting modules on your `settings.py` file.
 - **_Community Projects Integrated_**: Take a step to dump the late and poor updated DDragon, we going beta testing directly using Cdragon and Meraki, BangingHeads' DDragon replacement is also coming soon.
-- **_Caches Integrated_**: A wide range of Caches Stores is available right out of the box, we currently have Omnistone(Python), RedisCache(RAM), DiskCache(File) and soontm an SQL Cache.
-- **_Multiple Models_**: Available models are League of Legends, Teamfight Tactics and Valorant, holding onto Legend of Runeterra.
+- **_Caches Integrated_**: A wide range of Caches Stores is available right out of the box, we currently have Omnistone(Runtime), RedisCache(RAM), DiskCache(Disk) and MongoDB(NoSQL).
+- **_Multiple Models_**: Available models are League of Legends, Teamfight Tactics, Legends of Runeterra and Valorant.
 - **_Autocompletion Included_**: Forget the standard dictionary keys, triple your code efficiency now with autocompletion enabled.
 - **_Perfect Rate Limiter_**: Pyot Rate Limiter is production tested in all asynchronous, multithreaded and even multiprocessed environments, rate limiters for perfectionists.
-- **_User Friendly Docs_**: Meet a friendly docs that "should" be better to read and understand.
+- **_User Friendly Docs_**: Meet a friendly docs that "should" be easier to read and understand.
 
 ## Requirements
 
@@ -69,6 +69,15 @@ Settings(
         }
     ]
 ).activate() # <- DON'T FORGET TO ACTIVATE THE SETTINGS
+```
+
+Pyot Settings should be **_activated_** on your main module's `__init__.py` or before your script `main()` entry point.
+```python
+├─ foo
+│  ├─ __init__.py  # <---- HERE MOSTLY
+│  ├─ __main__.py  # <---- OR ANYWHERE BEFORE CALLING `main()`
+│  └─ bar.py
+# ...
 ```
 
 > This pipeline settings is only specific to League of Legends Model, for example, TFT doesn't have support of the MerakiCDN.

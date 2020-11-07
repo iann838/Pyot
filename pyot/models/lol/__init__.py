@@ -1,3 +1,4 @@
+from .tournament import Tournament, TournamentProvider, TournamentCodes, TournamentCode, TournamentLobbyEvents, TournamentStub, TournamentStubCodes, TournamentStubLobbyEvents, TournamentStubProvider
 from .championmastery import ChampionMasteries, ChampionMastery
 from .league import League, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeague, DivisionLeague
 from .clash import ClashPlayers, ClashTeam, ClashTournaments, ClashTournament

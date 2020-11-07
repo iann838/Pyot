@@ -12,4 +12,4 @@ This model is not obligatory to have its pipeline, it can assign a pipeline to t
 > `"asia"`
 
 ## Platform and Locale Values
-> DEPENDS ON THE CALLED PIPELINE
+> Depends on related models.

@@ -5,7 +5,7 @@ class PyotBaseObject:
 
     class Meta:
         region_list = ["americas", "europe", "asia"]
-        platform_list = ["br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru"]
+        platform_list = ["br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru", "pbe"]
         locale_list = ["cs_cz", "de_de", "en_us", "el_gb", "en_au", "en_gb", "en_ph", "en_sg", "es_ar", 
             "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro", 
             "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"]
@@ -53,7 +53,7 @@ class PyotCore(PyotBaseObject, PyotCoreObject):
         pass
 
     @classmethod
-    def set_pipeline(cls, pipeline):
+    def bind_pipeline(cls, pipeline):
         cls.Meta.pipeline = pipeline
 
 

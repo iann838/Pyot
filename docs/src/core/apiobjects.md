@@ -11,15 +11,29 @@ This is main type of objects that developers works with. Below is a list of gene
 > ### `__init__(**kwargs)` <Badge text="Pyot Core" vertical="middle"/>
 > Creates an instance of the Pyot Core Object. Parameters varies per API.
 
-> ### `get(sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
-> This is an awaitable that makes a `get` to the pipeline, searching for what it needs and returns the found data.
+> ### `get(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> Awaitable that executes `get` request to the pipeline, finds the requested data, returns it and sinks through the pipeline.
 > - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
+> - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
+
+> ### `post(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> Awaitable that executes `post` request to the pipeline, finds the correct service to execute and return the response if given. Unlike `get()` responses are not sinked through the pipeline.
+> - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
+> - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
+
+> ### `put(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> Awaitable that executes `put` request to the pipeline, finds the correct service to execute and return the response if given. Unlike `get()` responses are not sinked through the pipeline.
+> - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
+> - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
 
 > ### `query(**kwargs)` <Badge text="function" type="error" vertical="middle"/>
-> Appends query parameters to the object, these are normally the needed query parameters specified in Riot API Dev Portal. Parameters varies per object.
+> Appends query parameters to the object, these are mostly query parameters specified in endpoints of Riot Dev Portal. Queries parameters varies per object.
+
+> ### `body(**kwargs)` <Badge text="function" type="error" vertical="middle"/>
+> Adds the body parameters to the object as kwargs, these are mostly body specified in endpoints of Riot Dev Portal that supports POST, PUT requests. The kwargs are later converted to the necessary json to pass on the request.
 
 > ### `create_token()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> Creates a Pyot Pipeline Token that can make calls on the low level pipeline API, this can be useful for using high performance local `ArrowCache` or manually calling pipeline methods.
+> Creates a Pyot Pipeline Token that can make calls on the low level pipeline API, this can be useful for using high performance local `PtrCache` or manually calling pipeline methods.
 
 > ### `set_session_id(id: str)` <Badge text="function" type="error" vertical="middle"/>
 >::: danger DEPRECATED
@@ -57,10 +71,18 @@ These are objects that are nested into the Pyot Core Objects, inheriting some pa
 >
 > - `remove_server`<Badge text="param" type="warning" vertical="middle"/>: Refer to Pyot Core description of the params
 
+## Pyot Container
+
+* This object is identified using the badge <Badge text="Pyot Container" vertical="middle"/>
+
+These objects are made for managing groups of objects to ease development. For example you would need a better way to manage a deck returned by `lor.Match`, it will return a `lor.Deck` container with its own unique methods to manipulate the deck.
+
+> Methods are different on each container class. Check each of the model documentation.
+
 ## Pyot Lazy
 
 * This object is identified using the badge <Badge text="Pyot Lazy" vertical="middle"/>
 
-These objects are made to prevent overhead on the both Pyot Core and Pyot Static objects, it prevents loading unnecessary objects, more specifically when the Core object gets data back to _fill_ or when a Static object is called to _fill_, nested objects are _not_ filled directly, but creates an instance of `PyotLazyObject` that contains the nested data, and then when the nested data is needed or called, `PyotLazyObject` then proceeds to fill the next nested level object and returns the nested object.
+These objects are made to prevent overhead on the both Pyot Core and Pyot Static objects, it prevents loading unnecessary objects, more specifically when the Core object gets data back to fill or when a Static object is called to fill, nested objects are not filled directly, but creates an instance of `PyotLazyObject` that contains the nested data, and then when the nested data is called or touched, `PyotLazyObject` then proceeds to fill the next level and returns the nested object.
 
 > No methods are intended for direct usage, if you want to override a method, check source code to do so.

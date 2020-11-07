@@ -2,7 +2,7 @@ from typing import List
 from datetime import datetime, timedelta
 from pyot.models import lol
 from pyot.core import Queue, Gatherer, exceptions
-from pyot.utils import CloneGenerator, shuffle_list
+from pyot.utils import FrozenGenerator, shuffle_list
 
 
 async def match_history(queue: Queue, matchlist: set, regions: set, summoner: lol.Summoner, begin: timedelta):
@@ -31,7 +31,7 @@ async def pull_matchlist():
         for league in leagues:
             for entry in league.entries:
                 _summoners.append(entry.summoner)
-        summoners = CloneGenerator(shuffle_list(_summoners, "platform"))
+        summoners = FrozenGenerator(shuffle_list(_summoners, "platform"))
 
         begin = round((datetime.now() - timedelta(days=3)).timestamp()*1000)
         for summoner in summoners:

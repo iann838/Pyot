@@ -1,7 +1,7 @@
 # Match
 Model: Valorant
 
-## `Match` <Badge text="Pyot Core" vertical="middle"/>
+## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -17,8 +17,12 @@ Model: Valorant
 >`teams: List[MatchTeamData]`
 >
 >`round_results: List[MatchRoundResultData]`
+>
+>`creation: datetime` <Badge text="supertyped by MatchHistory" type="error" vertical="middle"/>
+>
+>`team_id: str` <Badge text="supertyped by MatchHistory" type="error" vertical="middle"/>
 
-## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`puuid: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -27,11 +31,11 @@ Model: Valorant
 
 >`puuid: str`
 >
->`history: List[MatchHistoryData]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`history: List[Match]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 >`account -> "Account"` <Badge text="bridge" type="error" vertical="middle"/>
 
-## `RecentMatches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `RecentMatches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`queue: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -224,8 +228,6 @@ Model: Valorant
 >`player_title: str`
 
 >`account -> "Account"` <Badge text="bridge" type="error" vertical="middle"/>
->
->`active_platform -> "ActivePlatform"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `MatchPlayerStatData` <Badge text="Pyot Static" vertical="middle"/>
 >`score: int`

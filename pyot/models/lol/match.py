@@ -101,42 +101,27 @@ class MatchParticipantStatData(PyotStatic):
     @property
     def items(self) -> List["Item"]:
         from .item import Item
-        mutable = []
-        for i in self.item_ids:
-            mutable.append(Item(id=i, locale=self.to_locale(self.platform)))
-        return mutable
+        return [Item(id=i, locale=self.to_locale(self.platform)) for i in self.item_ids]
 
     @property
     def meraki_items(self) -> List["MerakiItem"]:
         from .merakiitem import MerakiItem
-        mutable = []
-        for i in self.item_ids:
-            mutable.append(MerakiItem(id=i))
-        return mutable
+        return [MerakiItem(id=i) for i in self.item_ids]
 
     @property
     def runes(self) -> List["Rune"]:
         from .rune import Rune
-        mutable = []
-        for i in self.rune_ids:
-            mutable.append(Rune(id=i, locale=self.to_locale(self.platform)))
-        return mutable
+        return [Rune(id=i, locale=self.to_locale(self.platform)) for i in self.rune_ids]
 
     @property
     def stat_runes(self) -> List["Rune"]:
         from .rune import Rune
-        mutable = []
-        for i in self.stat_rune_ids:
-            mutable.append(Rune(id=i, locale=self.to_locale(self.platform)))
-        return mutable
+        return [Rune(id=i, locale=self.to_locale(self.platform)) for i in self.stat_rune_ids]
 
     @property
     def spells(self) -> List["Spell"]:
         from .spell import Spell
-        mutable = []
-        for i in self.spell_ids:
-            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
-        return mutable
+        return [Spell(id=i, locale=self.to_locale(self.platform)) for i in self.spell_ids]
 
 
 class MatchFrameData(PyotStatic):
@@ -242,9 +227,17 @@ class MatchParticipantData(PyotStatic):
     spell_ids: List[int]
     stats: MatchParticipantStatData
     timeline: MatchParticipantTimelineData
+    profile_icon_id: int
+    account_id: str
+    match_history_uri: str
+    current_account_id: str
+    current_platform: str
+    summoner_name: str
+    summoner_id: str
+    platform: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"participant_id": "id"}
+        renamed = {"participant_id": "id", "profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
         raws = ["spell_ids"]
 
     @property
@@ -260,10 +253,27 @@ class MatchParticipantData(PyotStatic):
     @property
     def spells(self) -> List["Spell"]:
         from .spell import Spell
-        mutable = []
-        for i in self.spell_ids:
-            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
-        return mutable
+        return [Spell(id=i, locale=self.to_locale(self.platform)) for i in self.spell_ids]
+
+    @property
+    def account(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(account_id=self.account_id, platform=self.platform)
+
+    @property
+    def current_account(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(account_id=self.current_account_id, platform=self.current_platform)
+
+    @property
+    def summoner(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(id=self.summoner_id, platform=self.platform)
+
+    @property
+    def profile_icon(self) -> "ProfileIcon":
+        from .profileicon import ProfileIcon
+        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
 
 
 class MatchTeamData(PyotStatic):
@@ -286,7 +296,7 @@ class MatchTeamData(PyotStatic):
     participants: List[MatchParticipantData]
 
 
-class MatchHistoryMatchData(PyotStatic):
+class MatchHistoryData(PyotStatic):
     platform: str
     id: int
     champion_id: int
@@ -332,20 +342,30 @@ class MatchFrameMinuteData(PyotStatic):
     frame: List[MatchFrameData]
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.frame[item]
 
     def __iter__(self) -> Iterator[MatchFrameData]:
         return iter(self.frame)
+
+    def __len__(self):
+        return len(self.frame)
 
 
 class MatchEventMinuteData(PyotStatic):
     frame: List[MatchEventData]
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.frame[item]
 
     def __iter__(self) -> Iterator[MatchEventData]:
         return iter(self.frame)
+
+    def __len__(self):
+        return len(self.frame)
 
 
 # PYOT CORE OBJECTS
@@ -454,6 +474,10 @@ class Match(PyotCore):
                 red_team["participants"].append(p)
 
         for pi in data["participantIdentities"]:
+            if pi["player"]["platformId"].lower() == "na":
+                pi["player"]["platformId"] = "NA1"
+            if pi["player"]["currentPlatformId"].lower() == "na":
+                pi["player"]["currentPlatformId"] = "NA1"
             pid = pi["participantId"]
             for p in blue_team["participants"]:
                 if p["participantId"] == pid:
@@ -477,17 +501,21 @@ class MatchTimeline(Match, PyotCore):
             "match_v4_timeline": ["id"],
         }
 
-    async def get(self, sid: str = None):
+    async def get(self, sid: str = None, pipeline: str = None):
         '''Awaitable. Get this object from the pipeline.\n
-        `sid` may be passed to reuse a session on the pipeline.'''
+        `sid` id identifying the session on the pipeline to reuse.\n
+        `pipeline` key identifying the pipeline to execute against.\n
+        '''
         # pylint: disable=no-member
+        if pipeline:
+            self.set_pipeline(pipeline)
         token1 = await self.create_token(search="match")
         token2 = await self.create_token(search="timeline")
-        task1 = asyncio.create_task(self.meta.pipeline.get(token1, sid))
-        task2 = asyncio.create_task(self.meta.pipeline.get(token2, sid))
+        task1 = asyncio.create_task(self._meta.pipeline.get(token1, sid))
+        task2 = asyncio.create_task(self._meta.pipeline.get(token2, sid))
         data1 = await task1
         data2 = await task2
-        self.meta.data = self._transform(data1, data2)
+        self._meta.data = self._transform(data1, data2)
         self._fill()
         return self
 
@@ -555,7 +583,7 @@ class Timeline(PyotCore):
 
 
 class MatchHistory(PyotCore):
-    matches: List[MatchHistoryMatchData]
+    entries: List[MatchHistoryData]
     start_index: int
     end_index: int
     total_games: int
@@ -563,13 +591,19 @@ class MatchHistory(PyotCore):
     
     class Meta(PyotCore.Meta):
         allow_query = True
+        renamed = {"matches": "entries"}
         rules = {"match_v4_matchlist": ["account_id"]}
 
     def __getitem__(self, item):
-        return self.matches[item]
+        if not isinstance(item, int):
+            return super().__getitem__(item)
+        return self.entries[item]
 
-    def __iter__(self) -> Iterator[MatchHistoryMatchData]:
-        return iter(self.matches)
+    def __iter__(self) -> Iterator[MatchHistoryData]:
+        return iter(self.entries)
+
+    def __len__(self):
+        return len(self.entries)
 
     def __init__(self, account_id: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -580,8 +614,20 @@ class MatchHistory(PyotCore):
         for i in [champion_ids, queue_ids, season_ids]:
             if not isinstance(i, list) and i is not None:
                 raise RuntimeError("Query parameters 'champion_ids', 'queue_ids' and 'season_ids' must be a list of values")
-        self.meta.query = self._parse_query(kargs)
+        self._meta.query = self._parse_camel(kargs)
         return self
+
+    @property
+    def matches(self) -> List[Match]:
+        return [Match(id=entry.id, platform=entry.platform) for entry in self.entries]
+
+    @property
+    def match_timelines(self) -> List[MatchTimeline]:
+        return [MatchTimeline(id=entry.id, platform=entry.platform) for entry in self.entries]
+
+    @property
+    def timelines(self) -> List[Timeline]:
+        return [Timeline(id=entry.id, platform=entry.platform) for entry in self.entries]
 
     @property
     def summoner(self) -> "Summoner":

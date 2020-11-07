@@ -23,7 +23,7 @@ class Item(PyotCore):
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def filter(self, data_):
+    def _filter(self, data_):
         data = data_["items"]
         for item in data:
             if item["id"] == self.id:
@@ -32,8 +32,8 @@ class Item(PyotCore):
 
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
-        load = getattr(self.meta, "load")
+            self._meta.server = "en_us"
+        load = getattr(self._meta, "load")
         load.pop("id")
 
     def _transform(self, data):
@@ -56,22 +56,22 @@ class Items(PyotCore):
         self._lazy_set(locals())
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.items[item]
 
     def __iter__(self) -> Iterator[Item]:
         return iter(self.items)
 
+    def __len__(self):
+        return len(self.items)
+
     def _refactor(self):
         if self.locale.lower() == "default":
-            self.meta.server = "en_us"
+            self._meta.server = "en_us"
 
-    def filter(self, data):
+    def _filter(self, data):
         return data["items"]
 
-    def _transform(self, data_):
-        items = []
-        for data in data_:
-            data["iconPath"] = tft_url(data.pop("icon"))
-            data["cleanedDescription"] = tft_item_sanitize(data["desc"], data["effects"])
-            items.append({"data": data})
-        return {"items": items}
+    def _transform(self, data):
+        return {"items": data}

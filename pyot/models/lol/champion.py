@@ -131,23 +131,23 @@ class Champion(PyotCore):
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
-            self.meta.server = "default"
+            self._meta.server = "default"
 
     def _transform(self, data):
         data["squarePortraitPath"] = cdragon_url(data["squarePortraitPath"])
         data["tacticalInfo"]["damageType"] = start_k(data["tacticalInfo"]["damageType"])
         skins = []
         for skin in data["skins"]:
-            skin["splashPath"] = cdragon_url(skin["splashPath"])
-            skin["uncenteredSplashPath"] = cdragon_url(skin["uncenteredSplashPath"])
-            skin["tilePath"] = cdragon_url(skin["tilePath"])
-            skin["loadScreenPath"] = cdragon_url(skin["loadScreenPath"])
-            skin["rarity"] = start_k(skin["rarity"])
-            skin["chromaPath"] = cdragon_url(skin["chromaPath"])
+            skin["splashPath"] = cdragon_url(skin.pop("splashPath", None))
+            skin["uncenteredSplashPath"] = cdragon_url(skin.pop("uncenteredSplashPath", None))
+            skin["tilePath"] = cdragon_url(skin.pop("tilePath", None))
+            skin["loadScreenPath"] = cdragon_url(skin.pop("loadScreenPath", None))
+            skin["rarity"] = start_k(skin.pop("rarity", None))
+            skin["chromaPath"] = cdragon_url(skin.pop("chromaPath", None))
             if "chromas" in skin:
                 chromas = []
                 for chroma in skin["chromas"]:
-                    chroma["chromaPath"] = cdragon_url(chroma["chromaPath"])
+                    chroma["chromaPath"] = cdragon_url(chroma.pop("chromaPath", None))
                     chromas.append(chroma)
                 skin["chromas"] = chromas
             if skin["skinLines"] is not None:
@@ -174,5 +174,4 @@ class Champion(PyotCore):
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
-        return MerakiChampion(id=self.id if hasattr(self,"id") else None, name=self.name if hasattr(self,"name") else None, 
-            key=self.key if hasattr(self,"key") else None)
+        return MerakiChampion(id=self.id)

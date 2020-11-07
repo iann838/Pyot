@@ -1,12 +1,16 @@
 # Stores
 
-Specify the backend of the store on the pipeline
+Specify the backend of the store on the pipeline.
 ```python
 {
     "BACKEND": "pyot.stores.RiotAPI",
     # ...
 }
 ```
+
+:::tip
+The arguments keys passed to Pyot Settings Pipeline can be in ALL CAPS to maintain better code redability, it is automatically lowercased on activation anyways.
+:::
 
 # Legend
 
@@ -19,7 +23,3 @@ Specify the backend of the store on the pipeline
 -<Badge text="Model" type="warning" vertical="middle" />: This is a Pyot model.
 
 -<Badge text="<model-name>" type="error" vertical="middle" />: The name of the model supported if not all.
-
-:::tip
-The arguments keys passed to Pyot Settings Pipeline can be in ALL CAPS to maintain better code redability, it is automatically lowercased on activation anyways.
-:::

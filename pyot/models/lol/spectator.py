@@ -223,10 +223,15 @@ class FeaturedGames(PyotCore):
         return super().__getattribute__(name)
 
     def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
         return self.games[item]
 
     def __iter__(self) -> Iterator[FeaturedGameData]:
         return iter(self.games)
+
+    def __len__(self):
+        return len(self.games)
 
     def __init__(self, platform: str = None):
         self._lazy_set(locals())

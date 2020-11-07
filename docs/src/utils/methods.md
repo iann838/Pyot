@@ -1,6 +1,6 @@
 # Methods
 
-Submodule: `common`
+### Submodule: `common`
 
 > ## `loop_run(coro)` <Badge text="function" type="error" vertical="middle"/>
 > Run the coroutine in the current event loop or a new one if `set_event_loop()` has not yet been called.
@@ -32,7 +32,7 @@ Submodule: `common`
 > - `size` <Badge text="param" type="warning" vertical="middle"/>: size of the returned chunks, e.g. `size=10` will return a new list with items of the same `param` every 10 items. Typically used for mixing pyot objects regions and platforms to better regulate rate limits.
 
 
-Submodule: `cdragon`
+### Submodule: `cdragon`
 
 > ## `start_k(string: str) -> str`  <Badge text="function" type="error" vertical="middle"/> 
 > Removes k if string start with k.
@@ -60,7 +60,7 @@ Submodule: `cdragon`
 > - `string` <Badge text="param" type="warning" vertical="middle"/>: Dirty string to sanitize
 > - `obj` <Badge text="param" type="warning" vertical="middle"/>: List of dict containing tft champion variables.
 
-Submodule: `champion`
+### Submodule: `champion`
 
 :::tip INFO
 Responses (All the champions) will be cached for 3 hours
@@ -84,7 +84,7 @@ Responses (All the champions) will be cached for 3 hours
 > ## `champion_name_by_key(value)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Convert champion key to name
 
-Submodule: `time`
+### Submodule: `time`
 
 > ## `timeit(func_or_coro, iters: int = 1 concurrent: bool = True)` <Badge text="function" type="error" vertical="middle"/>
 > Measures the running time of a function or coroutine. Functions/Coroutines with arguments should be passed using `functools.partial`.
@@ -96,18 +96,26 @@ Submodule: `time`
 > - `iters` <Badge text="param" type="warning" vertical="middle"/> may be passed to specify the amount of repeat executions.
 > - `concurrent`<Badge text="param" type="warning" vertical="middle"/> to signify concurrent running of coroutines.
 
-Submodule: `objects`
+### Submodule: `objects`
 
-> ## `arrow_cache(expiration=60*60*3, max_entries=2000)` <Badge text="function" type="error" vertical="middle"/>
-> Create an ArrowCache and return it. Takes the same params as the object class constructor.
+> ## `ptr_cache(expiration=60*60*3, max_entries=2000)` <Badge text="function" type="error" vertical="middle"/>
+> Create an PtrCache and return it. Takes the same params as the object class constructor.
 
-> ## `clone_generator(li)` <Badge text="function" type="error" vertical="middle"/>
-> Create a CloneGenerator and return it. Takes the same params as the object class constructor.
+> ## `frozen_generator(li)` <Badge text="function" type="error" vertical="middle"/>
+> Create a FrozenGenerator and return it. Takes the same params as the object class constructor.
 
-Submodule: `dicts`
+### Submodule: `dicts`
 
 > ## `multi_defaultdict(default: Callable)` <Badge text="function" type="error" vertical="middle"/>
 > Create a MultiDefaultDict and return it. Takes the same params as the object class constructor.
 
 > ## `redis_defaultdict(redi: redis.Redis, default: Callable, prefix: str = "")` <Badge text="function" type="error" vertical="middle"/>
 > Create a RedisDefaultDict and return it. Takes the same params as the object class constructor.
+
+### Submodule: `lor`
+
+> ## `batch_to_ccac(batch)` <Badge text="function" type="error" vertical="middle"/>
+> Converts a Batch object to CardCodeAndCount object.
+
+> ## `ccac_to_batch(ccac: CardCodeAndCount, locale: str = None) -> "Batch"` <Badge text="function" type="error" vertical="middle"/>
+> Converts a CardCodeAndCount object to Batch object. `locale` is set if passed.

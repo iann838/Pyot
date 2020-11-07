@@ -1,1 +1,1 @@
-from .account import Account, ActivePlatform
+from .account import Account, ActiveShard

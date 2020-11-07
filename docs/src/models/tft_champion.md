@@ -1,7 +1,7 @@
 # Champion
 Model: Teamfight Tactics
 
-## `Champions` <Badge text="Pyot Core" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `Champions` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`set: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`locale: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -12,7 +12,7 @@ Model: Teamfight Tactics
 >
 >`champions: List[Champion]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
-## `Champion` <Badge text="Pyot Core" vertical="middle"/>
+## `Champion` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`key: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`set: int = None` <Badge text="param" type="warning" vertical="middle"/>

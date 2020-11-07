@@ -42,9 +42,11 @@ The Riot Games API can give 3 types of 429: `service`, `application` and `method
 >
 >`401 : ("T", [])`
 >
+>`403 : ("T", [])`
+>
 >`404 : ("T", [])`
 >
->`403 : ("T", [])`
+>`405 : ("T", [])`
 >
 >`408 : ("E", [3, 3])`
 >

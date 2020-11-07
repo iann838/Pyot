@@ -4,9 +4,15 @@
 Asynchronous callbacks are only runable on a-prefixed methods, e.g. `aget`.
 :::
 
-Submodule: `objects`
+### Submodule: `objects`
 
-## `ArrowCache`
+:::danger DEPRECATED
+Starting v1.2.0
+- `ArrowCache` has been renamed to `PtrCache`.
+- `CloneGenerator` has been renamed to `FrozenGenerator`.
+:::
+
+## `PtrCache`
 > A high performance mini local cache based on reference keeping. Be aware that this cache is NOT isolated, hence the performance difference (This one is much faster) from Omnistone.
 > ::: warning
 > This cache will not copy the objects on get/put, modification to objects affects cached objects.
@@ -25,14 +31,14 @@ Submodule: `objects`
 > ### `clear()` <Badge text="function" type="error" vertical="middle"/>
 > Clear the cache.
 
-## `CloneGenerator`
-> Generator that isolates the original list by copying each iterated object. Used for preventing memory leaks of -filled objects with the price of more CPU time.
+## `FrozenGenerator`
+> Generator that isolates the original list by returning a copy of the object when iterated. Used for preventing memory leaks of self-filled objects with the price of more CPU time.
 > ### `__init__(li)`
 > - `li` <Badge text="param" type="warning" vertical="middle"/>: The original list
 > ### `__iter__()`
 > Generator based iter.
 
-Submodule: `locks`
+### Submodule: `locks`
 
 :::tip
 All these locks are preferably used in a context manager with `async with` to safeguard acquire and release the lock.
@@ -61,7 +67,7 @@ All these locks are preferably used in a context manager with `async with` to sa
 > ### `release()` <Badge text="function" type="error" vertical="middle"/>
 > Release the lock, this is not async for the sake of easier cleanup (e.g. registering `atexit`)
 
-Submodule: `dicts`
+### Submodule: `dicts`
 
 :::tip INFO
 For these dict to use the default coroutine, call `aget` instead of `get`.
