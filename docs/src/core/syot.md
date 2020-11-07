@@ -1,13 +1,13 @@
 # Syot
 
-Syot is a back ported version of Pyot to synchronous code (although I don't see a reason of not going async), this might be an option for those who don't want to go async or want to be REALLY FLEXIBLE by using the 2 world at the same time, which is in some case for Django views.
+Syot is a back ported version of Pyot to synchronous code (rarely a case not going async), this might be an option for those who don't want to go async or wants flexibility by using both async and sync code at the same time, which is in some case for Django views.
 
 :::tip INFO
 You still need to activate the Settings for Syot to work.
 :::
 
 :::warning
-Syot and Pyot **_shares the same pipeline_** per each model so you can use the 2 world together without problem of any. They won't have any conflict UNLESS UNLESS and UNLESS you try to activate the same Settings twice both in Syot and Pyot.
+Syot and Pyot **_shares the same pipeline_** per each model so you can use both environment together without problem of any. They won't have any conflict unless you try to activate the same Settings twice both in Syot and Pyot.
 :::
 
 Below documentation only applies to Syot.
@@ -18,7 +18,7 @@ The rest of the API please refer to Pyot documentation by replacing `pyot` with 
 2. All the models API are available on Syot, with some minor changes listed below.
 
 ## Differences
-1. Lose the advantage of cooperative tasks that speeds 10x the calls in exchange of flexibility or a ... mOrE rEAdAblE COdE ?
+1. Lose the advantage of cooperative tasks and high concurrency to speed up the calls.
 2. The Pyot Pipeline Low Level API is not available in synchronous environment, you would need to do `loop_run()` for every single pipeline coroutine.
 3. The Pyot Gatherer is also not supported here, because it is a feature only for asynchrounous environment.
 4. Instead of `from pyot` do `from syot` to import the synchronous version of Pyot.
