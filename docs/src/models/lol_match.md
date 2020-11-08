@@ -274,6 +274,14 @@ for match in history.match_timelines:
 >`meraki_champion -> "MerakiChampion"` <Badge text="bridge" type="error" vertical="middle"/>
 >
 >`spells -> List["Spell"]` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`account -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`current_account -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`profile_icon -> "ProfileIcon"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `MatchParticipantStatData` <Badge text="Pyot Static" vertical="middle"/>
 >`participant_id: int`
