@@ -140,7 +140,7 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >
 >`"summoner_v1_by_puuid"`
 
-> ### `LOL` <Badge text="Model" type="warning" vertical="middle" />
+> ### `LOR` <Badge text="Model" type="warning" vertical="middle" />
 >`"ranked_v1_leaderboards"`
 >
 >`"match_v1_matchlist"`
