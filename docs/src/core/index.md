@@ -12,7 +12,7 @@ The documentation is separated into different pages at the top navbar.
 - **_Developers_** section has contributing guidelines and wanted features.
 :::
 
-Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Valorant and Legend of Runeterra (soon). It specializes at doing task in async environment to get the expected result faster than synchronous code. Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cassiopeia), you will notice that it has similar approach and structure.
+Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Legends of Runeterra and Valorant. It specializes at doing task in async environment to get the expected result faster than synchronous code. Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cassiopeia), you will notice that it has similar approach and structure.
 
 ::: danger WARNING
 For all users that has Pyot version v1.1.3 or lower please update to v1.1.4 or higher which contains potential fixes to rate limiters. 
