@@ -102,5 +102,5 @@ class Filterer:
         try:
             return self.filters[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined key was passed, returned True by default")
+            LOGGER.warning("[Trace: Pyot > Pipeline] WARNING: A non defined key was passed, returned True by default")
             return pass_all

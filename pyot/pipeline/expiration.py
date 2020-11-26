@@ -110,7 +110,7 @@ class ExpirationManager:
         try:
             return self.expirations[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined expiration token was passed, returned 0 by default")
+            LOGGER.warning("[Trace: Pyot > Pipeline] WARNING: A non defined expiration token was passed, returned 0 by default")
             return 0
 
     def __iter__(self):

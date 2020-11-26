@@ -44,7 +44,7 @@ Settings(
         {
             "BACKEND": "pyot.stores.RiotAPI",
             "LOG_LEVEL": 30,
-            "API_KEY": os.environ["RIOT_API_KEY"],
+            "API_KEY": "RGAPI-8982b112-5690-43ad-a1d0-189b3d448433",
             "RATE_LIMITER": {
                 "BACKEND": "pyot.limiters.RedisLimiter",
                 "LIMITING_SHARE": 1,

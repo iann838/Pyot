@@ -32,8 +32,10 @@ class LimitToken:
             return 0
 
     async def run_or_wait(self):
-        if self.max > 0:
-            await asyncio.sleep(self.max)
+        max_ = self.max
+        if max_ > 0:
+            print(f"[Trace: Pyot > LimitToken] INFO: Time remaining for next limit bucket: {max_}s      ", end="\r")
+            await asyncio.sleep(min(1, max_))
             return True
         else:
             return False
@@ -71,7 +73,7 @@ class BaseLimiter:
         method_time1 = r_method_time[0]
         method_time2 = r_method_time[1]
         if app_time1 < now:
-            # app_time1 = r_app_time[0] = now + timedelta(seconds=app_rate1[3]) These codes will cause limit inconsistencies.
+            # app_time1 = r_app_time[0] = now + timedelta(seconds=app_rate1[3])
             app_rate1[0] = r_app_rate[0][0] = None
             app_rate1[1] = r_app_rate[0][1] = 0
         if app_time2 < now:
@@ -117,7 +119,7 @@ class BaseLimiter:
             elif r_app_rate[0][0] is None and self._application_bucket[server] > 0:
                 if self.last_waited < now:
                     self._application_bucket[server] = 0
-                token.append(0.5)
+                token.append(0.03)
 
             if r_method_rate[0][0] is None and self._methods_bucket[method] == 0:
                 self._methods_bucket[method] += 1
@@ -127,7 +129,7 @@ class BaseLimiter:
             elif r_method_rate[0][0] is None and self._methods_bucket[method] > 0:
                 if self.last_waited < now:
                     self._methods_bucket[method] = 0
-                token.append(0.5)
+                token.append(0.03)
 
         if token.max == 0:
             for i in range(4):
@@ -160,8 +162,8 @@ class BaseLimiter:
             await self.put_stream(fetched, server, method, token)
         except KeyError:
             self.validate_bucket(server, method, token)
-        except Exception:
-            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: Something unexpected happened while streaming to rate limiter")
+        except Exception as e:
+            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: Exception '{str(e)}' happened while streaming to rate limiter")
 
     async def put_stream(self, fetched: dict, server: str, method: str, token: LimitToken):
         now = datetime.now(pytz.utc)
@@ -191,11 +193,11 @@ class BaseLimiter:
             if not r_method_rate[i][0] or method_count[i][0] < r_method_rate[i][0]:
                 r_method_rate[i][0] = method_count[i][0]
         for i in range(2):
-            app_top = date + timedelta(seconds=r_app_rate[i][3] + 1)
-            method_top = date + timedelta(seconds=r_method_rate[i][3] + 1)
-            if app_top < r_app_time[i] or (token.flag_app and r_app_time[i] < now):
+            if token.flag_app and r_app_time[i] < now:
+                app_top = date + timedelta(seconds=r_app_rate[i][3] + 1.6)
                 r_app_time[i] = app_top
-            if method_top < r_method_time[i] or (token.flag_method and r_method_time[i] < now):
+            if token.flag_method and r_method_time[i] < now:
+                method_top = date + timedelta(seconds=r_method_rate[i][3] + 1.6)
                 r_method_time[i] = method_top
         await self.set_limits(server, method, [r_app_rate, r_app_time, r_method_rate, r_method_time])
 
