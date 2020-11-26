@@ -12,6 +12,8 @@ Model: League of Legends
 >
 >`tier: int`
 >
+>`rank: List[str]`
+>
 >`builds_from_ids: List[int]`
 >
 >`builds_into_ids: List[int]`
@@ -99,6 +101,10 @@ Model: League of Legends
 >`mana_regen: MerakiItemStatDetailData`
 >
 >`movespeed: MerakiItemStatDetailData`
+>
+>`ability_haste: MerakiItemStatDetailData`
+>
+>`omnivamp: MerakiItemStatDetailData`
 
 ## `MerakiItemStatDetailData` <Badge text="Pyot Static" vertical="middle"/>
 >`flat: int`

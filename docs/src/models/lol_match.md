@@ -48,31 +48,6 @@ Model: League of Legends
 >
 >`interval: timedelta`
 
-:::warning OVERHEAD OF SERIALIZATION
-Objects like `frames` and `events` are **_really large in numbers (hundreds per timeline)_**, Pyot **_might be slow_** when serializing these objects to `PyotStatic` objects. If you are bothered by performance issues, **_the recommended solution_** would be to access it as a dict to avoid the serializing process:
-
-```python
-for event in timeline["events"]:
-    # Do stuff with the event (as dictionary). Tested 10x faster.
-```
-The **_dict keys and values_** are the same as returned by the Riot API.
-
-Another cause of slowness on `MatchTimeline` might be caused by data integrity protection of Pyot stores.
-
-If you want to iterate for all the items in events, **_it would be innefficient_** doing `await event.item.get()` for every loop, even if it is cached, because Pyot's stores makes sure that any data is **_safe_** from any type of mutation, so stores will automatically copy the object before retrieving it, which adds up significant amount of CPU time. Solution would be a local cache that saves a reference to the object, one of the use case of a `PtrCache` from the utils module.
-```python{8}
-from pyot.utils import PtrCache
-from pyot.models import lol
-
-async def somefunc():
-    cache = PtrCache()
-    # ...
-    for event in participant.timeline["events"]:
-        item = await cache.aget(f"item{event['itemId']}", lol.Item(id=event['itemId']).get())
-```
-Do not mutate objects saved on PtrCache, the cached object will be affected too.
-:::
-
 ## `MatchTimeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -108,14 +83,37 @@ Do not mutate objects saved on PtrCache, the cached object will be affected too.
 >`blue_team: MatchTeamData`
 >
 >`red_team: MatchTeamData`
+>
+>:::tip INFO
+>Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
+>
+>This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeline objects for each participants is under each participant's timeline `events` and `frames`. Some events are not included because it belongs to the general team based.
+>:::
 
-:::tip INFO
-Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
-
-This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeline objects for each participants is under each participant's timeline `events` and `frames`. Some events are not included because it belongs to the general team based.
-:::
 :::warning OVERHEAD OF SERIALIZATION
-It suffers from the same overhead of Timeline on the `events` and `frames` objects.
+
+`MatchEventData` are usually **_large in numbers (hundreds per timeline)_**, Pyot **_can be slow_** when serializing these objects. If you are bothered by performance issues, **_the recommended solution_** would be to access it as a dict to avoid the serializing process:
+
+```python{2}
+    # ...
+    for event in timeline["events"]:
+        # Do stuff with the event (as dictionary). Tested 5x faster.
+```
+The **_dict keys and values_** are the same as returned by the Riot API.
+
+Another cause of slowness on `MatchTimeline` might be caused by data integrity protection of Pyot stores. Stores makes sure that all data is **_safe_** from any mutation, so stores will serialize and deserialize when accessing the object, which adds up significant amount of CPU time.
+
+The solution is a local `PtrCache` cache from the utils module. Do not mutate objects saved on `PtrCache`, the cached object is **_not protected_**.
+```python{8}
+from pyot.utils import PtrCache
+from pyot.models import lol
+
+async def somefunc():
+    cache = PtrCache()
+    # ...
+    for event in participant.timeline["events"]:
+        item = await lol.Item(id=event['itemId'].get(ptr_cache=cache)) # intercepts the cache
+```
 :::
 
 ## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
@@ -450,6 +448,7 @@ for match in history.match_timelines:
 >`frames: List[MatchFrameData]`
 >
 >`events: List[MatchEventData]`
+>
 > :::tip INFO 
 > `frames` and `events` are only available for `MatchTimeline` Objects.
 > :::
