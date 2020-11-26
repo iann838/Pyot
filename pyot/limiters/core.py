@@ -34,8 +34,7 @@ class LimitToken:
     async def run_or_wait(self):
         max_ = self.max
         if max_ > 0:
-            print(f"[Trace: Pyot > LimitToken] INFO: Time remaining for next limit bucket: {max_}s      ", end="\r")
-            await asyncio.sleep(min(1, max_))
+            await asyncio.sleep(max_)
             return True
         else:
             return False
