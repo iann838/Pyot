@@ -21,7 +21,7 @@ Features that Pyot has and can provide to your development.
 
 ## About the Documentation
 
-All documentation is in the "docs" directory and online at https://paaksing.github.io/Pyot/. If you're just getting started, here's how we recommend you read the docs:
+All documentation is in the "docs" directory. If you're just getting started, here's how we recommend you read the docs:
 
 > The documentation is separated into different pages at the top navbar.
 > - **_Core_** section documents the core modules, objects and settings of Pyot.
@@ -46,6 +46,6 @@ Docs are updated rigorously. If you find any problems in the docs, or think they
 
 Contributions are welcome! If you have idea or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. And we always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.
 
-Check out https://paaksing.github.io/Pyot/devs/ for information about getting involved.
+Check out [Developers](/devs/) for information about getting involved.
 
 Finally thanks for Django docs, I literally copied their doc format and changed the names. Yikes

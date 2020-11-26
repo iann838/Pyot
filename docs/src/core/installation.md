@@ -29,7 +29,7 @@ Take a look at [venv](https://docs.python.org/3/tutorial/venv.html). This tool p
 * Windows
 ```shell
 python -m venv venv
-venv\\scripts\\activate
+venv\scripts\activate
 ```
 
 * Unix
