@@ -35,14 +35,14 @@ class Gatherer:
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False, limit=self.workers))
         for pipeline in pipelines.values():
             pipeline.sessions[self.session_id] = self.session
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Gatherer] Created session '{self.session_id}'")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Gatherer] Created session '{self.session_id}'")
         return self
 
     async def __aexit__(self, *args):
         await self.session.close()
         for pipeline in pipelines.values():
             pipeline.sessions.pop(self.session_id)
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Gatherer] Closed session '{self.session_id}'")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Gatherer] Closed session '{self.session_id}'")
         return
 
     async def gather(self):
@@ -54,7 +54,7 @@ class Gatherer:
             try:
                 self.statements[i] = self.statements[i].get
             except Exception:
-                raise RuntimeError(f"[Trace: Pyot > Gatherer] Failed to add session id to statements at index {i}, "
+                raise RuntimeError(f"[Trace: Pyot Gatherer] Failed to add session id to statements at index {i}, "
                     "make sure that only Pyot objects are included and 'get()' is not passed on the statements")
 
         try:
@@ -70,5 +70,5 @@ class Gatherer:
         except Exception as e:
             for task in bucket:
                 task.cancel()
-            LOGGER.warning(f"[Trace: Pyot > Gatherer] All statements of session '{self.session_id}' are cancelled due to exception: {e}")
+            LOGGER.warning(f"[Trace: Pyot Gatherer] All statements of session '{self.session_id}' are cancelled due to exception: {e}")
             raise

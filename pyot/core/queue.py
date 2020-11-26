@@ -41,7 +41,7 @@ class Queue:
                 if res is not None:
                     self.responses.append(res)
             except Exception as e:
-                LOGGER.warning(f"[Trace: Pyot > Queue] WARNING: Unhandled exception '{e.__class__.__name__}: {e}' was raised and ignored")
+                LOGGER.warning(f"[Trace: Pyot Queue] WARNING: Unhandled exception '{e.__class__.__name__}: {e}' was raised and ignored")
             finally:
                 queue.task_done()
 
@@ -52,9 +52,9 @@ class Queue:
         for _ in range(self.workers_num):
             worker = asyncio.create_task(self.worker(self.queue))
             self.workers.append(worker)
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Queue] Spawned {self.workers_num} workers")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Spawned {self.workers_num} workers")
         self.sid = uuid.uuid4()
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Queue] Created session '{self.sid}'")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Created session '{self.sid}'")
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False))
         for pipeline in pipelines.values():
             pipeline.sessions[self.sid] = self.session
@@ -66,9 +66,9 @@ class Queue:
             worker.cancel()
         await asyncio.gather(*self.workers, return_exceptions=True)
         self.is_joined = True
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Queue] Joined {self.workers_num} workers")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Joined {self.workers_num} workers")
         await self.session.close()
-        LOGGER.log(self.log_level, f"[Trace: Pyot > Queue] Closed session '{self.sid}'")
+        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Closed session '{self.sid}'")
         for pipeline in pipelines.values():
             pipeline.sessions.pop(self.sid)
         return
@@ -81,7 +81,7 @@ class Queue:
         if delay > 0:
             await asyncio.sleep(delay)
         if not asyncio.iscoroutine(coro):
-            raise RuntimeError(f"[Trace: Pyot > Queue] {str(coro)} is not a coroutine")
+            raise RuntimeError(f"[Trace: Pyot Queue] {str(coro)} is not a coroutine")
         await self.queue.put(coro)
 
     async def join(self) -> List:
