@@ -10,9 +10,8 @@ Settings(
     DEFAULT_LOCALE= "EN_US",
     PIPELINE = [
         {
-            "BACKEND": "pyot.stores.MongoDB",
+            "BACKEND": "pyot.stores.Omnistone",
             "LOG_LEVEL": 30,
-            "DB": 'pyot_lol',
             "EXPIRATIONS": {
                 "summoner_v4_by_name": 100,
             }
@@ -21,6 +20,10 @@ Settings(
             "BACKEND": "pyot.stores.RedisCache",
             "LOG_LEVEL": 30,
             "DB": 1,
+            "EXPIRATIONS": {
+                "match_v4_match": 600,
+                "match_v4_timeline": 600,
+            }
         },
         {
             "BACKEND": "pyot.stores.MerakiCDN",

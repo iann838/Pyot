@@ -19,7 +19,7 @@ async def async_champions():
         v.dict(pyotify=True)
 
 async def async_champion():
-    val = await tft.Champion(key="TFT3_Darius").get()
+    val = await tft.Champion(key="TFT4_Aatrox").get()
     val.dict(pyotify=True)
 
 
@@ -34,12 +34,12 @@ async def async_item():
 
 
 async def async_traits():
-    val = await tft.Traits(set=3, locale="zh_cn").get()
+    val = await tft.Traits(set=4, locale="zh_cn").get()
     for v in val:
         v.dict(pyotify=True)
 
 async def async_trait():
-    val = await tft.Trait(key="Battlecast", set=3).get()
+    val = await tft.Trait(key="Divine", set=4).get()
     val.dict(pyotify=True)
 
 

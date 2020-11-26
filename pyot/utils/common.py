@@ -1,3 +1,4 @@
+from inspect import getmembers, isfunction
 from typing import List, Any
 from importlib import import_module
 import asyncio
@@ -14,6 +15,15 @@ async def thread_run(func):
     '''Run a blocking function in a thread.'''
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, func)
+
+
+def inherit_docstrings(cls):
+    for name, func in getmembers(cls, isfunction):
+        if func.__doc__: continue
+        for parent in cls.__mro__[1:]:
+            if hasattr(parent, name):
+                func.__doc__ = getattr(parent, name).__doc__
+    return cls
 
 
 def snakecase(attr: str) -> str:

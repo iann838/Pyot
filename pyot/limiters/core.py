@@ -191,8 +191,8 @@ class BaseLimiter:
             if not r_method_rate[i][0] or method_count[i][0] < r_method_rate[i][0]:
                 r_method_rate[i][0] = method_count[i][0]
         for i in range(2):
-            app_top = date + timedelta(seconds=r_app_rate[i][3])
-            method_top = date + timedelta(seconds=r_method_rate[i][3])
+            app_top = date + timedelta(seconds=r_app_rate[i][3] + 1)
+            method_top = date + timedelta(seconds=r_method_rate[i][3] + 1)
             if app_top < r_app_time[i] or (token.flag_app and r_app_time[i] < now):
                 r_app_time[i] = app_top
             if method_top < r_method_time[i] or (token.flag_method and r_method_time[i] < now):

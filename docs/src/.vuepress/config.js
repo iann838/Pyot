@@ -82,12 +82,21 @@ module.exports = {
           collapsable: false,
           children: [
             '',
-            'syot',
-            'django',
+            'installation',
+            'startup',
           ]
         },
         {
-          title: 'Core',
+          title: 'Integrations',
+          collapsable: false,
+          children: [
+            'django',
+            'celery',
+            'syot',
+          ]
+        },
+        {
+          title: 'Cores',
           collapsable: false,
           sidebarDepth: 2,
           children: [

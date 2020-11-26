@@ -35,7 +35,7 @@ class Omnistone(StoreObject):
                 if timeout != -1:
                     timeout = datetime.timedelta(seconds=timeout)
                 if await self._allowed():
-                    value = pickle.loads(pickle.dumps(value))
+                    value = pickle.dumps(value)
                     self._data[token] = (value, timeout, datetime.datetime.now(), datetime.datetime.now())
                     LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > Omnistone] SET: {self._log_template(token)}")
             if len(self._data) > self._max_entries and await self._allowed():
@@ -60,7 +60,7 @@ class Omnistone(StoreObject):
             now = datetime.datetime.now()
             if timeout == -1:
                 self._data[token] = (item, timeout, entered, now)
-                item = pickle.loads(pickle.dumps(item))
+                item = pickle.loads(item)
                 return item
             
             elif now > entered + timeout:
@@ -71,7 +71,7 @@ class Omnistone(StoreObject):
             
             else:
                 self._data[token] = (item, timeout, entered, now)
-                item = pickle.loads(pickle.dumps(item))
+                item = pickle.loads(item)
                 return item
 
     async def delete(self, token: PipelineToken) -> None:

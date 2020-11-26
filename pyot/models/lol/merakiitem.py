@@ -32,6 +32,8 @@ class MerakiItemStatData(PyotStatic):
     mana: MerakiItemStatDetailData
     mana_regen: MerakiItemStatDetailData
     movespeed: MerakiItemStatDetailData
+    ability_haste: MerakiItemStatDetailData
+    omnivamp: MerakiItemStatDetailData
 
 
 class MerakiItemPassiveData(PyotStatic):
@@ -71,6 +73,7 @@ class MerakiItem(PyotCore):
     name: str
     id: int
     tier: int
+    rank: List[str]
     builds_from_ids: List[int]
     builds_into_ids: List[int]
     no_effects: bool
@@ -87,7 +90,7 @@ class MerakiItem(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"meraki_item_by_id": ["id"]}
-        raws = ["builds_from_ids", "builds_into_ids", "nicknames"]
+        raws = ["builds_from_ids", "builds_into_ids", "nicknames", "rank"]
         renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids", "required_champion": "required_champion_key"}
 
     def __init__(self, id: int = None):

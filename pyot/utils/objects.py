@@ -31,7 +31,7 @@ class PtrCache:
             return data[0]
         except KeyError:
             if func is None:
-                raise
+                return None
         response = func()
         self.set(name, response)
         return response
@@ -54,7 +54,7 @@ class PtrCache:
             return data[0]
         except KeyError:
             if coro is None:
-                raise
+                return None
         response = await coro
         self.set(name, response)
         return response

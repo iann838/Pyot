@@ -25,7 +25,7 @@ class Pipeline:
                     response = await store.get(token, session=session)
                     found_in = store
                 except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and not isinstance(e, NotFindable):
+                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
                         raise
                     continue
                 break
@@ -48,7 +48,7 @@ class Pipeline:
                 try:
                     response = await store.post(token, body, session=session)
                 except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and not isinstance(e, NotFindable):
+                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
                         raise
                     continue
                 break
@@ -61,7 +61,7 @@ class Pipeline:
                 try:
                     response = await store.put(token, body, session=session)
                 except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and not isinstance(e, NotFindable):
+                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
                         raise
                     continue
                 break

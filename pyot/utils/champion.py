@@ -31,44 +31,53 @@ async def _gather_summary(cache):
                 cache.set(key, val)
 
 
+# IMPORTANT: _gather_summary() gathers all values, that's why it isn't passed as default.
+
+
 async def champion_id_by_key(value):
     '''Convert champion key to id'''
-    try: data = _utils_inner_cache.get("champion_id_by_key")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_id_by_key")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_id_by_key")
     return data[value]
 
 async def champion_id_by_name(value):
     '''Convert champion name to id'''
-    try: data = _utils_inner_cache.get("champion_id_by_name")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_id_by_name")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_id_by_name")
     return data[value]
 
 async def champion_key_by_id(value):
     '''Convert champion id to key'''
-    try: data = _utils_inner_cache.get("champion_key_by_id")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_key_by_id")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_key_by_id")
     return data[value]
 
 async def champion_key_by_name(value):
     '''Convert champion name to key'''
-    try: data = _utils_inner_cache.get("champion_key_by_name")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_key_by_name")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_key_by_name")
     return data[value]
 
 async def champion_name_by_id(value):
     '''Convert champion id to name'''
-    try: data = _utils_inner_cache.get("champion_name_by_id")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_name_by_id")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_name_by_id")
     return data[value]
 
 async def champion_name_by_key(value):
     '''Convert champion key to name'''
-    try: data = _utils_inner_cache.get("champion_name_by_key")
-    except KeyError: await _gather_summary(_utils_inner_cache)
     data = _utils_inner_cache.get("champion_name_by_key")
+    if data is None:
+        await _gather_summary(_utils_inner_cache)
+        data = _utils_inner_cache.get("champion_name_by_key")
     return data[value]

@@ -28,14 +28,14 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="1.2.0", 
+    version="2.0.0", 
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
-    description="2020 High level Python framework for the Riot Games API, support for AsyncIO and Django",
+    description="AsyncIO based high level Python framework for the Riot Games API that encourages rapid development and clean, pragmatic design.",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "Django"],
+    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "Django", "asyncio"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3.7",
@@ -54,5 +54,10 @@ setup(
     packages=find_packages(exclude=("test","test_djot")),
     zip_safe=True,
     install_requires=install_requires,
-    include_package_data=True
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'pyot=pyot.management.scripts:main'
+        ]
+    }
 )

@@ -91,11 +91,27 @@ class PyotStaticObject:
                 return obj
             else:
                 return attr
-        except (KeyError, AttributeError) as e:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'") from e
+        except (KeyError, AttributeError):
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def __getitem__(self, item):
         return self._meta.data[item]
+
+    def _rename(self, data):
+        # SNAKECASE > RENAME > REMOVE
+        new_data = {}
+        mapping = {}
+        for attr, val in data.items():
+            name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', attr)
+            newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+            if newkey in self._meta.removed:
+                continue
+            if newkey in self._meta.renamed:
+                newkey = self._meta.renamed[newkey]
+            mapping[attr] = newkey
+            new_data[newkey] = val
+
+        return new_data, mapping
 
     def _get_types(self):
         types = get_type_hints(self.__class__)
@@ -107,14 +123,19 @@ class PyotStaticObject:
                 pass
         return types
 
-    def _rename(self, key):
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
-        newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
-        if newkey in self._meta.removed:
-            return None
-        if newkey in self._meta.renamed:
-            newkey = self._meta.renamed[newkey]
-        return newkey
+    def _normalize(self, data):
+        mapping = normalizer_cache.get(self.__class__, dict)
+        new_data = {}
+        for attr, val in data.items():
+            try:
+                new_data[mapping[attr]] = val
+            except KeyError:
+                new_data, new_mapping = self._rename(data)
+                mapping.update(new_mapping)
+                return new_data
+        for key in self._meta.removed:
+            new_data.pop(key, None)
+        return new_data
 
     def _fill(self):
         # BIND SERVER > NORMALIZE > RAW > LAZY
@@ -124,30 +145,21 @@ class PyotStaticObject:
             setattr(self, server_type[0], server_type[1].lower())
         except AttributeError: pass
 
-        mapping = normalizer_cache.get(self.__class__, dict)
+        data_ = self._normalize(self._meta.data)
 
-        for attr, renamed in self._meta.renamed.items():
-            if renamed != self._meta.server_type:
-                continue
-            server = self._meta.data.pop(attr, None)
-            if server:
-                setattr(self, self._meta.server_type, server.lower())
-            break
+        if self._meta.server_type in data_:
+            has_server = True
+        else:
+            has_server = False
 
-        for key, val in self._meta.data.items():
-            try:
-                attr = mapping[key]
-            except KeyError:
-                attr = self._rename(key)
-                mapping[key] = attr
-            
-            if attr is None:
-                continue
-
+        for attr, val in data_.items():
             if attr in self._meta.raws:
                 setattr(self, attr, val)
             elif PyotLazyObject.need_lazy(val):
-                server = getattr(self, self._meta.server_type)
+                if has_server:
+                    server = data_[self._meta.server_type]
+                else:
+                    server = getattr(self, self._meta.server_type)
                 setattr(self, attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
             elif attr == self._meta.server_type:
                 setattr(self, attr, val.lower())
@@ -341,8 +353,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         if pipeline is None: return self
         try:
             self._meta.pipeline = pipelines[pipeline]
-        except KeyError as e:
-            raise RuntimeError(f"Pipeline '{pipeline}' does not exist, inactive or dead") from e
+        except KeyError:
+            raise RuntimeError(f"Pipeline '{pipeline}' does not exist, inactive or dead")
         return self
 
     def _parse_camel(self, kwargs) -> Dict:
@@ -356,7 +368,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         self._get_server()
         self._refactor()
         self._validate()
-        if not hasattr(self._meta, "pipeline"): raise RuntimeError("Pyot pipeline for this model is not activated or lost")
+        if not hasattr(self._meta, "pipeline"): raise RuntimeError("Pyot pipeline for this model wasn't activated or lost")
         return PipelineToken(self._meta.pipeline.model, self._meta.server, self._meta.key, self._meta.load, self._meta.query)
 
     def _get_rule(self, search):

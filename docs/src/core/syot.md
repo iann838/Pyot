@@ -1,6 +1,6 @@
 # Syot
 
-Syot is a back ported version of Pyot to synchronous code (rarely a case not going async), this might be an option for those who don't want to go async or wants flexibility by using both async and sync code at the same time, which is in some case for Django views.
+Syot is a back ported version of Pyot to synchronous code (rarely a case not going async), this might be an option for those who don't want to go async or wants less complexity in code.
 
 :::tip INFO
 You still need to activate the Settings for Syot to work.

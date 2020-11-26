@@ -23,7 +23,7 @@ class TournamentProvider(PyotCore):
 
     def body(self, region: str, url: str):
         '''Add body parameters to the object.'''
-        if not url.startswith("https://") or not url.startswith("http://"):
+        if not url.startswith("https://") and not url.startswith("http://"):
             raise TypeError("url should be well-formed, starting with an http protocol")
         if region not in ["BR", "EUNE", "EUW", "JP", "LAN", "LAS", "NA", "OCE", "PBE", "RU", "TR"]:
             raise TypeError(f"Invalid region '{region}' parameter, region in tournament-v4 uses client keys (NA, EUW, BR, LAN, ...)")
