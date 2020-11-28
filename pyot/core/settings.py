@@ -54,7 +54,7 @@ class Settings:
         stores = []
         _track = []
         for config in pipeline_configs:
-            config = {key.lower():value for (key,value) in config.items()}
+            config = {key.lower() if key.upper() == key else key: value for (key,value) in config.items()}
             store_cls = import_class(config.pop("backend"))
             if store_cls in _track and store_cls.unique == True:
                 raise RuntimeError(f"Store '{store_cls.__name__}' should only have one instance in the pipeline")
