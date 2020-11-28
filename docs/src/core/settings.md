@@ -41,14 +41,6 @@ Pyot Settings should be **_activated_** on your main module's `__init__.py` or b
 > - `DEFAULT_LOCALE` <Badge text="param" type="warning" vertical="middle"/> <Badge text="param" type="optional" vertical="middle"/> -> `str`: Default locale to use when no locale is passed to Pyot Core Objects, locale values varies from model, refer to each model at API section.
 >
 > - `LOCALE_MAP` <Badge text="param" type="warning" vertical="middle"/> <Badge text="param" type="optional" vertical="middle"/> -> `Mapping[str, str]`: A dictionary that contains the key value pairs to override the default mapping to locale, this mapping is used for converting platform and regions to locale when "bridges" are called, for example, calling a bridge that brings a `Champion` instance from a `ChampionMastery` instance with platform `"KR"` will bring `Champion` with locale `ko_kr` by default, you can override the region/platform/locale on runtime too, simply `x.locale = "en_us"` where x is a locale based Core Object. For values refer to each model at API section
-> :::tip INFO
-> Since v1.0.7 you can use the wildcard key (`"*"`) to identify "remaining" locales.
-> :::
->
-> - `GATHERER` <Badge text="param" type="warning" vertical="middle"/> -> `Mapping[str, Any]`: Gatherer original argument
-> ::: danger DEPRECATED
-> Removed since v1.1.0.
-> :::
 >
 > - `PIPELINE` <Badge text="param" type="warning" vertical="middle"/> -> `List[Mapping[str, Any]]`: A list of dict of stores that defines the Pipeline used for the model. **_For each item in the list, DEFINE the `BACKEND` of the Store plus other required or optional settings, these settings are documented in a per Store basic_**. Please refer to Pipeline section for more details and Stores section for its settings params and available stores for each model.
 
@@ -89,7 +81,7 @@ Settings(
         {
             "BACKEND": "pyot.stores.RiotAPI",
             "API_KEY": os.environ["RIOT_API_KEY"],
-            "LOG_LEVEL": 30,  # <-- 30 to put at warning level so python prints it.
+            "LOG_LEVEL": 30,  # <-- 30 will also make python print all calls.
             "RATE_LIMITER": {
                 "BACKEND": "pyot.limiters.MemoryLimiter",
                 "LIMITING_SHARE": 1,

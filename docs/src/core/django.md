@@ -8,7 +8,7 @@ Create a file (the example will use `pipelines.py`) under any of the Django modu
 
 This example has `mysite` as the project directory and `pipelines.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
-```python{21}
+```python{20}
 #mysite/pipelines.py
 
 from pyot.core import Settings
