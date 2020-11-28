@@ -17,6 +17,13 @@ Starting v1.2.0
 > ::: warning
 > This cache will not copy the objects on get/put, modification to objects affects cached objects.
 > :::
+> ::: tip NEW
+> **Since v2.0.0:** You can intercept the cache into the `get()` method of a Pyot Core object for syntax sugar.
+> ```python
+> cache = PtrCache()
+> item = lol.Item(id=2003).get(ptr_cache=cache)
+> ```
+> :::
 > ### `__init__(expiration=60*60*3, max_entries=2000)`
 > - `expiration` <Badge text="param" type="warning" vertical="middle"/>: Expiration time of objects.
 > - `max_entries` <Badge text="param" type="warning" vertical="middle"/>: Max number of objects before culling.

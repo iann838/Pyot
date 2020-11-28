@@ -80,7 +80,7 @@ class RiotAPI(StoreObject):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
             LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupts your task if this persists. "
-                           f"Origin: {origin}, Inmediate backoff: {seconds} seconds.")
+                           f"Origin: {origin}, Backing off for {seconds} seconds and retrying.")
             type_ = response.headers["X-Rate-Limit-Type"]
             await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, regmethod)
 

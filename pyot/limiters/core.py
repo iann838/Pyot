@@ -193,10 +193,10 @@ class BaseLimiter:
                 r_method_rate[i][0] = method_count[i][0]
         for i in range(2):
             if token.flag_app and r_app_time[i] < now:
-                app_top = date + timedelta(seconds=r_app_rate[i][3] + 1.6)
+                app_top = date + timedelta(seconds=r_app_rate[i][3] - 0.03)
                 r_app_time[i] = app_top
             if token.flag_method and r_method_time[i] < now:
-                method_top = date + timedelta(seconds=r_method_rate[i][3] + 1.6)
+                method_top = date + timedelta(seconds=r_method_rate[i][3] - 0.03)
                 r_method_time[i] = method_top
         await self.set_limits(server, method, [r_app_rate, r_app_time, r_method_rate, r_method_time])
 

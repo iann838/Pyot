@@ -1,6 +1,6 @@
 ---
 home: true
-tagline: 2020 High level Python Framework for the Riot Games API, AsyncIO based, support for Django, wide range of Caches and the most perfect Rate Limiters.
+tagline: AsyncIO based high level Python framework for the Riot Games API that encourages rapid development and clean, pragmatic design.
 actionText: Documentations →
 actionLink: /core/
 features:

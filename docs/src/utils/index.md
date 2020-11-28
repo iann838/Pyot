@@ -2,9 +2,9 @@
 
 This module exposes a wide set of utils methods and objects **_highly_** helpful for development.
 
-If you want to iterate for all the items in events, **_it would be innefficient_** doing `await event.item.get()` for every loop, even if it is cached, because Pyot's stores makes sure that any data is **_safe_** from any type of mutation, so stores will automatically copy the object before retrieving it, which adds up significant amount of CPU time. Solution would be a local cache that saves a reference to the object, one of the use case of a `PtrCache` from this module.
+For example: If you want to iterate for all the items in lol timeline events, **_it would be innefficient_** doing `await event.item.get()` for every event, because Pyot's stores makes sure that all data is **_safe_** from any type of mutation, so stores will automatically serialize and deserialize when accessing the object, which adds up CPU time overall. The solution would be a local `PtrCache` that saves references to the object without serializing it.
 
-Or if you want to convert a champion key to champion id without the need of pulling an entire `Champion` object then the method `champion_id_by_key` is here for you. There is also others common tools like the frequently mentioned `loop_run`, `fast_copy` which are even useful outside of Pyot environment.
+Another example: Pyot objects are _self filled_, therefore having them in lists will start filling the object in that list, allocating more memory over time, with a `FrozenGenerator` it will isolate the objects from the list by returning a copy on the iteration process.
 
 ## Imports
 
