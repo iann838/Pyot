@@ -33,44 +33,81 @@ async with Queue() as quque:
 > ### `join()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>:
 >Block until all items in the queue have been gotten and processed. Empty the collected responses and returns them. NoneType and Exceptions are not collected, order of the responses might not correspond the put order.
 
+> ### `sid` <Badge text="property" type="error" vertical="middle"/>
+> Property where the session id is stored, can be used to pass down to the Core objects `get()` to reuse a session.
+
 > ### `responses` <Badge text="property" type="error" vertical="middle"/>
 > Property where all the responses are saved, unlike Gatherer, this property **_is not safe to access_** as it may have inconsistenty.
 
 :::tip
 You can use the same queue to `join()` as many time as you want, this creates a nice way to do everything in a single Queue, For example: get ChallengerLeague -> all Summoner in the entries -> pull all MatchHistory of the gotten Summoners.
+
+It's best practice to passed the `sid` to the Core objects so it can reuse a session since creating a new session (created when no `sid` is provided) will cause some overhead.
 :::
 
 ## Example Usage
-```python{11,12,13,14,23,24}
+```python{11,14,22,25,26}
 from typing import List
 from pyot.models import lol
 from pyot.core import Queue
-from pyot.utils import FrozenGenerator, shuffle_list, loop_run
+from pyot.utils import FrozenGenerator, shuffle_list
 
 async def get_puuid(queue: Queue, summoner: lol.Summoner):
     summoner = await summoner.get(sid=queue.sid)
     return summoner.puuid
 
 async def pull_puuids():
-    async with Queue(log_level=30) as queue: # type: Queue
+    async with Queue() as queue: # type: Queue
         await queue.put(lol.ChallengerLeague(queue="RANKED_SOLO_5x5", platform="na1").get(sid=queue.sid))
         await queue.put(lol.MasterLeague(queue="RANKED_SOLO_5x5", platform="na1").get(sid=queue.sid))
         leagues = await queue.join() # type: List[lol.ChallengerLeague]
-        
-        _summoners = []
+
+        summoners = []
         for league in leagues:
             for entry in league.entries:
-                _summoners.append(entry.summoner)
-        summoners = FrozenGenerator(shuffle_list(_summoners, "platform"))
+                summoners.append(entry.summoner)
+        # Shuffles the list by platform to balance rate limits by region 
+        # Also freezes the list to prevent mutation that causes memory leak
+        summoners = FrozenGenerator(shuffle_list(summoners, "platform"))
 
         for summoner in summoners:
             await queue.put(get_puuid(queue, summoner))
         print(await queue.join())
-
-loop_run(pull_puuids)
 ```
+:::danger MEMORY AWARENESS
+The coroutine passed to the queue, try your best to not return anything or return small objects, because `Queue` will save those returning values for the `join()`, meaning that memory can start to increase over time, try to design the coroutines to consume the object instead.
+
+Assuming we want to gather 30k matches, take the following examples in term of memory usage
+* ***BAD***
+```python
+def get_matches():
+    matches = list_with_30k_match_timelines # <-- Suppose
+
+    async with Queue() as queue: # type: Queue
+        for match in matches:
+            await queue.put(match.get(sid=queue.sid))
+```
+* ***GOOD***
+```python
+def get_matches():
+    matches = list_with_30k_match_timelines # <-- Suppose
+    matches = FrozenGenerator(matches) # Freezes the list to prevent mutation
+
+    async with Queue() as queue: # type: Queue
+        for match in matches:
+            await queue.put(consume_match(queue, match))
+
+def consume_match(queue, match):
+    match.get(sid=queue.sid) # pass the session to reuse
+    # ...
+    # Consume your match (e.g. get specific stat, mutate a dictionary, save to db, etc.) ...
+    # ...
+    return None
+    # OR no return at all (When no return is stated, defaults to return None)
+```
+:::
 :::tip DETAILS
-* `FrozenGenerator` was used to isolate the summoners objects so it doesn't pass by reference and therefore not filling up the original list and prevent possible memory leak.
-* `shuffle_list` was used to shuffle the list by `"platform"` to take advantage of crossing the waiting time on the rate limiters for the different regions.
+* `FrozenGenerator` was used to isolate the summoners objects so it doesn't pass by reference and therefore not mutating the original list and prevent possible memory leak.
+* `shuffle_list` was used to shuffle the list by `"platform"` to take advantage of crossing the waiting time on the rate limits for the different regions.
 * A good use of inline type hinting can help you with IDE autocompletion. Note: You might not use this if responses contains more than 1 type of Pyot Core objects.
 :::

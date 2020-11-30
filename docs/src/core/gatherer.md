@@ -14,7 +14,7 @@ Pyot Gatherer will automatically append `get()` to the instance after setting th
 
 Gatherer workers are NOT real workers, that is the size of the chunk to gather.
 :::
-:::danger READ ME
+:::danger MEMORY AWARENESS
 Misusing the Gatherer might end up causing memory leaks, consider the following example:
 ```python{4}
 matches = list_with_30k_match_timelines # <-- Suppose
