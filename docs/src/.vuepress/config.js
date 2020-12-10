@@ -63,12 +63,12 @@ module.exports = {
         link: '/utils/',
       },
       {
-        text: 'Developers',
-        link: '/devs/',
-      },
-      {
         text: 'Topics',
         link: '/topics/',
+      },
+      {
+        text: 'Developers',
+        link: '/devs/',
       },
       {
         text: 'Github',

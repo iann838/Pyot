@@ -30,6 +30,7 @@ All documentation is in the "docs" directory. If you're just getting started, he
 > - **_Stores_** section documents the available Stores configurable to the pipeline.
 > - **_Limiters_** section documents the available Rate Limiters for the RiotAPI Store.
 > - **_Utils_** section documents the available helper functions and objects of Pyot.
+> - **_Topics_** section documents common Q&As and hard touched topics of Pyot.
 > - **_Developers_** section has contributing guidelines and wanted features.
 
 1. First, read the **[Installation Guide](installation.html)** for instructions on installing Pyot.
@@ -43,6 +44,8 @@ All documentation is in the "docs" directory. If you're just getting started, he
 Docs are updated rigorously. If you find any problems in the docs, or think they should be clarified in any way, please take 30 seconds to open an issue in this repository.
 
 ## To contribute to Pyot
+
+If this framework is useful to you, a **star** to the repo is appreciated.
 
 Contributions are welcome! If you have idea or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. And we always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.
 
