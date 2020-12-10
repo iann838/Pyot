@@ -67,6 +67,10 @@ module.exports = {
         link: '/devs/',
       },
       {
+        text: 'Topics',
+        link: '/topics/',
+      },
+      {
         text: 'Github',
         link: 'https://github.com/paaksing/pyot'
       },
@@ -262,6 +266,20 @@ module.exports = {
             '',
             'objects',
             'methods',
+            'decorators',
+          ]
+        }
+      ],
+      '/topics': [
+        {
+          title: "Topics",
+          collapsable: false,
+          sidebarDepth: 2,
+          initialOpenGroupIndex: 1,
+          children: [
+            '',
+            'slow',
+            'sudden_stop',
           ]
         }
       ],

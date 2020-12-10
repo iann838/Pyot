@@ -42,7 +42,7 @@ async with Queue() as quque:
 :::tip
 You can use the same queue to `join()` as many time as you want, this creates a nice way to do everything in a single Queue, For example: get ChallengerLeague -> all Summoner in the entries -> pull all MatchHistory of the gotten Summoners.
 
-It's best practice to passed the `sid` to the Core objects so it can reuse a session since creating a new session (created when no `sid` is provided) will cause some overhead.
+It's best practice to pass the `sid` to the Core objects so it can reuse a session since creating a new session (created when no `sid` is provided) will cause some overhead.
 :::
 
 ## Example Usage

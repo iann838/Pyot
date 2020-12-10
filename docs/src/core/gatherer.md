@@ -27,7 +27,7 @@ The why of this is because `matches` is a mutable object, so it will be passed t
 
 ## Pyot Gatherer API
 This object creates a manager that speeds up the normal data gathering, statements and responses are all instantiated to this object and can be referenced back.
-~~This object is imported at Pyot's root level as `Gatherer`~~(Removed since v1.1) at the core module of pyot.
+This object is imported at the core module of pyot.
 
 ```python{1}
 from pyot.core import Gatherer

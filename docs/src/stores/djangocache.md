@@ -23,7 +23,7 @@ You can add multiple stores of this type to the pipeline, but take in mind that 
 
 ## Cached Endpoints
 
-All available endpoints defined in the default expirations.
+All available endpoints defined in the [default expirations](/pipeline/expiration.html#default-expirations). Endpoints are also documented under each service store documentation.
 
 ## Example Usage
 

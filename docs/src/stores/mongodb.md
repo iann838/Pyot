@@ -34,7 +34,7 @@ Objects are stored as bytes strings serialized by `pickle` due to faster perform
 
 ## Cached Endpoints
 
-All available endpoints defined in the default expirations.
+All available endpoints defined in the [default expirations](/pipeline/expiration.html#default-expirations). Endpoints are also documented under each service store documentation.
 
 ## Example Usage
 

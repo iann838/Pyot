@@ -19,7 +19,7 @@ pyot startproject myproject
 This will create a **myproject** directory in your current directory.
 
 :::warning
-You’ll need to avoid naming projects after built-in Python or Pyot components. In particular, this means you should avoid using names like django (which will conflict with Pyot itself) or test (which conflicts with a built-in Python package).
+You’ll need to avoid naming projects after built-in Python or Pyot components. In particular, this means you should avoid using names like pyot (which will conflict with Pyot itself) or test (which conflicts with a built-in Python package).
 :::
 
 ```shell

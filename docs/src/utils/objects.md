@@ -24,17 +24,17 @@ Starting v1.2.0
 > item = lol.Item(id=2003).get(ptr_cache=cache)
 > ```
 > :::
-> ### `__init__(expiration=60*60*3, max_entries=2000)`
-> - `expiration` <Badge text="param" type="warning" vertical="middle"/>: Expiration time of objects.
-> - `max_entries` <Badge text="param" type="warning" vertical="middle"/>: Max number of objects before culling.
+> ### `__init__(expiration=60*60*3, max_entries=5000)`
+> - `expiration` <Badge text="param" type="warning" vertical="middle"/>: Expiration time of objects (number of seconds). Negative value will be treated as "cache forever".
+> - `max_entries` <Badge text="param" type="warning" vertical="middle"/>: Max number of objects before culling, for sanity of preventing memory leak.
 > ### `get(name: str, func = None)` <Badge text="function" type="error" vertical="middle"/>
 > Get an object from the cache.
 > - `func` <Badge text="param" type="warning" vertical="middle"/> will be called when provided and if object doesn't exist, put the returned value to the cache and return it.
 > ### `aget(name: str, coro = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Async get an object from the cache.
 > - `coro` <Badge text="param" type="warning" vertical="middle"/> will be awaited when provided and if object doesn't exist, put the returned value to the cache and return it. If the `coro` doesn't need to be awaited it will be closed and not raise warnings.
-> ### `set(name: str, val)` <Badge text="function" type="error" vertical="middle"/>
-> Put an object to the cache.
+> ### `set(name: str, val, exp: int = None)` <Badge text="function" type="error" vertical="middle"/>
+> Put an object to the cache. Expiration can be provided to override default expiration on cache instantiation.
 > ### `clear()` <Badge text="function" type="error" vertical="middle"/>
 > Clear the cache.
 

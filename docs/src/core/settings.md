@@ -10,9 +10,11 @@ Pyot Settings are passed as constructors parameters to the class. It takes the n
 Don't forget to call `activate()` at the end of your settings instantiation.
 :::
 
+***Relevant related documentations: [Pipeline](/pipeline/) & [Stores](/stores/).***
+
 ## Pyot Settings API
 
-This object is imported ~~at Pyot's root level as `Settings`~~(Removed since v1.1.0) at the core module.
+This object is imported at the core module.
 ```python{1}
 from pyot.core import Settings
 
@@ -42,16 +44,15 @@ Pyot Settings should be **_activated_** on your main module's `__init__.py` or b
 >
 > - `LOCALE_MAP` <Badge text="param" type="warning" vertical="middle"/> <Badge text="param" type="optional" vertical="middle"/> -> `Mapping[str, str]`: A dictionary that contains the key value pairs to override the default mapping to locale, this mapping is used for converting platform and regions to locale when "bridges" are called, for example, calling a bridge that brings a `Champion` instance from a `ChampionMastery` instance with platform `"KR"` will bring `Champion` with locale `ko_kr` by default, you can override the region/platform/locale on runtime too, simply `x.locale = "en_us"` where x is a locale based Core Object. For values refer to each model at API section
 >
-> - `PIPELINE` <Badge text="param" type="warning" vertical="middle"/> -> `List[Mapping[str, Any]]`: A list of dict of stores that defines the Pipeline used for the model. **_For each item in the list, DEFINE the `BACKEND` of the Store plus other required or optional settings, these settings are documented in a per Store basic_**. Please refer to Pipeline section for more details and Stores section for its settings params and available stores for each model.
+> - `PIPELINE` <Badge text="param" type="warning" vertical="middle"/> -> `List[Mapping[str, Any]]`: A list of dict of stores that defines the Pipeline used for the model. **_For each item in the list, DEFINE the `BACKEND` of the Store plus other required or optional settings, these settings are documented in a per Store basic_**. Please refer to [Pipeline](/pipeline/) section for more details and [Stores](/stores/) section for its settings params and available stores for each model.
 
 > ### `activate()` <Badge text="function" type="error" vertical="middle"/>
 > Activates the Settings object by creating the needed pipeline and adjusting the defaults.
 
 ## Example Usage
-:::tip
-Each Pipeline Store can receive different params, check out the Stores tab for detailed info on available stores.
-The Gatherer info is in the next section.
-:::
+
+For documentation of each store please go to [Stores](/stores/).
+
 ```python
 from pyot.core import Settings
 import os

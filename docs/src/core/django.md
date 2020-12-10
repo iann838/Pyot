@@ -49,3 +49,66 @@ In the same `settings.py` file, add the file path to a reserved variable for Pyo
 PYOT_SETTINGS = ['mysite.pipelines']
 ```
 You can define multiple settings in different files if you want to keep 1 setting per app (supposing you have 1 app per game model).
+
+## Synchronous Compatibility
+
+The wrappers from `asgiref.sync` will be responsible for this.
+
+Running async function in sync code:
+
+```python
+from asgiref.sync import async_to_sync
+
+async def bar():
+    pass
+
+def foo():
+    async_to_sync(bar)()
+```
+
+```python
+from asgiref.sync import async_to_sync
+
+@async_to_sync
+async def bar():
+    pass
+
+def foo():
+    bar()
+```
+
+Running sync function in async code:
+
+```python
+from asgiref.sync import sync_to_async
+
+def bar():
+    pass
+
+async def foo():
+    await sync_to_async(bar)()
+```
+
+```python
+from asgiref.sync import sync_to_async
+
+@sync_to_async
+def bar():
+    pass
+
+async def foo():
+    await bar()
+```
+
+For more info, please read [Django Asynchronous Support](https://docs.djangoproject.com/en/3.1/topics/async/).
+
+On windows, it is possible to see `RuntimeError: Event loop is closed` throwing from the proactor pipeline. This is a [known issue](https://github.com/aio-libs/aiohttp/issues/4324). ***This will not affect your code from running, because the exception will be ignored.*** You can still fix this on Windows so that the warning is not printed, you can add the following code in the same file of your pyot settings:
+
+```python
+import platform
+
+if platform.system() == 'Windows':
+    from asyncio.proactor_events import _ProactorBasePipeTransport
+    from pyot.utils.internal import silence_event_loop_closed
+    _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(_ProactorBasePipeTransport.__del__)
+```

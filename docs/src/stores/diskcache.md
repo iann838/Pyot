@@ -22,11 +22,11 @@ You can add multiple stores of this type to the pipeline, but take in mind that 
 > Set the log level for the store. Defaults to 10 (DEBUG level).
 >
 > #### `**kwargs` (Any Extra key value pair)
-> Any extra Key : Value pair that is passed to the `diskcache.FanoutCache` instance. Refer to its arguments at [diskcache documentation](http://www.grantjenks.com/docs/diskcache/api.html).
+> Any extra Key : Value pair that is passed to the `diskcache.FanoutCache` instance. Refer to its arguments at [diskcache documentation](https://www.grantjenks.com/docs/diskcache/api.html).
 
 ## Cached Endpoints
 
-All available endpoints defined in the default expirations.
+All available endpoints defined in the [default expirations](/pipeline/expiration.html#default-expirations). Endpoints are also documented under each service store documentation.
 
 ## Example Usage
 

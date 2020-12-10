@@ -27,18 +27,18 @@ pip install asgiref
 Wrap the tasks
 
 ```python
-from asgiref.sync import AsyncToSync
+from asgiref.sync import async_to_sync
 from .celery import app
 
 @app.task
-@AsyncToSync
+@async_to_sync
 async def mytask():
     # ...
 ```
 
 ### Calling asyncio.run 
 
-This one involves in creating a proxy synchronous function, not so clean. You can also create a decorator that functions similarly to `AsyncToSync`.
+This one involves in creating a proxy synchronous function, not so clean. You can also create a decorator that functions similarly to `async_to_sync`.
 
 ```python
 import asyncio

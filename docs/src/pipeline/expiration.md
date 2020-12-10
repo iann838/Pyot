@@ -78,6 +78,10 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >
 >`"match_v4_matchlist": 0`
 >
+>`"match_v4_tournament_match": 0`
+>
+>`"match_v4_tournament_matches": 0`
+>
 >`"spectator_v4_current_game": 0`
 >
 >`"spectator_v4_featured_games": 0`
@@ -111,6 +115,7 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >`"meraki_champion_by_key": td(hours=3)`
 >
 >`"meraki_item_by_id": td(hours=3)`
+
 
 > ### `TFT` <Badge text="Model" type="warning" vertical="middle" />
 >`"league_v1_summoner_entries": 0`
@@ -149,7 +154,6 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 > `"match_v1_match": 0`
 >
 > `"ddragon_lor_set_data": td(hours=3)`
->
 
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />

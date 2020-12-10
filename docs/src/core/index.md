@@ -37,7 +37,7 @@ All documentation is in the "docs" directory. If you're just getting started, he
 3. Then you should get to know the types of objects that Pyot works with in **[Objects](apiobjects.html)**.
 4. Now give yourself an idea of what models we have and what objects we work in **[Models](/models/)**
 5. You'll probably want to read through the topical context managers for achieving concurrency in **[Gatherer](gatherer.html)** and **[Queue](queue.html)**.
-6. From there you can jump back to manipulating the settings by reading **Core > Cores > Settings** and get to know all the available pipeline stores in Pyot at **[Stores](/stores/)**.
+6. From there you can jump back to manipulating the settings by reading **[Settings](settings.html)** and get to know all the available pipeline stores in Pyot at **[Stores](/stores/)**.
 7. Check out all the utils objects and methods available in `pyot.utils` that can be handy in your development, documented at **[Utils](/utils/)**.
 
 Docs are updated rigorously. If you find any problems in the docs, or think they should be clarified in any way, please take 30 seconds to open an issue in this repository.
