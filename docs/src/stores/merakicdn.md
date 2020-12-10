@@ -12,7 +12,7 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 ### Backend: `pyot.stores.MerakiCDN`
 ### Arguments:
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
-> Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
+> Define how this store should handle request errors, please refer to [Error Handler](/pipeline/handler.html) documentations at Pipeline.
 >
 > #### `log_level: int = 10`
 > Set the log level for the store. Defaults to 10 (DEBUG level).

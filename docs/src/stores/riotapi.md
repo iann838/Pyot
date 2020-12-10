@@ -24,7 +24,7 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 > Accepts a Dict containing the settings for the rate limiter. Please refer to Limiters tab section.
 >
 > #### `error_handling: Mapping[int, Tuple[str, List[int]]] = None`
-> Define how this store should handle request errors, please refer to the General -> Error Handler section on the sidebar.
+> Define how this store should handle request errors, please refer to [Error Handler](/pipeline/handler.html) documentations at Pipeline.
 >
 > #### `log_level: int = 10`
 > Set the log level for the store. Defaults to 10 (DEBUG level).
