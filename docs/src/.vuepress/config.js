@@ -270,7 +270,7 @@ module.exports = {
           ]
         }
       ],
-      '/topics': [
+      '/topics/': [
         {
           title: "Topics",
           collapsable: false,
