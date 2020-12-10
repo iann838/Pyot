@@ -10,7 +10,7 @@ Pyot Settings are passed as constructors parameters to the class. It takes the n
 Don't forget to call `activate()` at the end of your settings instantiation.
 :::
 
-***Relevant related documentations: [Pipeline](/pipeline/) & [Stores](/stores/).***
+Relevant related documentations: **[Pipeline](/pipeline/)** & **[Stores](/stores/)**.
 
 ## Pyot Settings API
 

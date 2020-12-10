@@ -272,12 +272,18 @@ module.exports = {
       ],
       '/topics/': [
         {
+          title: "General",
+          collapsable: false,
+          children: [
+            '',
+          ]
+        },
+        {
           title: "Topics",
           collapsable: false,
           sidebarDepth: 2,
           initialOpenGroupIndex: 1,
           children: [
-            '',
             'slow',
             'sudden_stop',
           ]
