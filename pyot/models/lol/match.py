@@ -339,33 +339,41 @@ class MatchHistoryData(PyotStatic):
 
 
 class MatchFrameMinuteData(PyotStatic):
-    frame: List[MatchFrameData]
+    data: List[MatchFrameData]
+
+    def __init__(self, data):
+        data = {'data': data}
+        super().__init__(data)
 
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)
-        return self.frame[item]
+        return self.data[item]
 
     def __iter__(self) -> Iterator[MatchFrameData]:
-        return iter(self.frame)
+        return iter(self.data)
 
     def __len__(self):
-        return len(self.frame)
+        return len(self.data)
 
 
 class MatchEventMinuteData(PyotStatic):
-    frame: List[MatchEventData]
+    data: List[MatchEventData]
+
+    def __init__(self, data):
+        data = {'data': data}
+        super().__init__(data)
 
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)
-        return self.frame[item]
+        return self.data[item]
 
     def __iter__(self) -> Iterator[MatchEventData]:
-        return iter(self.frame)
+        return iter(self.data)
 
     def __len__(self):
-        return len(self.frame)
+        return len(self.data)
 
 
 # PYOT CORE OBJECTS
@@ -513,10 +521,11 @@ class MatchTimeline(Match, PyotCore):
             "match_v4_timeline": ["id"],
         }
 
-    async def get(self, sid: str = None, pipeline: str = None):
+    async def get(self, sid: str = None, pipeline: str = None, raw: bool = False):
         '''Awaitable. Get this object from the pipeline.\n
         `sid` id identifying the session on the pipeline to reuse.\n
         `pipeline` key identifying the pipeline to execute against.\n
+        `raw` flag for returning raw dictionary instead of serialized objects.\n
         '''
         # pylint: disable=no-member
         if pipeline:
@@ -527,6 +536,8 @@ class MatchTimeline(Match, PyotCore):
         task2 = asyncio.create_task(self._meta.pipeline.get(token2, sid))
         data1 = await task1
         data2 = await task2
+        if raw:
+            return {'match': data1, 'timeline': data2}
         self._meta.data = self._transform(data1, data2)
         self._fill()
         return self
@@ -584,13 +595,13 @@ class Timeline(PyotCore):
 
     def _transform(self, data):
         new_data = {
-            "frames": {},
-            "events": {},
+            "frames": [],
+            "events": [],
             "interval": data["frameInterval"]
         }
         for f in data["frames"]:
-            new_data["frames"]["frame"] = list(f["participantFrames"].values())
-            new_data["events"]["frame"] = f["events"]
+            new_data["frames"].append(list(f["participantFrames"].values()))
+            new_data["events"].append(f["events"])
         return new_data
 
 

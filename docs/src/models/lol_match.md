@@ -183,11 +183,11 @@ for match in history.match_timelines:
 
 ## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 
->`frame: List[MatchFrameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`data: List[MatchFrameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 ## `MatchEventMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 
->`frame: List[MatchEventData]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`data: List[MatchEventData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 ## `MatchHistoryMatchData` <Badge text="Pyot Static" vertical="middle"/> 
 >`platform: str`

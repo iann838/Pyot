@@ -60,6 +60,6 @@ The Riot Games API can give 3 types of 429: `service`, `application` and `method
 >
 >`504 : ("E", [3, 3])`
 >
->`602 : ("T", [])`
+>`602 : ("R", [2])`
 >
 >`800 : ("T", [])`

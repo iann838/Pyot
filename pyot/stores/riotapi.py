@@ -1,16 +1,17 @@
-from typing import Mapping, Dict, Any, Tuple, List
+from typing import Mapping, Dict, Any, List
 from json.decoder import JSONDecodeError
 from logging import getLogger
-from datetime import datetime, timedelta
+from datetime import datetime
 import asyncio
 import aiohttp
+import requests
 
 from pyot.core import exceptions as exc
 from pyot.pipeline.token import PipelineToken, RequestToken
 from pyot.pipeline.objects import StoreObject
 from pyot.pipeline.handler import ErrorHandler
 from pyot.limiters.core import BaseLimiter
-from pyot.utils import import_class
+from pyot.utils import import_class, thread_run
 
 LOGGER = getLogger(__name__)
 
@@ -44,16 +45,21 @@ class RiotAPI(StoreObject):
         url = await self._endpoints.resolve(token)
         headers = {"X-Riot-Token": self._api_key}
         request_token = RequestToken()
+        decode_failed = False
         while await request_token.run_or_raise():
             try:
                 limit_token = await self._rate_limiter.get_limit_token(server, regmethod)
                 if await limit_token.run_or_wait():
                     self._rate_limiter.validate_bucket(server, regmethod, limit_token)
                     continue
-                response = await session.request(method=request_method, url=url, headers=headers, json=body)
+                if decode_failed:
+                    response = await thread_run(requests.request, method=request_method, url=url, headers=headers, json=body)
+                    response.status = response.status_code
+                else:
+                    response = await session.request(method=request_method, url=url, headers=headers, json=body)
                 LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > RiotAPI] {request_method}: {self._log_template(token)}")
             except Exception as e:
-                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request and ignored")
+                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request")
                 response = None
 
             await self._rate_limiter.stream(response, server, regmethod, limit_token)
@@ -62,10 +68,17 @@ class RiotAPI(StoreObject):
             if response and response.status == 200:
                 try:
                     try:
-                        return await asyncio.wait_for(response.json(encoding="utf-8"), timeout=5)
+                        if not decode_failed:
+                            return await asyncio.wait_for(response.json(encoding="utf-8"), timeout=5)
+                        else:
+                            return await thread_run(response.json, encoding="utf-8")
                     except JSONDecodeError:
-                        return await asyncio.wait_for(response.text(), timeout=5)
+                        if not decode_failed:
+                            return await asyncio.wait_for(response.text(), timeout=5)
+                        else:
+                            return await thread_run(response.text)
                 except asyncio.TimeoutError:
+                    decode_failed = True
                     code = 602
 
             try:

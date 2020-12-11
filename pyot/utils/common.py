@@ -1,3 +1,4 @@
+from functools import partial
 from inspect import getmembers, isfunction
 from typing import List, Any
 from importlib import import_module
@@ -11,10 +12,10 @@ def loop_run(coro):
     return asyncio.get_event_loop().run_until_complete(coro)
 
 
-async def thread_run(func):
+async def thread_run(func, *args, **kwargs):
     '''Run a blocking function in a thread.'''
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, func)
+    return await loop.run_in_executor(None, partial(func, *args, **kwargs))
 
 
 def inherit_docstrings(cls):

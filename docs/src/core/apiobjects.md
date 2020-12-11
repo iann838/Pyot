@@ -15,6 +15,7 @@ This is main type of objects that developers works with. Below is a list of gene
 > Awaitable that executes `get` request to the pipeline, finds the requested data, returns it and sinks through the pipeline.
 > - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
 > - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
+> - `raw` <Badge text="param" type="warning" vertical="middle"/>: Optional, boolean flag for returning raw dictionary instead of serialized objects, typically for third party libraries to comsume.
 > - `ptr_cache` <Badge text="param" type="warning" vertical="middle"/>: Optional, Intercepts a PtrCache, usage details please refer to [PtrCache](/utils/objects.html#PtrCache).
 
 > ### `post(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>

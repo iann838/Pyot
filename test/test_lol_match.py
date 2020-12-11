@@ -185,9 +185,13 @@ async def async_timeline():
     assert isinstance(timeline.interval, timedelta)
     assert timeline.interval == timedelta(seconds=60)
     for event in timeline.events:
-        assert isinstance(event, lol.match.MatchEventData)
+        assert isinstance(event, lol.match.MatchEventMinuteData)
+        for e in event:
+            assert isinstance(e, lol.match.MatchEventData)
     for frame in timeline.frames:
-        assert isinstance(frame, lol.match.MatchFrameData)
+        assert isinstance(frame, lol.match.MatchFrameMinuteData)
+        for f in frame:
+            assert isinstance(f, lol.match.MatchFrameData)
 
 
 async def async_match_history():

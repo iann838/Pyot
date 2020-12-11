@@ -257,11 +257,12 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         platform_list = []
         locale_list = []
 
-    async def get(self, sid: str = None, pipeline: str = None, ptr_cache: PtrCache = None):
+    async def get(self, sid: str = None, pipeline: str = None, raw: bool = False, ptr_cache: PtrCache = None):
         '''Awaitable. Get this object from the pipeline.\n
         `sid` id identifying the session on the pipeline to reuse.\n
         `pipeline` key identifying the pipeline to execute against.\n
-        `ptr_cache` intercepts a PtrCache, usage details please refer to documentations.\n 
+        `raw` flag for returning raw dictionary instead of serialized objects.\n
+        `ptr_cache` intercepts a PtrCache, usage details please refer to documentations.\n
         '''
         self.set_pipeline(pipeline)
         token = await self.create_token()
@@ -275,6 +276,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
 
         data = await self._meta.pipeline.get(token, sid)
         data = self._filter(data)
+        if raw:
+            return data
         self._meta.data = self._transform(data)
         self._fill()
 
