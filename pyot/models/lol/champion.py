@@ -104,6 +104,7 @@ class Champion(PyotCore):
     id: int
     key: str
     name: str
+    lore: str
     tactical_info: ChampionTacticalData
     play_style: ChampionPlayerStyleData
     square_path: str

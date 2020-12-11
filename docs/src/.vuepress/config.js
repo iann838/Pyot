@@ -171,6 +171,7 @@ module.exports = {
             'lol_spectator',
             'lol_spell',
             'lol_summoner',
+            'lol_status',
             'lol_thirdpartycode',
             'lol_tournaments',
           ]
@@ -200,6 +201,7 @@ module.exports = {
             'lor_card',
             'lor_match',
             'lor_ranked',
+            'lor_status',
           ]
         },
         {
@@ -210,6 +212,7 @@ module.exports = {
             'val_core',
             'val_content',
             'val_match',
+            'val_status',
           ]
         }
       ],
@@ -286,6 +289,7 @@ module.exports = {
           children: [
             'slow',
             'sudden_stop',
+            'proactor_runtimeerror',
           ]
         }
       ],

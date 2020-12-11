@@ -61,7 +61,7 @@ class Status(PyotCore):
     incidents: List[StatusDetailData]
 
     class Meta(PyotCore.Meta):
-        rules = {"status_v4_platform_data": []}
+        rules = {"status_v1_platform_data": []}
         raws = ["locales"]
 
     def __init__(self, platform: str = None):

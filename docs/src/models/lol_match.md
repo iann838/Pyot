@@ -1,11 +1,21 @@
 # Match
 Model: League of Legends
 
+:::warning PERFORMANCE TOPIC
+Timeline objects are bottlenecked by the python runtime, for more info about this topic and its **solution** please read **[Pyot slowing down on serialization](/topics/slow.html).**
+:::
+
+:::tip NEW
+***Since v2.0.5***: `Match` and `MatchTimeline` objects supports the tournament match endpoint. `Matches` class is added with the get match ids by tournament code endpoint. `Timeline` remains the same since both normal and tournament matches shares the same timeline endpoint.
+:::
+
 ## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
+>`"match_v4_tournament_match": ["tournament_code", "id"]` <Badge text="endpoint" type="error" vertical="middle"/>
+>
 >`"match_v4_match": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/>
 
 >`id: int`
@@ -34,6 +44,8 @@ Model: League of Legends
 >
 >`red_team: MatchTeamData`
 
+>`timeline -> "Timeline"` <Badge text="bridge" type="error" vertical="middle"/>
+
 ## `Timeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -50,10 +62,18 @@ Model: League of Legends
 
 ## `MatchTimeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
+>:::tip ABOUT THIS CLASS
+>This class inherits from `Match` and therefore has the same structure, `get()` will inject `events` and `frames` into each participant's timeline from `"match_v4_timeline"` response. Some events are not included because they are mainly team based (any event that has no `participantId` or similar).
+>
+>Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
+>:::
+>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
+>`"match_v4_tournament_match": ["tournament_code", "id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
+>
 >`"match_v4_match": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
 >
 >`"match_v4_timeline": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
@@ -84,37 +104,6 @@ Model: League of Legends
 >
 >`red_team: MatchTeamData`
 >
->:::tip INFO
->Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
->
->This Pyot Core Object is a Unified version of `Match` and `Timeline`, the timeline objects for each participants is under each participant's timeline `events` and `frames`. Some events are not included because it belongs to the general team based.
->:::
-
-:::warning OVERHEAD OF SERIALIZATION
-
-`MatchEventData` are usually **_large in numbers (hundreds per timeline)_**, Pyot **_can be slow_** when serializing these objects. If you are bothered by performance issues, **_the recommended solution_** would be to access it as a dict to avoid the serializing process:
-
-```python{2}
-    # ...
-    for event in timeline["events"]:
-        # Do stuff with the event (as dictionary). Tested 5x faster.
-```
-The **_dict keys and values_** are the same as returned by the Riot API.
-
-Another cause of slowness on `MatchTimeline` might be caused by data integrity protection of Pyot stores. Stores makes sure that all data is **_safe_** from any mutation, so stores will serialize and deserialize when accessing the object, which adds up significant amount of CPU time.
-
-The solution is a local `PtrCache` cache from the utils module. Do not mutate objects saved on `PtrCache`, the cached object is **_not protected_**.
-```python{8}
-from pyot.utils import PtrCache
-from pyot.models import lol
-
-async def somefunc():
-    cache = PtrCache()
-    # ...
-    for event in participant.timeline["events"]:
-        item = await lol.Item(id=event['itemId'].get(ptr_cache=cache)) # intercepts the cache
-```
-:::
 
 ## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`account_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -147,11 +136,11 @@ async def somefunc():
 >
 >`account_id: str`
 >
->`matches: List[Match]`
+>`matches: List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
 >
->`match_timelines: List[MatchTimeline]`
+>`match_timelines: List[MatchTimeline]` <Badge text="bridge" type="error" vertical="middle"/>
 >
->`timelines: List[Timeline]`
+>`timelines: List[Timeline]` <Badge text="bridge" type="error" vertical="middle"/>
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
@@ -169,10 +158,31 @@ for match in history.match_timelines:
 ```
 :::
 
+## `Matches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
+
+>`"match_v4_tournament_matches": ["tournament_code"]` <Badge text="endpoint" type="error" vertical="middle"/>
+
+>`tournament_code: str = None` <Badge text="param" type="warning" vertical="middle"/>
+>
+>`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
+
+>`ids: List[str]`
+>
+>`tournament_code: str`
+
+>`matches -> List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`match_timelines -> List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
+>
+>`timelines -> List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
+
+
 ## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+
 >`frame: List[MatchFrameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 ## `MatchEventMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+
 >`frame: List[MatchEventData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 
 ## `MatchHistoryMatchData` <Badge text="Pyot Static" vertical="middle"/> 

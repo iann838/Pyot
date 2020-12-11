@@ -118,10 +118,12 @@ class RiotAPIEndpoint:
             "league_v4_master_league": "/lol/league/v4/masterleagues/by-queue/{queue}",
             "league_v4_entries_by_division": "/lol/league/v4/entries/{queue}/{tier}/{division}",
             "league_v4_league_by_league_id": "/lol/league/v4/leagues/{id}",
-            "status_v3_shard_data": "/lol/status/v3/shard-data",
+            "status_v4_platform_data": "/lol/status/v4/platform-data",
             "match_v4_match": "/lol/match/v4/matches/{id}",
             "match_v4_timeline": "/lol/match/v4/timelines/by-match/{id}",
             "match_v4_matchlist": "/lol/match/v4/matchlists/by-account/{account_id}",
+            "match_v4_tournament_match": "/lol/match/v4/matches/{id}/by-tournament-code/{tournament_code}",
+            "match_v4_tournament_matches": "/lol/match/v4/matches/by-tournament-code/{tournament_code}/ids", 
             "spectator_v4_current_game": "/lol/spectator/v4/active-games/by-summoner/{summoner_id}",
             "spectator_v4_featured_games": "/lol/spectator/v4/featured-games",
             "summoner_v4_by_name": "/lol/summoner/v4/summoners/by-name/{name}",
@@ -157,12 +159,14 @@ class RiotAPIEndpoint:
             "ranked_v1_leaderboards": "/lor/ranked/v1/leaderboards",
             "match_v1_matchlist": "/lor/match/v1/matches/by-puuid/{puuid}/ids",
             "match_v1_match": "/lor/match/v1/matches/{id}",
+            "status_v1_platform_data": "/lor/status/v1/platform-data",
         },
         "val": {
             "match_v1_match": "/val/match/v1/matches/{id}",
             "match_v1_matchlist": "/val/match/v1/matchlists/by-puuid/{puuid}",
             "match_v1_recent": "/val/match/v1/recent-matches/by-queue/{queue}",
             "content_v1_contents": "/val/content/v1/contents",
+            "status_v1_platform_data": "/val/status/v1/platform-data",
         }
     }
     

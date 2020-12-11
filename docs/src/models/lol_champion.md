@@ -18,6 +18,8 @@ Model: League of Legends
 >
 >`name: str`
 >
+>`lore: str`
+>
 >`tactical_info: ChampionTacticalData`
 >
 >`play_style: ChampionPlayerStyleData`

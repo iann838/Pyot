@@ -108,7 +108,6 @@ On windows, it is possible to see `RuntimeError: Event loop is closed` throwing 
 import platform
 
 if platform.system() == 'Windows':
-    from asyncio.proactor_events import _ProactorBasePipeTransport
-    from pyot.utils.internal import silence_event_loop_closed
-    _ProactorBasePipeTransport.__del__ = silence_event_loop_closed(_ProactorBasePipeTransport.__del__)
+    from pyot.utils.internal import silence_proactor_pipe_deallocation
+    silence_proactor_pipe_deallocation()
 ```

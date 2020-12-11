@@ -3,8 +3,8 @@ from pyot.models import val, riot
 from datetime import datetime, timedelta
 
 async def async_match_history():
-    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS").get(pipeline="val")
-    history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
+    account = await riot.Account(name="Lamb", tag="7926", region="AMERICAS").get(pipeline="val")
+    history = await val.MatchHistory(puuid=account.puuid, platform="NA").get()
     for match in history:
         assert isinstance(match, val.Match)
         assert isinstance(match.id, str)
@@ -13,8 +13,8 @@ async def async_match_history():
 
 
 async def async_match():
-    account = await riot.Account(name="stelar7", tag="stl7", region="AMERICAS").get(pipeline="val")
-    history = await val.MatchHistory(puuid=account.puuid, platform="eu").get()
+    account = await riot.Account(name="Lamb", tag="7926", region="AMERICAS").get(pipeline="val")
+    history = await val.MatchHistory(puuid=account.puuid, platform="NA").get()
     match = await history[0].get()
     info = match.info
     players = match.players

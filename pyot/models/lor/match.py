@@ -87,7 +87,6 @@ class Match(PyotCore):
 class MatchHistory(PyotCore):
     ids: List[str]
     puuid: str
-    _matches: List[Match]
 
     class Meta(PyotCore.Meta):
         raws = ["ids"]
@@ -108,14 +107,11 @@ class MatchHistory(PyotCore):
         return iter(self.matches)
 
     def __len__(self):
-        return len(self.matches)
+        return len(self.ids)
 
     @property
     def matches(self) -> List[Match]:
-        if hasattr(self, "_matches"):
-            return self._matches
-        self._matches = [Match(id=id_, region=self.region) for id_ in self.ids]
-        return self._matches
+        return [Match(id=id_, region=self.region) for id_ in self.ids]
 
     @property
     def account(self) -> "Account":

@@ -97,6 +97,8 @@ class Cards(PyotCore):
         rules = {"ddragon_lor_set_data": ["set", "locale"]}
 
     def __init__(self, set: int = None, locale: str = None):
+        if not locale: # SPECIAL CASE, RULE LOOKUP IS __dict__ instead of getattr()
+            locale = self.locale
         self._lazy_set(locals())
 
     def __getitem__(self, item):

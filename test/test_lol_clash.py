@@ -25,6 +25,8 @@ async def async_tournaments_active():
 
 async def async_tournament_by_id():
     clash = await lol.ClashTournaments(platform="NA1").get()
+    if len(clash) == 0:
+        return
     TOURNAMENT_ID = clash.tournaments[0].id
     tour = await lol.ClashTournament(id=TOURNAMENT_ID, platform="NA1").get()
     assert isinstance(tour.id, int)

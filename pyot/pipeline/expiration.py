@@ -29,10 +29,12 @@ class ExpirationManager:
             "league_v4_master_league": 0,
             "league_v4_entries_by_division": 0,
             "league_v4_league_by_league_id": 0,
-            "status_v3_shard_data": 0,
+            "status_v4_platform_data": 0,
             "match_v4_match": 0,
             "match_v4_timeline": 0,
             "match_v4_matchlist": 0,
+            "match_v4_tournament_match": 0,
+            "match_v4_tournament_matches": 0,
             "spectator_v4_current_game": 0,
             "spectator_v4_featured_games": 0,
             "summoner_v4_by_name": 0,
@@ -58,6 +60,7 @@ class ExpirationManager:
             "match_v1_matchlist": 0,
             "match_v1_match": 0,
             "ddragon_lor_set_data": td(hours=3),
+            "status_v1_platform_data": 0,
         },
         "tft": {
             "league_v1_summoner_entries": 0,
@@ -81,6 +84,7 @@ class ExpirationManager:
             "match_v1_matchlist": 0,
             "match_v1_recent": 0,
             "content_v1_contents": 0,
+            "status_v1_platform_data": 0,
         }
     }
 

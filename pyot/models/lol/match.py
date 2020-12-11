@@ -384,9 +384,13 @@ class Match(PyotCore):
     teams: List[MatchTeamData]
     blue_team: MatchTeamData
     red_team: MatchTeamData
+    tournament_code: str
 
     class Meta(PyotCore.Meta):
-        rules = {"match_v4_match": ["id"]}
+        rules = {
+            "match_v4_tournament_match": ["tournament_code", "id"],
+            "match_v4_match": ["id"],
+        }
         renamed = {"game_id": "id", "platform_id": "platform", "game_creation": "creation", "game_duration": "duration",
             "game_version": "version", "game_mode": "mode", "game_type": "type", "queue": "queue_id"}
 
@@ -397,7 +401,7 @@ class Match(PyotCore):
             return timedelta(seconds=super().__getattribute__(name))
         return super().__getattribute__(name)
 
-    def __init__(self, id: int = None, platform: str = None):
+    def __init__(self, id: int = None, tournament_code: str = None, platform: str = None):
         self._lazy_set(locals())
 
     def _transform(self, data):
@@ -474,17 +478,20 @@ class Match(PyotCore):
                 red_team["participants"].append(p)
 
         for pi in data["participantIdentities"]:
-            if pi["player"]["platformId"].lower() == "na":
-                pi["player"]["platformId"] = "NA1"
-            if pi["player"]["currentPlatformId"].lower() == "na":
-                pi["player"]["currentPlatformId"] = "NA1"
-            pid = pi["participantId"]
-            for p in blue_team["participants"]:
-                if p["participantId"] == pid:
-                    p.update(pi["player"])
-            for p in red_team["participants"]:
-                if p["participantId"] == pid:
-                    p.update(pi["player"])
+            try:
+                if pi["player"]["platformId"].lower() == "na":
+                    pi["player"]["platformId"] = "NA1"
+                if pi["player"]["currentPlatformId"].lower() == "na":
+                    pi["player"]["currentPlatformId"] = "NA1"
+                pid = pi["participantId"]
+                for p in blue_team["participants"]:
+                    if p["participantId"] == pid:
+                        p.update(pi["player"])
+                for p in red_team["participants"]:
+                    if p["participantId"] == pid:
+                        p.update(pi["player"])
+            except KeyError:
+                pass
         
         data.pop("participants")
         data.pop("participantIdentities")
@@ -492,11 +499,16 @@ class Match(PyotCore):
         data["redTeam"] = red_team
         return data
 
+    @property
+    def timeline(self) -> "Timeline":
+        return Timeline(id=self.id, platform=self.platform)
+
 
 class MatchTimeline(Match, PyotCore):
     
     class Meta(Match.Meta):
         rules = {
+            "match_v4_tournament_match": ["tournament_code", "id"],
             "match_v4_match": ["id"],
             "match_v4_timeline": ["id"],
         }
@@ -509,7 +521,7 @@ class MatchTimeline(Match, PyotCore):
         # pylint: disable=no-member
         if pipeline:
             self.set_pipeline(pipeline)
-        token1 = await self.create_token(search="match")
+        token1 = await self.create_token(search="match" if "tournament_code" not in self.__dict__ else "tournament")
         token2 = await self.create_token(search="timeline")
         task1 = asyncio.create_task(self._meta.pipeline.get(token1, sid))
         task2 = asyncio.create_task(self._meta.pipeline.get(token2, sid))
@@ -633,3 +645,38 @@ class MatchHistory(PyotCore):
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(account_id=self.account_id, platform=self.platform)
+
+
+class Matches(PyotCore):
+    ids: List[str]
+    tournament_code: str
+
+    class Meta(PyotCore.Meta):
+        rules = {"match_v4_tournament_matches": ["tournament_code"]}
+        raws = ["ids"]
+    
+    def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
+        return self.matches[item]
+
+    def __len__(self):
+        return len(self.ids)
+
+    def __init__(self, tournament_code: str = None, platform: str = None):
+        self._lazy_set(locals())
+
+    @property
+    def matches(self) -> List[Match]:
+        return [Match(id=id_, tournament_code=self.tournament_code, platform=self.platform) for id_ in self.ids]
+
+    @property
+    def match_timelines(self) -> List[Match]:
+        return [MatchTimeline(id=id_, tournament_code=self.tournament_code, platform=self.platform) for id_ in self.ids]
+
+    @property
+    def timelines(self) -> List[Match]:
+        return [Timeline(id=id_, platform=self.platform) for id_ in self.ids]
+
+    def _transform(self, data):
+        return {"ids": data}

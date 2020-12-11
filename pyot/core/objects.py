@@ -367,8 +367,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
             load = {}
             for a in attr:
                 try:
-                    load[a] = getattr(self, a)
-                except AttributeError:
+                    load[a] = self.__dict__[a]
+                except KeyError:
                     break
             if len(load) != len(attr):
                 continue
