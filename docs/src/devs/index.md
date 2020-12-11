@@ -2,6 +2,8 @@
 
 Help make our community better.
 
+![Actual meaning of Pyot](https://cdn.discordapp.com/attachments/712398810717880352/787003735183720548/unknown.png)
+
 ## Contributing
 
 Contributions are welcome! If you have idea or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. And we always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.

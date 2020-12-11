@@ -74,7 +74,7 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >
 >`"league_v4_league_by_league_id"`
 >
->`"status_v3_shard_data"`
+>`"status_v4_platform_data"`
 >
 >`"match_v4_match"`
 >
@@ -146,6 +146,8 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >`"match_v1_matchlist"`
 >
 >`"match_v1_match"`
+>
+>`"status_v1_platform_data"`
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
 >`"match_v1_match"`
@@ -155,6 +157,8 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >`"match_v1_recent"`
 >
 >`"content_v1_contents"`
+>
+>`"status_v1_platform_data"`
 
 ## Example Usage
 

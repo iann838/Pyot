@@ -70,7 +70,7 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >
 >`"league_v4_league_by_league_id": 0`
 >
->`"status_v3_shard_data": 0`
+>`"status_v4_platform_data": 0`
 >
 >`"match_v4_match": 0`
 >
@@ -147,13 +147,15 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >`"cdragon_profile_icon_full": td(hours=3)`
 
 > ### `LOR` <Badge text="Model" type="warning" vertical="middle" />
-> `"ranked_v1_leaderboards": 0`
+>`"ranked_v1_leaderboards": 0`
 >
-> `"match_v1_matchlist": 0`
+>`"match_v1_matchlist": 0`
 >
-> `"match_v1_match": 0`
+>`"match_v1_match": 0`
 >
-> `"ddragon_lor_set_data": td(hours=3)`
+>`"status_v1_platform_data": 0`
+>
+>`"ddragon_lor_set_data": td(hours=3)`
 
 
 > ### `VAL` <Badge text="Model" type="warning" vertical="middle" />
@@ -162,5 +164,7 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >`"match_v1_matchlist": 0`
 >
 >`"match_v1_recent": 0`
+>
+>`"status_v1_platform_data": 0`
 >
 >`"content_v1_contents": td(hours=3)`
