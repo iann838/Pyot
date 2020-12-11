@@ -12,6 +12,8 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 ## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
+>`tournament_code: str = None` <Badge text="param" type="warning" vertical="middle"/>
+>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
 >`"match_v4_tournament_match": ["tournament_code", "id"]` <Badge text="endpoint" type="error" vertical="middle"/>
@@ -69,6 +71,8 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 >:::
 >
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
+>
+>`tournament_code: str = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 

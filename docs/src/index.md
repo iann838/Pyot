@@ -24,3 +24,7 @@ features:
   details: Meet a friendly docs that "should" be better to read and understand.
 footer: Made by Paaksing with ❤️
 ---
+
+<p align="center" style="margin-bottom: 30px">
+  <img width="300" height="100" src="https://cdn.discordapp.com/attachments/712398810717880352/786994008748195920/unknown.png">
+</p>
