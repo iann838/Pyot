@@ -1,7 +1,7 @@
 # Pyot
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/paaksing/pyot/blob/master/LICENSE)
 
-Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Legends of Runeterra and Valorant that encourages rapid development and clean, pragmatic design. It specializes at doing task in async environment to get the expected result faster than synchronous code. Thanks for checking it out.
+Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT, that encourages rapid development and clean, pragmatic design. It specializes at doing tasks in an async environment to get the expected result faster than synchronous code. Thanks for checking it out.
 
 Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cassiopeia), you will notice that both has similar internal workings.
 
@@ -9,15 +9,15 @@ Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cass
 
 Features that Pyot has and can provide to your development.
 
-- **_AsyncIO Based_**: No more waiting forever, concurrent calls and jobs made faster, highly configurable settings and wide range of tools to speed all your I/O tasks.
+- **_AsyncIO Based_**: No more waiting forever, concurrent calls and jobs are made faster, highly configurable settings and wide range of tools to speed all your I/O tasks.
 - **_Synchronous Compatible_**: An adapted version of Pyot that runs on synchronous environment, **Pyot will expose part of its API synchronously in its secondary module called Syot**.
 - **_Django Support_**: Full support for Django Caches Framework and its new 3.1 async Views, just add `pyot` to the installed apps and point your setting modules on your `settings.py` file.
-- **_Community Projects Integrated_**: Take a step to dump the late and poor updated DDragon, we going beta testing directly using Cdragon and Meraki, BangingHeads' DDragon replacement is also coming soon.
+- **_Community Projects Integrated_**: Take a step to dump the late and poorly updated DDragon, we are currently beta testing directly using CDragon and Meraki. BangingHeads' DDragon replacement is also coming soon.
 - **_Caches Integrated_**: A wide range of Caches Stores is available right out of the box, we currently have Omnistone(Runtime), RedisCache(RAM), DiskCache(Disk) and MongoDB(NoSQL).
-- **_Multiple Models_**: Available models are League of Legends, Teamfight Tactics, Legends of Runeterra and Valorant.
-- **_Autocompletion Included_**: Forget the standard dictionary keys, triple your code efficiency now with autocompletion enabled.
-- **_Perfect Rate Limiter_**: Pyot Rate Limiter is production tested in all asynchronous, multithreaded and even multiprocessed environments, rate limiters for perfectionists.
-- **_User Friendly Docs_**: Meet a friendly docs that "should" be easier to read and understand.
+- **_Multiple Models_**: Available models are League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT.
+- **_Autocompletion Included_**: Forget standard dictionary keys, triple your code efficiency now with autocompletion.
+- **_Perfect Rate Limiter_**: Pyot's Rate Limiter is production tested in all asynchronous, multithreaded and even multiprocessed environments. Pyot's rate limiters are made for perfectionists.
+- **_User Friendly Docs_**: Meet friendly docs that "should" be easy to read and understand.
 
 ## About the Documentation
 
@@ -49,7 +49,7 @@ Docs are updated rigorously. If you find any problems in the docs, or think they
 
 If this framework is useful to you, a **star** to the repo is appreciated.
 
-Contributions are welcome! If you have idea or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. And we always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.
+Contributions are welcome! If you have ideas or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. We always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.
 
 Check out https://paaksing.github.io/Pyot/devs/ for information about getting involved.
 
