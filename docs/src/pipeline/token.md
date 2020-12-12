@@ -2,7 +2,7 @@
 
 ## `PipelineToken`
 
-Token class used among all the stores in the pipeline. Typically generated from `create_token()` from `PyotCore` objects.
+Token class is used among all the stores in the pipeline. Typically generated from `create_token()` from `PyotCore` objects.
 
 > ### `__init__(model: str, server: str, method: str, params: Dict[str, Any], queries: Dict[str, Any])`
 > - `model` <Badge text="param" type="warning" vertical="middle"/> -> `str`: Name of the pipeline.
@@ -19,7 +19,7 @@ Token class used among all the stores in the pipeline. Typically generated from 
 
 ## `RequestToken`
 
-Token class used to handle request based on configured error handler.
+Token class is used to handle request based on configured error handler.
 
 > ### `__init__(tries: int = 0, _raise_at: int = 1, _exception: Any = None, _code: int = 0)`
 > - `tries` <Badge text="param" type="warning" vertical="middle"/> -> int: Number of tries attempted.

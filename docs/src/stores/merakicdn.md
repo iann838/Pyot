@@ -2,7 +2,7 @@
 
 - Type: <Badge text="Pyot Service" vertical="middle" />
 - Models: <Badge text="LOL" type="error" vertical="middle" />
-- Description: Store that provides data from the Meraki CDN, this store provides the endpoints for the Pyot Core Objects that returns static data, a list of the endpoints is found below.
+- Description: Store that provides data from the Meraki CDN, this store provides the endpoints for the Pyot Core Objects that returns static data. A list of the endpoints is found below.
 
 :::tip INFO ABOUT THIS STORE
 Until now, champion abilities in particular were unavailable because ddragon's (MEGA RE-RIP) data is inaccurate and cdragon's data (from the game itself) is unparsable because it's so complicated. Our goal here is to provide high quality data so that you can create awesome applications. We've got a big update on the data format now, mostly for champion stats, and thanks to @dryan (who did all the work) we have a huge update with items as well (they exist!). The goal for items is similar: to provide high quality data so that you can make awesome apps that were not possible without having this accurate data.

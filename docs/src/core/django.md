@@ -6,7 +6,7 @@ Integrating Pyot into Django is easy.
 
 Create a file (the example will use `pipelines.py`) under any of the Django modules (either under an app folder or project folder):
 
-This example has `mysite` as the project directory and `pipelines.py` as the module. Inside the file add up the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
+This example has `mysite` as the project directory and `pipelines.py` as the module. Inside the file add the needed Pyot Settings. The below example settings is AN EXAMPLE, you can customize the Settings for your needs. Don't forget to activate the settings.
 
 ```python{20}
 #mysite/pipelines.py
@@ -48,7 +48,7 @@ In the same `settings.py` file, add the file path to a reserved variable for Pyo
 
 PYOT_SETTINGS = ['mysite.pipelines']
 ```
-You can define multiple settings in different files if you want to keep 1 setting per app (supposing you have 1 app per game model).
+You can define multiple settings in different files if you want to keep 1 setting per app (assuming that you have 1 app per game model).
 
 ## Synchronous Compatibility
 
@@ -102,7 +102,7 @@ async def foo():
 
 For more info, please read [Django Asynchronous Support](https://docs.djangoproject.com/en/3.1/topics/async/).
 
-On windows, it is possible to see `RuntimeError: Event loop is closed` throwing from the proactor pipeline. This is a [known issue](https://github.com/aio-libs/aiohttp/issues/4324). ***This will not affect your code from running, because the exception will be ignored.*** You can still fix this on Windows so that the warning is not printed, you can add the following code in the same file of your pyot settings:
+On Windows, it is possible to see `RuntimeError: Event loop is closed` throwing from the proactor pipeline. This is a [known issue](https://github.com/aio-libs/aiohttp/issues/4324). ***This will not affect your code from running, because the exception will be ignored.*** You can still fix this on Windows so that the warning is not printed, you can add the following code in the same file of your pyot settings:
 
 ```python
 import platform

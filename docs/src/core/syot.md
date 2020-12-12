@@ -1,17 +1,17 @@
 # Syot
 
-Syot is a back ported version of Pyot to synchronous code (rarely a case not going async), this might be an option for those who don't want to go async or wants less complexity in code.
+Syot is a backported version of Pyot to synchronous code (rarely a case not going async). This might be an option for those who don't want to go async or want less complexity in code.
 
 :::tip INFO
 You still need to activate the Settings for Syot to work.
 :::
 
 :::warning
-Syot and Pyot **_shares the same pipeline_** per each model so you can use both environment together without problem of any. They won't have any conflict unless you try to activate the same Settings twice both in Syot and Pyot.
+Syot and Pyot **_shares the same pipeline_** per each model so you can use both environment together without any problem. They won't have any conflicts unless you try to activate the same Settings both in Syot and Pyot.
 :::
 
-Below documentation only applies to Syot.
-The rest of the API please refer to Pyot documentation by replacing `pyot` with `syot` instead, awaitables needs to be executed with `loop_run()`.
+The below documentation only applies to Syot.
+For the rest of the API please refer to Pyot documentation by replacing `pyot` with `syot` instead, awaitables needs to be executed with `loop_run()`.
 
 ## Similarities
 1. All Pyot Object's methods that are not marked with <Badge text="awaitable" type="error" vertical="middle"/> are usable in Syot, that includes Pyot Object's `dict()`, `json()` and others not mentioned.
@@ -59,7 +59,7 @@ print(lol.Summoner(name="Morimorph", platform="NA1").get().level)
 
 The below issue is already handled if you created the project using `pyot startproject`.
 
-On windows, it is possible to see `RuntimeError: Event loop is closed` throwing from the proactor pipeline. This is a [known issue](https://github.com/aio-libs/aiohttp/issues/4324). ***This will not affect your code from running, because the exception will be ignored.*** You can still fix this on Windows so that the warning is not printed, you can add the following code in the same file of your pyot settings:
+On Windows, it is possible to see `RuntimeError: Event loop is closed` throwing from the proactor pipeline. This is a [known issue](https://github.com/aio-libs/aiohttp/issues/4324). ***This will not affect your code from running, because the exception will be ignored.*** You can still fix this on Windows so that the warning is not printed. You can add the following code in the same file of your pyot settings:
 
 ```python
 import platform

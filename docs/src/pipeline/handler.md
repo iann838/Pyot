@@ -6,7 +6,7 @@ This argument is available for all the Pyot Store of type <Badge text="Pyot Sour
 Accepts a dictionary of status code to tuple of strategy and strategy arguments.
 
 >#### Syntax: `Mapping[int, Tuple[str, List[int]]]`
-> the key is an integer indentifying the status code, the value is a Tuple that has 2 items, the first item is the strategy token and the second item is a list of arguments passed to the strategy. List of token and accepted arguments:
+> The key is an integer indentifying the status code, the value is a Tuple that has 2 items, the first item is the strategy token and the second item is a list of arguments passed to the strategy. List of tokens and accepted arguments:
 >
 > `"T"` (throw on error): `[]` No arguments
 >

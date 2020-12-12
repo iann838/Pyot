@@ -2,10 +2,10 @@
 
 - Type: <Badge text="Pyot Service" vertical="middle" />
 - Models: <Badge text="LOL" type="error" vertical="middle" /> <Badge text="TFT" type="error" vertical="middle" />
-- Description: Store that provides data from the Community Dragon Raws, this store provides the endpoints for the Pyot Core Objects that returns static data, a list of the endpoints is found below.
+- Description: Store that provides data from CommunityDragon Raw. This store provides the endpoints for the Pyot Core Objects that returns static data. A list of the endpoints is found below.
 
 :::tip INFO ABOUT THIS STORE
-The CDragon has the data that the game uses, but it is highly unparsable, the main goal here is to provide the data as fast as possible unlike the some 3 days delay of DDragon. Since the data structure in CDragon might change at any time without warning, the Pyot Core objects for this might break aswell, submit an issue if this happen and .. will try to fix. It is designed to be fixable in short time in any case UNLESS the jsons goes upside down.
+The CDragon has the data that the game uses, but it is highly unparsable, the main goal here is to provide the data as fast as possible unlike the some 3 days delay of DDragon. Since the data structure in CDragon might change at any time without warning, the Pyot Core objects for this might break aswell. Submit an issue if this happens and we will try to fix as soon as possible. It is designed to be fixable in short time in any case UNLESS the jsons goes upside down.
 :::
 
 ## Pipeline Settings Reference

@@ -4,7 +4,7 @@
 - Description: A temporary Cache that starts on Pyot Settings activation and shut down on script or server exit. Since it lives at runtime it is a lot faster than an independent Cache server.
 
 :::tip INFO ABOUT THIS STORE
-This Cache doesn't expire data after it _expired_, to prevent memory overflow, a cull system is in place, when the amount of data reaches a limit, it calls the `expire()` coroutine on its own, if the amount of data is still higher than `MAX_ENTRIES` * (1 - 1/`CULL_FRECUENCY`), then it deletes items until the set amount, deletion prioritizes least recently used data.
+This Cache doesn't expire data after it is _expired_. To prevent memory overflow, a cull system is in place. When the amount of data reaches a limit, it calls the `expire()` coroutine on its own. If the amount of data is still higher than `MAX_ENTRIES` * (1 - 1/`CULL_FRECUENCY`), it deletes items until the set amount. Deletion prioritizes least recently used data.
 :::
 
 ## Pipeline Settings Reference
