@@ -15,7 +15,7 @@ class Settings:
     `activate()` needs to be called to take effect the settings.
     '''
     MODEL: str
-    PIPELINE: Mapping[str, Any] = None
+    PIPELINE: List[Mapping[str, Any]] = None
     DEFAULT_REGION: str = None
     DEFAULT_PLATFORM: str = None
     DEFAULT_LOCALE: str = None

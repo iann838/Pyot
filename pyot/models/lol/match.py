@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from typing import List, get_type_hints, Iterator
 import asyncio
 
+from pyot.utils import fast_copy
+
 
 # PYOT STATIC OBJECTS
 
@@ -521,11 +523,11 @@ class MatchTimeline(Match, PyotCore):
             "match_v4_timeline": ["id"],
         }
 
-    async def get(self, sid: str = None, pipeline: str = None, raw: bool = False):
+    async def get(self, sid: str = None, pipeline: str = None, keep_raw: bool = False):
         '''Awaitable. Get this object from the pipeline.\n
         `sid` id identifying the session on the pipeline to reuse.\n
         `pipeline` key identifying the pipeline to execute against.\n
-        `raw` flag for returning raw dictionary instead of serialized objects.\n
+        `keep_raw` flag for storing raw data of the request as a dictionary.\n
         '''
         # pylint: disable=no-member
         if pipeline:
@@ -536,8 +538,8 @@ class MatchTimeline(Match, PyotCore):
         task2 = asyncio.create_task(self._meta.pipeline.get(token2, sid))
         data1 = await task1
         data2 = await task2
-        if raw:
-            return {'match': data1, 'timeline': data2}
+        if keep_raw:
+            self._meta.raw_data = {'match': fast_copy(data1), 'timeline': fast_copy(data2)}
         self._meta.data = self._transform(data1, data2)
         self._fill()
         return self

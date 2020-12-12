@@ -256,12 +256,13 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         region_list = []
         platform_list = []
         locale_list = []
+        raw_data: Any
 
-    async def get(self, sid: str = None, pipeline: str = None, raw: bool = False, ptr_cache: PtrCache = None):
+    async def get(self, sid: str = None, pipeline: str = None, keep_raw: bool = False, ptr_cache: PtrCache = None):
         '''Awaitable. Get this object from the pipeline.\n
         `sid` id identifying the session on the pipeline to reuse.\n
         `pipeline` key identifying the pipeline to execute against.\n
-        `raw` flag for returning raw dictionary instead of serialized objects.\n
+        `keep_raw` flag for storing raw data of the request as a dictionary.\n
         `ptr_cache` intercepts a PtrCache, usage details please refer to documentations.\n
         '''
         self.set_pipeline(pipeline)
@@ -276,8 +277,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
 
         data = await self._meta.pipeline.get(token, sid)
         data = self._filter(data)
-        if raw:
-            return data
+        if keep_raw:
+            self._meta.raw_data = fast_copy(data)
         self._meta.data = self._transform(data)
         self._fill()
 
@@ -380,6 +381,11 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
             return self
         raise TypeError("Incomplete values to create request token")
 
+    def raw(self):
+        """Return the dictionary containing the raw data, only available if `keep_raw=True` was passed when calling `get()`"""
+        if hasattr(self._meta, "raw_data"):
+            return self._meta.raw_data
+        raise AttributeError("Raw data is not stored, pass `keep_raw=True` to `get()`")
 
     async def _clean(self):
         pass
