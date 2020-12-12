@@ -1,13 +1,13 @@
 # Celery
 
-Celery is Task Queue for scheduling tasks and workloads.
+Celery is a Task Queue for scheduling tasks and workloads.
 
-You probably don't need celery for concurrency, since the Pyot itself gives you high concurrency. In most scenario you will need celery for distributing work across processes or machines, which in Python it can become tricky with `multiprocessing` and periodic tasks that can also get tricky with normal cronjobs.
+You probably don't need celery for concurrency, since the Pyot itself gives you high concurrency. In most scenarios you will need celery for distributing work across multiple processes or machines, which in Python it can become tricky with `multiprocessing` and periodic tasks that can also get tricky with normal cronjobs.
 
 Example usage:
 * Run a task every day at 4 AM.
 * Run multiple CPU intense tasks at the same time in a multicore machine
-* Run the same task in multiple machines.
+* Run the same task on multiple machines.
 
 Celery itself supports Django.
 
@@ -38,7 +38,7 @@ async def mytask():
 
 ### Calling asyncio.run 
 
-This one involves in creating a proxy synchronous function, not so clean. You can also create a decorator that functions similarly to `async_to_sync`.
+Using asyncio.run involves in creating a proxy synchronous function, which is not so clean. You can also create a decorator that functions similarly to `async_to_sync`.
 
 ```python
 import asyncio

@@ -6,7 +6,7 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 :::
 
 :::tip NEW
-***Since v2.0.5***: `Match` and `MatchTimeline` objects supports the tournament match endpoint. `Matches` class is added with the get match ids by tournament code endpoint. `Timeline` remains the same since both normal and tournament matches shares the same timeline endpoint.
+***Since v2.0.5***: `Match` and `MatchTimeline` objects support the tournament match endpoint. `Matches` class is added with the get match ids by tournament code endpoint. `Timeline` remains the same since both normal and tournament matches share the same timeline endpoint.
 :::
 
 ## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>

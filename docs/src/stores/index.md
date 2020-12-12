@@ -9,7 +9,7 @@ Specify the backend of the store on the pipeline.
 ```
 
 :::tip
-The arguments keys passed to Pyot Settings Pipeline can be in ALL CAPS to maintain better code redability, it is automatically lowercased on activation anyways.
+The arguments keys passed to Pyot Settings Pipeline can be in ALL CAPS to maintain better code redability. It is automatically lowercased on activation anyways.
 :::
 
 # Legend

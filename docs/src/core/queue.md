@@ -9,8 +9,8 @@ This object is only accessible as a context manager with the `async with` syntax
 ## Pyot Queue API
 A managed Queue on top of asyncio.Queue. This Queue is only usable as a context manager.
 
-Unlike Gatherer, Queue has real workers that acts like consumers.
-A session is created and accessible on 'sid' attribute, the maxsize will default to workers * 2.
+Unlike Gatherer, Queue has real workers that act like consumers.
+A session is created and accessible on a 'sid' attribute. The maxsize will default to workers * 2.
 Normally the queue object will be passed down to coroutines to give access to session id or queue methods. 
 
 ```python{1}
@@ -26,23 +26,23 @@ async with Queue() as quque:
 > - `maxsize` <Badge text="param" type="warning" vertical="middle"/> -> `int`: Max size of the queue. Defaults to `workers * 2`.
 
 > ### `put(coro: Coroutine, delay: float = 0)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
->Put a coroutine object to the queue, if the queue is full, wait for availability. A delay may be provided if desired for execution balancing.
+>Put a coroutine object to the queue. If the queue is full, it will wait for availability. A delay may be provided if desired for execution balancing.
 > - `coro` <Badge text="param" type="warning" vertical="middle"/> -> `Coroutine`: The coroutine to put on the queue.
 > - `delay` <Badge text="param" type="warning" vertical="middle"/> -> `float`: The amount of delay in seconds before putting the coroutine into the queue. Defaults to 0.
 
 > ### `join()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>:
->Block until all items in the queue have been gotten and processed. Empty the collected responses and returns them. NoneType and Exceptions are not collected, order of the responses might not correspond the put order.
+>Block until all items in the queue have been gotten and processed. Empty the collected responses and returns them. NoneType and Exceptions are not collected, thus order of the responses may not correspond the put order.
 
 > ### `sid` <Badge text="property" type="error" vertical="middle"/>
 > Property where the session id is stored, can be used to pass down to the Core objects `get()` to reuse a session.
 
 > ### `responses` <Badge text="property" type="error" vertical="middle"/>
-> Property where all the responses are saved, unlike Gatherer, this property **_is not safe to access_** as it may have inconsistenty.
+> Property where all the responses are saved, unlike Gatherer, this property **_is not safe to access_** as it may have inconsistency.
 
 :::tip
-You can use the same queue to `join()` as many time as you want, this creates a nice way to do everything in a single Queue, For example: get ChallengerLeague -> all Summoner in the entries -> pull all MatchHistory of the gotten Summoners.
+You can use the same queue to `join()` as many time as you want, this creates a nice way to do everything in a single Queue. For example, get ChallengerLeague -> get all Summoners in the entries -> pull match history of all the Summoners.
 
-It's best practice to pass the `sid` to the Core objects so it can reuse a session since creating a new session (created when no `sid` is provided) will cause some overhead.
+It's best practice to pass the `sid` to the Core objects so that it can reuse a session, since creating a new session (created when no `sid` is provided) will cause some overhead.
 :::
 
 ## Example Usage
@@ -75,7 +75,7 @@ async def pull_puuids():
         print(await queue.join())
 ```
 :::danger MEMORY AWARENESS
-The coroutine passed to the queue, try your best to not return anything or return small objects, because `Queue` will save those returning values for the `join()`, meaning that memory can start to increase over time, try to design the coroutines to consume the object instead.
+The coroutine passed to the queue. Try your best to not return anything or return small objects, because `Queue` will save those returning values for the `join()`, meaning that memory can start to increase over time. Try to design the coroutines to consume the object instead.
 
 Assuming we want to gather 30k matches, take the following examples in term of memory usage
 * ***BAD***
@@ -107,7 +107,7 @@ def consume_match(queue, match):
 ```
 :::
 :::tip DETAILS
-* `FrozenGenerator` was used to isolate the summoners objects so it doesn't pass by reference and therefore not mutating the original list and prevent possible memory leak.
+* `FrozenGenerator` was used to isolate the Summoners objects so that it doesn't pass by reference; therefore, not mutating the original list and prevent possible memory leak.
 * `shuffle_list` was used to shuffle the list by `"platform"` to take advantage of crossing the waiting time on the rate limits for the different regions.
-* A good use of inline type hinting can help you with IDE autocompletion. Note: You might not use this if responses contains more than 1 type of Pyot Core objects.
+* A good use of inline type hinting can help you with IDE autocompletion. Note: You might not use this if responses contain more than 1 Pyot Core object type.
 :::

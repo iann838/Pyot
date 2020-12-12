@@ -1,4 +1,4 @@
-# Expirations
+# Expiration
 
 This argument is available for all the Pyot Stores of type <Badge text="Pyot Cache" vertical="middle" />
 
@@ -20,13 +20,13 @@ This will override the `summoner_v4_by_name` endpoint to cache 2 minutes, and `l
 Removed since v1.1.0, due to unclear concept and mismatch to new default expirations
 :::
 
-## Default Expirations
+## Default Expiration
 Supposing the following import
 ```python
 from datetime import timedelta as td
 ```
 ::: tip REMAINDER
-**_Changed in v1.1.0:_** Now all expirations are default to 0 (not cache) except the endpoints for static data. Developers should choose to cache what they want to and Pyot shouldn't have a default to that assuming the developer know what he/she is doing.
+**_Changed in v1.1.0:_** Now all expirations default to 0 (not cached) except the endpoints for static data. Developers should choose to cache what they want to. Pyot shouldn't have a default to that assuming the developer know what he/she is doing.
 
 Models with <Badge text="Global" type="error" vertical="middle" /> badge will be available to all objects, meaning that can you still modify the `"account_v1_by_puuid"` in the `LOL` model and such object called from the `LOL` pipeline will use that pipeline expirations.
 :::

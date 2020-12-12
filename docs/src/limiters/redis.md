@@ -2,7 +2,7 @@
 
 Rate limiter based on Redis. This Rate Limiter is async safe, thread safe, **_cross-process safe and also api-key safe (meaning merged keys are safe without doing limiting share)_**.
 
-Limits on the db are expired after 1 hour if it isn't touched.
+Limits in the database are expired after 1 hour if it isn't touched.
 
 ## Rate Limiter Settings Reference
 ### Backend: `pyot.limiters.RedisLimiter`

@@ -4,14 +4,14 @@ Build your first pyot project.
 
 ::: warning Before starting this guide
 * This guide only applies to pyot v2.0.0 or higher.
-* For integrating with Django, there is a total different [setup](django.html)
+* For integrating with Django, there is a totally different [setup](django.html)
 :::
 
 ## Create a new project
 
-If this is your first time using Pyot, you’ll have to take care of some initial setup. Namely, you’ll need to change the environments that establishes a Pyot project – a collection of settings for an instance of Pyot, including API key setup, store specific options and pipeline-specific settings.
+If this is your first time using Pyot, you’ll have to take care of some initial setup. Namely, you’ll need to change the environment that establishes a Pyot project – a collection of settings for an instance of Pyot, including API key setup, store specific options and pipeline-specific settings.
 
-From the command line, cd into a directory where you’d like to store your code, then run the following command:
+From the command line, change your working directory into a directory where you’d like to store your code, then run the following command:
 
 ```shell
 pyot startproject myproject
@@ -33,9 +33,9 @@ myproject/
 
 These files are:
 * **__init__.py**: Marks the directory as module, imports the Pyot settings from **settings.py** and others.
-* **__main__.py**: Marks the module as execurable, entry point of the module, defaults to executing the task manager in **manage.py**.
+* **__main__.py**: Marks the module as executable, the entry point of the module, defaults to executing the task manager in **manage.py**.
 * **manage.py**: Managers for this Pyot project, you can change this file to your wanted behavior.
-* **settings.py**: Settings/Configuration for this Pyot project, [Pyot settings](settings.html) will tell you how settings works.
+* **settings.py**: Settings/Configuration for this Pyot project, [Pyot settings](settings.html) will tell you how settings work.
 * **tasks.py**: Tasks of this Pyot project, all callables in this file will be accessible by managers. 
 
 ## Running your project for the first time
@@ -50,7 +50,7 @@ First, please that your API key is set, Pyot will default to get your environmen
         'API_KEY': os.environ['RIOT_API_KEY'] 
 ```
 
-Now everything is set up, run the following command:
+Now that everything is set up, run the following command:
 
 ```shell
 python -m myproject summoner_level Morimorph NA1

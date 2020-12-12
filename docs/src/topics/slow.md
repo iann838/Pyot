@@ -1,7 +1,7 @@
 # Pyot slowing down on serialization
 
 ::: tip IMPORTANT FACT
-Serialization of dicts to python objects will always touch creation of it, so called instantiation. In python instationtion is relatively slow. This is a Python bottleneck, not a framework level bottleneck. The straight out solution is to write C code that can be imported to Python, but that is not something the maintainer is good at.
+Serialization of dicts to python objects (instantiation) will always add to processing time. In python, instantiation is relatively slow. This is a Python bottleneck, not a framework level bottleneck. The straight out solution is to write C code that can be imported to Python, but that is not something the maintainer is good at.
 :::
 
 The ***explanation and solution is given** using the `lol.MatchTimeline` or `lol.Timeline` objects from the lol model.
@@ -63,4 +63,4 @@ async def somefunc():
         item = item_cache.get(event['itemId'])
 ```
 
-It is best practice to have different cache for different type of objects, so keys can be easily made unique.
+It is best practice to have a different cache for different types of objects, so keys can be easily made unique.

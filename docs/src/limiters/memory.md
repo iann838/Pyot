@@ -1,6 +1,6 @@
 # Memory Limiter
 
-Rate limiter based on runtime Python Objects. This Rate Limiter is async safe, thread safe and the fastest available rate limiter. For cross-process safe Rate Limiter please refer to other Limiters.
+Rate limiter based on runtime Python Objects. This Rate Limiter is async safe, thread safe and the fastest available rate limiter. For cross-process safe Rate Limiter please refer to the other Limiters.
 
 ## Rate Limiter Settings Reference
 ### Backend: `pyot.limiters.MemoryLimiter`

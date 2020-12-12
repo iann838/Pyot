@@ -1,6 +1,6 @@
 # API Core
 
-API references for Valorant
+API references for VALORANT
 
 ## Region Values
 > `"americas"`

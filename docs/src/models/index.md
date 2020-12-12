@@ -11,7 +11,7 @@ from pyot.models import val
 - `LOR` <Badge text="Model" type="warning" vertical="middle" />
 - `VAL` <Badge text="Model" type="warning" vertical="middle" />
 
-Some model doesn't need a pipeline on startup, but needs a pipeline at run time. For example the `riot` model.
+Some models don't need a pipeline on startup, but need a pipeline at runtime. For example the `riot` model.
 
 # Legend
 
