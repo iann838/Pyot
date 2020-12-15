@@ -40,7 +40,7 @@ def assert_team(team):
             assert isinstance(it, lol.Spell)
         assert len(stats.item_ids) == 7
         for it in stats.items:
-            assert isinstance(it, lol.Item)
+            assert isinstance(it, lol.Item) or it is None
         assert len(stats.rune_ids) == 6
         for it in stats.runes:
             assert isinstance(it, lol.Rune)
