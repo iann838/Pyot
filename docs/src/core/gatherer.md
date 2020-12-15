@@ -25,6 +25,10 @@ async with Gatherer() as gatherer:
 This is because `matches` is a mutable object, so it will be passed to the gatherer by reference. It will end up filling the 30k matches on that list. A workaround to this would be to load your matches in a loop scope so that Python can garbage collect it, or even better you can use the utils `FrozenGenerator` along with the other gathering tool `Queue`.
 :::
 
+::: warning RELEVANT TOPIC
+* [Why not use asyncio.gather ?](/topics/why_not_asyncio_gather.html).
+:::
+
 ## Pyot Gatherer API
 This object creates a manager that speeds up the normal data gathering. All statements and responses are instantiated to this object and can be referenced back.
 This object is imported at the core module of pyot.

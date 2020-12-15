@@ -6,6 +6,10 @@ This is an object that executes coroutines in a queue/workers basic. Unlike Gath
 This object is only accessible as a context manager with the `async with` syntax for safeguarding session closing and workers joining.
 :::
 
+::: warning RELEVANT TOPIC
+* [Why not use asyncio.gather ?](/topics/why_not_asyncio_gather.html).
+:::
+
 ## Pyot Queue API
 A managed Queue on top of asyncio.Queue. This Queue is only usable as a context manager.
 

@@ -103,12 +103,12 @@ class MatchParticipantStatData(PyotStatic):
     @property
     def items(self) -> List["Item"]:
         from .item import Item
-        return [Item(id=i, locale=self.to_locale(self.platform)) for i in self.item_ids]
+        return [Item(id=i, locale=self.to_locale(self.platform)) if i > 0 else None for i in self.item_ids]
 
     @property
     def meraki_items(self) -> List["MerakiItem"]:
         from .merakiitem import MerakiItem
-        return [MerakiItem(id=i) for i in self.item_ids]
+        return [MerakiItem(id=i) if i > 0 else None for i in self.item_ids]
 
     @property
     def runes(self) -> List["Rune"]:

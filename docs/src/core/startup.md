@@ -85,3 +85,7 @@ async def summoner_level(name, platform):
     except NotFound:
         print('Summoner not found')
 ```
+
+## Clarification
+
+This is only a **base template** that developers can work out as a startup is not limited to that template, if you're integrating pyot to other frameworks (e.g. Flask, FastAPI), you can choose to import the tasks written in this module and execute it in your other framework, or integrate pyot to that framework by adding imports and applying settings. For more information please check **[Integrating pyot to other framework / environment](/topics/integrating.html)**.

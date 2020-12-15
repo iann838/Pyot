@@ -133,3 +133,5 @@ dmypy.json
 # DiskCache
 diskcache/
 restart
+
+snipets.*

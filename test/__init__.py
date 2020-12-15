@@ -16,15 +16,15 @@ Settings(
                 "summoner_v4_by_name": 100,
             }
         },
-        {
-            "BACKEND": "pyot.stores.RedisCache",
-            "LOG_LEVEL": 30,
-            "DB": 1,
-            "EXPIRATIONS": {
-                "match_v4_match": 600,
-                "match_v4_timeline": 600,
-            }
-        },
+        # {
+        #     "BACKEND": "pyot.stores.RedisCache",
+        #     "LOG_LEVEL": 30,
+        #     "DB": 1,
+        #     "EXPIRATIONS": {
+        #         "match_v4_match": 600,
+        #         "match_v4_timeline": 600,
+        #     }
+        # },
         {
             "BACKEND": "pyot.stores.MerakiCDN",
             "LOG_LEVEL": 30,

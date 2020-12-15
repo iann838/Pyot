@@ -290,6 +290,8 @@ module.exports = {
             'slow',
             'sudden_stop',
             'proactor_runtimeerror',
+            'integrating',
+            'why_not_asyncio_gather',
           ]
         }
       ],
