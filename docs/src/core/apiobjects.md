@@ -17,6 +17,9 @@ This is main type of objects that developers works with. Below is a list of gene
 > - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
 > - `keep_raw` <Badge text="param" type="warning" vertical="middle"/>: Optional, boolean flag for storing raw data of the request as a dictionary that is later accessible through `.raw()`, typically for third party libraries to comsume.
 > - `ptr_cache` <Badge text="param" type="warning" vertical="middle"/>: Optional, Intercepts a PtrCache, usage details please refer to [PtrCache](/utils/objects.html#PtrCache).
+> ::: WARNING
+> A bug returning duplicate objects from `ptr_cache` is fixed in v2.0.8
+> :::
 
 > ### `post(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
 > Awaitable that executes `post` request to the pipeline, finds the correct service to execute and return the response if given. Unlike `get()` responses are not sinked through the pipeline.

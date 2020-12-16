@@ -12,7 +12,7 @@ def assert_status(obj: lol.Status):
         for m in t:
             assert isinstance(m.id, int)
             assert isinstance(m.maintenance_status, str) or m.maintenance_status is None
-            assert isinstance(m.incident_severity, str)
+            assert isinstance(m.incident_severity, str) or m.incident_severity is None
             assert isinstance(m.created_at, datetime) or m.created_at is None
             assert isinstance(m.archive_at, datetime) or m.archive_at is None
             assert isinstance(m.updated_at, datetime) or m.updated_at is None

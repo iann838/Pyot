@@ -250,6 +250,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         load: Mapping[str, Any]
         query: Mapping[str, Any]
         body: Mapping[str, Any]
+        filter_key: str = ""
         server_type: str = "platform"
         allow_query: bool = False
         rules: Mapping[str, List[str]] = {}
@@ -271,7 +272,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         if ptr_cache:
             if not isinstance(ptr_cache, PtrCache):
                 raise TypeError(f"'ptr_cache' receives object of type 'PtrCache', got '{ptr_cache.__class__.__name__}'")
-            item = ptr_cache.get(token)
+            item = ptr_cache.get(token.stringify + self._meta.filter_key)
             if item:
                 return item
 
@@ -283,7 +284,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         self._fill()
 
         if ptr_cache:
-            ptr_cache.set(token, self)
+            ptr_cache.set(token.stringify + self._meta.filter_key, self)
 
         return self
 

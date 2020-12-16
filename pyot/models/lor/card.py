@@ -52,7 +52,7 @@ class Card(PyotCore):
         raws = ["keywords", "keyword_refs", "subtypes", "associated_card_codes"]
         removed = ["associated_cards"]
         renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes"}
-        rules = {"ddragon_lor_set_data": ["set", "locale"]}
+        rules = {"ddragon_lor_set_data": ["set", "code", "locale"]}
 
     def __init__(self, code: str = None, locale: str = None):
         if code:
@@ -60,6 +60,10 @@ class Card(PyotCore):
             self.faction = code[2:4]
             self.number = int(code[4:])
         self._lazy_set(locals())
+
+    def _refactor(self):
+        load = getattr(self._meta, "load")
+        self._meta.filter_key = load.pop("code")
 
     def filter_func(self, data):
         for ind, card in enumerate(data):
@@ -98,7 +102,7 @@ class Cards(PyotCore):
 
     def __init__(self, set: int = None, locale: str = None):
         if not locale: # SPECIAL CASE, RULE LOOKUP IS __dict__ instead of getattr()
-            locale = self.locale
+            self.locale = self.locale
         self._lazy_set(locals())
 
     def __getitem__(self, item):

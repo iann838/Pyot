@@ -34,7 +34,7 @@ class Item(PyotCore):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
         load = getattr(self._meta, "load")
-        load.pop("id")
+        self._meta.filter_key = str(load.pop("id"))
 
     def _transform(self, data):
         data["iconPath"] = tft_url(data.pop("icon"))

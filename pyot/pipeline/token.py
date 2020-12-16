@@ -73,4 +73,4 @@ class PipelineToken:
 
     @property
     def stringify(self):
-        return (self.model+self.server+self.method+str(self.params)+str(self.queries)).replace(" ", "_")
+        return (self.model + self.server + self.method + str(self.params) + str(self.queries)).replace(" ", "_")
