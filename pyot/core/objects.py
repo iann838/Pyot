@@ -1,5 +1,4 @@
 from typing import Dict, List, Mapping, Any, get_type_hints
-import pickle
 import re
 import json
 
@@ -7,6 +6,7 @@ from pyot.pipeline.core import Pipeline
 from pyot.pipeline.token import PipelineToken
 from pyot.utils import PtrCache, camelcase, fast_copy
 from pyot.pipeline import pipelines
+
 
 normalizer_cache = PtrCache()
 typing_cache = PtrCache()
@@ -22,42 +22,28 @@ class PyotLazyObject:
         self.obj = obj
 
     def __call__(self):
-        if issubclass(self.clas, PyotCoreObject):
+        try:
+            if issubclass(self.clas, PyotCoreObject):
+                if isinstance(self.obj, list):
+                    return [self._load_core(obj) for obj in self.obj]
+                return self._load_core(self.obj)
             if isinstance(self.obj, list):
-                li = []
-                for obj in self.obj:
-                    instance = self.clas()
-                    instance._meta.server_map = self.server_map
-                    instance._meta.data = instance._transform(obj)
-                    instance._fill()
-                    li.append(instance)
-                return li
-            else:
-                instance = self.clas()
-                # SERVER MAP WILL GO FIRST THAN OBJECT
-                instance._meta.server_map = self.server_map
-                instance._meta.data = instance._transform(self.obj)
-                instance._fill()
-                return instance
-        elif issubclass(self.clas, PyotStaticObject):
-            if isinstance(self.obj, list):
-                l = []
-                for obj in self.obj:
-                    instance = self.clas(obj)
-                    instance._meta.server_map = self.server_map
-                    l.append(instance._fill())
-                return l
-            else:
-                instance = self.clas(self.obj)
-                instance._meta.server_map = self.server_map
-                return instance._fill()
-        raise RuntimeError(f"Unable to lazy load '{self.clas}'")
+                return [self._load_static(obj) for obj in self.obj]
+            return self._load_static(self.obj)
+        except Exception as e:
+            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object") from e
 
-    @staticmethod
-    def need_lazy(obj):
-        if isinstance(obj, list) or isinstance(obj, dict):
-            return True
-        return False
+    def _load_static(self, obj):
+        instance = self.clas(obj)
+        instance._meta.server_map = self.server_map
+        return instance._fill()
+
+    def _load_core(self, obj):
+        instance = self.clas()
+        # SERVER MAP WILL GO FIRST THAN OBJECT
+        instance._meta.server_map = self.server_map
+        instance._meta.data = instance._transform(obj)
+        return instance._fill()
 
 
 class PyotStaticObject:
@@ -80,22 +66,27 @@ class PyotStaticObject:
         # META CLASS UNIQUE MUTABLE OBJECTS
         self._meta = self.Meta()
         self._meta.data = data
-        self._meta.types = typing_cache.get(self.__class__, self._get_types)
+        self._meta.types = typing_cache.get(self.__class__, lambda: self._get_types, True)
 
     def __getattribute__(self, name):
         try:
             attr = super().__getattribute__(name)
-            if isinstance(attr, PyotLazyObject):
+            if attr.__class__ == PyotLazyObject:
                 obj = attr()
                 setattr(self, name, obj)
                 return obj
-            else:
-                return attr
+            return attr
         except (KeyError, AttributeError) as e:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'") from e
 
     def __getitem__(self, item):
         return self._meta.data[item]
+
+    @staticmethod
+    def _laziable(obj):
+        if isinstance(obj, dict) or isinstance(obj, list):
+            return True
+        return False
 
     def _get_types(self):
         types = get_type_hints(self.__class__)
@@ -110,8 +101,8 @@ class PyotStaticObject:
     def _rename(self, key):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
         newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
-        if newkey in self._meta.removed:
-            return None
+        # if newkey in self._meta.removed:
+        #     return None
         if newkey in self._meta.renamed:
             newkey = self._meta.renamed[newkey]
         return newkey
@@ -121,18 +112,10 @@ class PyotStaticObject:
         try:
             server_type = self._meta.server_map
             self._meta.server_type = server_type[0]
-            setattr(self, server_type[0], server_type[1].lower())
+            setattr(self, server_type[0], server_type[1])
         except AttributeError: pass
 
         mapping = normalizer_cache.get(self.__class__, dict)
-
-        for attr, renamed in self._meta.renamed.items():
-            if renamed != self._meta.server_type:
-                continue
-            server = self._meta.data.pop(attr, None)
-            if server:
-                setattr(self, self._meta.server_type, server.lower())
-            break
 
         for key, val in self._meta.data.items():
             try:
@@ -140,19 +123,19 @@ class PyotStaticObject:
             except KeyError:
                 attr = self._rename(key)
                 mapping[key] = attr
-            
-            if attr is None:
-                continue
 
-            if attr in self._meta.raws:
-                setattr(self, attr, val)
-            elif PyotLazyObject.need_lazy(val):
-                server = getattr(self, self._meta.server_type)
-                setattr(self, attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
-            elif attr == self._meta.server_type:
-                setattr(self, attr, val.lower())
+            # if attr is None:
+            #     continue
+
+            if self._laziable(val):
+                if attr in self._meta.raws:
+                    setattr(self, attr, val)
+                else:
+                    server = getattr(self, self._meta.server_type)
+                    setattr(self, attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
             else:
                 setattr(self, attr, val)
+
         return self
 
     def dict(self, pyotify: bool = False, remove_server: bool = True):
@@ -162,7 +145,7 @@ class PyotStaticObject:
         Set `remove_server` to False to not remove the server values (region/platform/locale).
         '''
         if not pyotify:
-            return fast_copy(self._meta.data) # USING PICKLE FOR FASTER COPY
+            return fast_copy(self._meta.data)
         def recursive(obj):
             dic = obj.__dict__
             del dic["_meta"]
@@ -180,7 +163,7 @@ class PyotStaticObject:
                         inner = recursive(obj)
                         dic[key] = inner
             return dic
-        obj = pickle.loads(pickle.dumps(self))
+        obj = fast_copy(self)
         return recursive(obj)
 
     def json(self, pyotify: bool = False, remove_server: bool = True):
@@ -319,7 +302,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         self._meta = self.Meta()
         self._meta.query = {}
         self._meta.data = {}
-        self._meta.types = typing_cache.get(self.__class__, self._get_types)
+        self._meta.types = typing_cache.get(self.__class__, lambda: self._get_types, True)
 
         self._set_server_type(kwargs)
         for name, val in kwargs.items():

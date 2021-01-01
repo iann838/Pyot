@@ -16,7 +16,7 @@ class PtrCache:
         self.expiration = expiration
         self.max_entries = max_entries
 
-    def get(self, name: str, func = None):
+    def get(self, name: str, func = None, lazy: bool = False):
         '''
         Get an object from the cache.
 
@@ -32,11 +32,11 @@ class PtrCache:
         except KeyError:
             if func is None:
                 return None
-        response = func()
+        response = func()() if lazy else func() 
         self.set(name, response)
         return response
 
-    async def aget(self, name: str, coro = None):
+    async def aget(self, name: str, coro = None, lazy: bool = False):
         '''
         Async get an object from the cache.
 
@@ -49,13 +49,13 @@ class PtrCache:
             if data[1] is not None and data[1] < datetime.now():
                 del self.objects[name]
                 raise KeyError(name)
-            if coro:
+            if not lazy and coro:
                 coro.close()
             return data[0]
         except KeyError:
             if coro is None:
                 return None
-        response = await coro
+        response = (await coro()) if lazy else (await coro)
         self.set(name, response)
         return response
 

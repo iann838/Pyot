@@ -159,7 +159,7 @@ class MatchEventData(PyotStatic):
     team_id: int
     position: MatchPositionData
     killer_id: int
-    timestamp: timedelta
+    timestamp: float
     assisting_participant_ids: List[int]
     building_type: str
     victim_id: int
@@ -167,10 +167,9 @@ class MatchEventData(PyotStatic):
     class Meta(PyotStatic.Meta):
         raws = ["assisting_participant_ids"]
 
-    def __getattribute__(self, name):
-        if name == "timestamp":
-            return timedelta(super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def time(self) -> timedelta:
+        return timedelta(self.timestamp)
 
     @property
     def after_item(self) -> "Item":
@@ -270,7 +269,7 @@ class MatchParticipantData(PyotStatic):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
-        return Summoner(id=self.summoner_id, platform=self.platform)
+        return Summoner(id=self.summoner_id, platform=self.current_platform)
 
     @property
     def profile_icon(self) -> "ProfileIcon":

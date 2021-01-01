@@ -11,9 +11,11 @@ Settings(
     PIPELINE = [
         {
             "BACKEND": "pyot.stores.Omnistone",
-            "LOG_LEVEL": 30,
+            # "LOG_LEVEL": 30,
             "EXPIRATIONS": {
                 "summoner_v4_by_name": 100,
+                "match_v4_match": 600,
+                "match_v4_timeline": 600,
             }
         },
         # {

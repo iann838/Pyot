@@ -6,4 +6,4 @@ import cProfile
 # loop_run(pull_dev_key_limit())
 
 print(timeit(iterate_match_events))
-cProfile.run("timeit(iterate_match_events, 100)")
+cProfile.run("timeit(iterate_match_events, 100)", sort='tottime')
