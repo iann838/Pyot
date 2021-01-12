@@ -2,11 +2,11 @@ from pyot.core.objects import PyotCoreObject, PyotStaticObject
 from pyot.utils import case_insensitive_dict
 
 
-REGIONS = ["americas", "europe", "asia"]
-PLATFORMS = []
-LOCALES = ["cs_cz", "de_de", "en_us", "el_gb", "en_au", "en_gb", "en_ph", "en_sg", "es_ar", 
-    "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro", 
-    "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"]
+REGIONS = {"americas", "europe", "asia"}
+PLATFORMS = set()
+LOCALES = {"cs_cz", "de_de", "en_us", "el_gb", "en_au", "en_gb", "en_ph", "en_sg", "es_ar",
+    "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro",
+    "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"}
 
 LOCALIZATIONS = {
     # "br1": "en_us",

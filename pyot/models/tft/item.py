@@ -27,11 +27,10 @@ class Item(PyotCore):
     def _filter(self, indexer, data):
         return indexer.get(self.id, data["items"], "id")
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
-        load = getattr(self._meta, "load")
-        self._meta.filter_key = str(load.pop("id"))
+        self._hide_load_value("id")
 
     @lazy_property
     def icon_abspath(self) -> str:
@@ -66,7 +65,7 @@ class Items(PyotCore):
     def __len__(self):
         return len(self.items)
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
 

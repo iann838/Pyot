@@ -1,9 +1,22 @@
 from datetime import datetime, timedelta
+from collections import defaultdict
 from typing import List, Iterator, Dict
 import asyncio
 
-from pyot.utils import fast_copy
+from pyot.utils import AutoData, dict_key_value_swap
+from pyot.core.functional import turbo_copy, handle_import_error
 from .__core__ import PyotCore, PyotStatic
+
+try:
+    import roleml
+except (ImportError, ValueError):
+    pass
+
+try:
+    import roleidentification
+    champion_roles = AutoData(defaultdict(lambda: {}, roleidentification.pull_data()))
+except ImportError:
+    pass
 
 
 # PYOT STATIC OBJECTS
@@ -290,7 +303,7 @@ class MatchParticipantData(MatchParticipantIdentityPlayerData, PyotStatic):
 
 
 class MatchTeamData(PyotStatic):
-    team_id: int
+    id: int
     win: bool
     first_blood: bool
     first_tower: bool
@@ -307,6 +320,9 @@ class MatchTeamData(PyotStatic):
     dominion_victory_score: int
     bans: List[MatchBanData]
     participants: List[MatchParticipantData]
+
+    class Meta(PyotStatic.Meta):
+        renamed = {"team_id": "id"}
 
 
 class MatchHistoryData(PyotStatic):
@@ -342,50 +358,19 @@ class MatchHistoryData(PyotStatic):
         return Match(id=self.id, platform=self.platform)
 
     @property
-    def match_timeline(self) -> "MatchTimeline":
-        return MatchTimeline(id=self.id, platform=self.platform)
-
-    @property
     def timeline(self) -> "Timeline":
         return Timeline(id=self.id, platform=self.platform)
 
 
 class MatchFrameMinuteData(PyotStatic):
-    data: List[MatchFrameData]
+    participant_frames: List[MatchFrameData]
+    events: List[MatchEventData]
+    timestamp: int
+    time: timedelta
 
-    def __init__(self, data):
-        data = {'data': data}
-        super().__init__(data)
-
-    def __getitem__(self, item):
-        if not isinstance(item, int):
-            return super().__getitem__(item)
-        return self.data[item]
-
-    def __iter__(self) -> Iterator[MatchFrameData]:
-        return iter(self.data)
-
-    def __len__(self):
-        return len(self.data)
-
-
-class MatchEventMinuteData(PyotStatic):
-    data: List[MatchEventData]
-
-    def __init__(self, data):
-        data = {'data': data}
-        super().__init__(data)
-
-    def __getitem__(self, item):
-        if not isinstance(item, int):
-            return super().__getitem__(item)
-        return self.data[item]
-
-    def __iter__(self) -> Iterator[MatchEventData]:
-        return iter(self.data)
-
-    def __len__(self):
-        return len(self.data)
+    @property
+    def time(self):
+        return timedelta(milliseconds=self.timestamp)
 
 
 # PYOT CORE OBJECTS
@@ -405,9 +390,10 @@ class Match(PyotCore):
     platform: str
     teams: List[MatchTeamData]
     tournament_code: str
+    include_timeline: bool
 
     class Meta(PyotCore.Meta):
-        turbo_level = 3
+        raw_timeline: Dict
         rules = {
             "match_v4_tournament_match": ["tournament_code", "id"],
             "match_v4_match": ["id"],
@@ -415,10 +401,31 @@ class Match(PyotCore):
         renamed = {"game_id": "id", "platform_id": "platform", "game_creation": "creation_millis", "game_duration": "duration_secs",
             "game_version": "version", "game_mode": "mode", "game_type": "type", "queue": "queue_id"}
 
-    def __init__(self, id: int = None, tournament_code: str = None, platform: str = None):
+    def __init__(self, id: int = None, tournament_code: str = None, include_timeline: bool = False, platform: str = None):
         self._lazy_set(locals())
 
+    async def get(self, sid: str = None, pipeline: str = None, deepcopy: bool = False):
+        if not self.include_timeline:
+            return await super().get(sid, pipeline, deepcopy)
+        get_timeline = asyncio.create_task(Timeline(id=self.id).get(sid, pipeline, deepcopy))
+        get_match = asyncio.create_task(super().get(sid, pipeline, deepcopy))
+        await get_match
+        timeline = await get_timeline
+        self._meta.raw_timeline = timeline.raw()
+        self._inject_timeline(timeline.dict())
+        return self
+
+    def _turbo_copy(self, data):
+        data = data.copy()
+        data['teams'] = turbo_copy(data['teams'], 2)
+        data['participants'] = turbo_copy(data['participants'], 2)
+        for i, p in enumerate(data['participants']):
+            data['participants'][i]['stats'] = p['stats'].copy()
+            data['participants'][i]['timeline'] = p['timeline'].copy()
+        return data
+
     def _transform(self, data):
+        data = self._turbo_copy(data)
         if data["teams"][0]["teamId"] == 100:
             blue_team = data["teams"][0]
             red_team = data["teams"][1]
@@ -435,13 +442,13 @@ class Match(PyotCore):
 
         for p in data["participants"]:
             stats = p["stats"]
-            p["spellIds"] = stats["spellIds"] = [p["spell1Id"], p["spell2Id"]]
+            p["spellIds"] = stats["spellIds"] = [p.pop("spell1Id", None), p.pop("spell2Id", None)]
 
-            stats["dominionScores"] = [stats["playerScore"+str(i)] for i in range(10)]
-            stats["itemIds"] = [stats["item"+str(i)] for i in range(7)]
-            stats["runeIds"] = [stats["perk"+str(i)] for i in range(6)]
-            stats["runeVars"] = [[stats["perk"+str(i)+"Var"+str(j)] for j in range(1, 4)] for i in range(6)]
-            stats["statRuneIds"] = [stats["statPerk"+str(i)] for i in range(3)]
+            stats["dominionScores"] = [stats.pop("playerScore"+str(i), None) for i in range(10)]
+            stats["itemIds"] = [stats.pop("item"+str(i), None) for i in range(7)]
+            stats["runeIds"] = [stats.pop("perk"+str(i), None) for i in range(6)]
+            stats["runeVars"] = [[stats.pop("perk"+str(i)+"Var"+str(j), None) for j in range(1, 4)] for i in range(6)]
+            stats["statRuneIds"] = [stats.pop("statPerk"+str(i), None) for i in range(3)]
 
             if p["teamId"] == 100: blue_team["participants"].append(p)
             elif p["teamId"] == 200: red_team["participants"].append(p)
@@ -457,9 +464,62 @@ class Match(PyotCore):
                             p.update(pi["player"])
             except KeyError: pass
 
-        data.pop("participants")
-        data.pop("participantIdentities")
+        data.pop("participants"); data.pop("participantIdentities")
         return data
+
+    def _inject_timeline(self, data):
+        teams = self._meta.data["teams"]
+        frames = {}
+        events = {}
+        for val in data["frames"][0]["participantFrames"]:
+            frames[val["participantId"]] = []
+            events[val["participantId"]] = []
+        for frame in data["frames"]:
+            for val in frame["participantFrames"]:
+                frames[val["participantId"]].append(val)
+            for event in frame["events"]:
+                try: events[event["participantId"]].append(event)
+                except KeyError:
+                    try: events[event["creatorId"]].append(event)
+                    except KeyError:
+                        try:
+                            events[event["killerId"]].append(event)
+                            events[event["victimId"]].append(event)
+                        except KeyError:
+                            pass
+        for key in frames:
+            for team in teams:
+                found = False
+                for participant in team["participants"]:
+                    if participant["participantId"] == key:
+                        participant["timeline"]["frames"] = frames[key]
+                        participant["timeline"]["events"] = events[key]
+                        found = True
+                        break
+                if found: break
+        return data
+
+    @handle_import_error("roleml")
+    def roleml(self):
+        roles = roleml.predict(self._meta.raw, self._meta.raw_timeline)
+        for team in self.teams:
+            for participant in team.participants:
+                participant.timeline.position = roles[participant.id]
+                participant.timeline._meta.data['position'] = roles[participant.id]
+
+    @handle_import_error("roleidentification")
+    def roleidentification(self):
+        for team in self.teams:
+            roles = dict_key_value_swap(roleidentification.get_roles(
+                champion_roles.get(),
+                [participant.champion_id for participant in team.participants]
+            ))
+            for participant in team.participants:
+                participant.timeline.position = roles[participant.champion_id]
+                participant.timeline._meta.data['position'] = roles[participant.champion_id]
+
+    def raw_timeline(self):
+        return self._meta.raw_timeline
 
     @property
     def creation(self) -> datetime:
@@ -473,96 +533,33 @@ class Match(PyotCore):
     def timeline(self) -> "Timeline":
         return Timeline(id=self.id, platform=self.platform)
 
+    @property
+    def blue_team(self) -> MatchTeamData:
+        return next(team for team in self.teams if team.id == 100)
 
-class MatchTimeline(Match, PyotCore):
-
-    class Meta(Match.Meta):
-        rules = {
-            "match_v4_tournament_match": ["tournament_code", "id"],
-            "match_v4_match": ["id"],
-            "match_v4_timeline": ["id"],
-        }
-
-    async def get(self, sid: str = None, pipeline: str = None, keep_raw: bool = False):
-        '''Awaitable. Get this object from the pipeline.\n
-        `sid` id identifying the session on the pipeline to reuse.\n
-        `pipeline` key identifying the pipeline to execute against.\n
-        `keep_raw` flag for storing raw data of the request as a dictionary.\n
-        '''
-        # pylint: disable=no-member
-        if pipeline:
-            self.set_pipeline(pipeline)
-        token1 = await self.create_token(search="match" if "tournament_code" not in self.__dict__ else "tournament")
-        token2 = await self.create_token(search="timeline")
-        task1 = asyncio.create_task(self._meta.pipeline.get(token1, sid))
-        task2 = asyncio.create_task(self._meta.pipeline.get(token2, sid))
-        data1 = await task1
-        data2 = await task2
-        if keep_raw:
-            self._meta.raw_data = {'match': fast_copy(data1), 'timeline': fast_copy(data2)}
-        self._meta.data = self._transform(data1, data2)
-        self._fill()
-        return self
-
-    def _transform(self, data1, data2):
-        data = super()._transform(data1)
-        teams = data["teams"]
-        frames = {}
-        events = {}
-        for val in data2["frames"][0]["participantFrames"].values():
-            frames[val["participantId"]] = []
-            events[val["participantId"]] = []
-        for frame in data2["frames"]:
-            for key, val in frame["participantFrames"].items():
-                p = val["participantId"]
-                frames[p].append(val)
-            for event in frame["events"]:
-                p = 0
-                if "participantId" in event:
-                    p = int(event["participantId"])
-                elif "creatorId" in event:
-                    p = int(event["creatorId"])
-                elif "killerId" in event:
-                    p = int(event["killerId"])
-                if p != 0:
-                    events[p].append(event)
-        for key in frames:
-            for team in teams:
-                found = False
-                for participant in team["participants"]:
-                    if participant["participantId"] == key:
-                        participant["timeline"]["frames"] = frames[key]
-                        participant["timeline"]["events"] = events[key]
-                        found = True
-                        break
-                if found: break
-        return data
+    @property
+    def red_team(self) -> MatchTeamData:
+        return next(team for team in self.teams if team.id == 200)
 
 
 class Timeline(PyotCore):
     frames: List[MatchFrameMinuteData]
-    events: List[MatchEventMinuteData]
     interval_millis: int
     interval: timedelta
 
     class Meta(PyotCore.Meta):
-        turbo_level = 1
         rules = {"match_v4_timeline": ["id"]}
-        renamed = {"interval": "interval_millis"}
+        renamed = {"frame_interval": "interval_millis"}
 
     def __init__(self, id: int = None, platform: str = None):
         self._lazy_set(locals())
 
     def _transform(self, data):
-        new_data = {
-            "frames": [],
-            "events": [],
-            "interval": data["frameInterval"]
-        }
-        for f in data["frames"]:
-            new_data["frames"].append(list(f["participantFrames"].values()))
-            new_data["events"].append(f["events"])
-        return new_data
+        data = data.copy()
+        for i, f in enumerate(data["frames"]):
+            data["frames"][i] = f.copy()
+            data["frames"][i]["participantFrames"] = list(f["participantFrames"].values())
+        return data
 
     @property
     def interval(self) -> datetime:
@@ -609,8 +606,8 @@ class MatchHistory(PyotCore):
         return [Match(id=entry.id, platform=entry.platform) for entry in self.entries]
 
     @property
-    def match_timelines(self) -> List[MatchTimeline]:
-        return [MatchTimeline(id=entry.id, platform=entry.platform) for entry in self.entries]
+    def match_timelines(self) -> List[Match]:
+        return [Match(id=entry.id, include_timeline=True, platform=entry.platform) for entry in self.entries]
 
     @property
     def timelines(self) -> List[Timeline]:
@@ -647,10 +644,10 @@ class Matches(PyotCore):
 
     @property
     def match_timelines(self) -> List[Match]:
-        return [MatchTimeline(id=id_, tournament_code=self.tournament_code, platform=self.platform) for id_ in self.ids]
+        return [Match(id=id_, tournament_code=self.tournament_code, include_timeline=True, platform=self.platform) for id_ in self.ids]
 
     @property
-    def timelines(self) -> List[Match]:
+    def timelines(self) -> List[Timeline]:
         return [Timeline(id=id_, platform=self.platform) for id_ in self.ids]
 
     def _transform(self, data):

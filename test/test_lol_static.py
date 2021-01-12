@@ -5,60 +5,60 @@ from pyot.models import lol
 async def async_profile_icons():
     val = await lol.ProfileIcons(locale="en_us").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 
 async def async_profile_icon():
     val = await lol.ProfileIcon(id=28, locale="en_us").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_merakichampion():
     val = await lol.MerakiChampion(id=235).get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_merakiitem():
     val = await lol.MerakiItem(id=3153).get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_champion():
     val = await lol.Champion(key="Senna").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_spells():
     val = await lol.Spells(locale="zh_cn").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 
 async def async_spell():
     val = await lol.Spell(id=12, locale="es_es").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_items():
     val = await lol.Items(locale="zh_cn").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 
 async def async_item():
     val = await lol.Item(id=3153, locale="fr_fr").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_runes():
     val = await lol.Runes(locale="zh_cn").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 
 async def async_rune():
     val = await lol.Rune(id=8112, locale="es_es").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 def test_profile_icons():

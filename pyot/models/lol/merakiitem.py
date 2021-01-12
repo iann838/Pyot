@@ -90,6 +90,7 @@ class MerakiItem(PyotCore):
     shop: MerakiItemShopData
 
     class Meta(PyotCore.Meta):
+        server_type = "locale"
         rules = {"meraki_item_by_id": ["id"]}
         raws = ["builds_from_ids", "builds_into_ids", "nicknames", "rank"]
         renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids", "required_champion": "required_champion_key"}

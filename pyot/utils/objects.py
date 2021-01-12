@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import pickle
 
+from .common import thread_run
+
 
 class PtrCache:
     '''
@@ -16,7 +18,7 @@ class PtrCache:
         self.expiration = expiration
         self.max_entries = max_entries
 
-    def get(self, name: str, func = None, lazy: bool = False):
+    def get(self, name: str, func=None, lazy: bool = False):
         '''
         Get an object from the cache.
 
@@ -32,11 +34,11 @@ class PtrCache:
         except KeyError:
             if func is None:
                 return None
-        response = func()() if lazy else func() 
+        response = func()() if lazy else func()
         self.set(name, response)
         return response
 
-    async def aget(self, name: str, coro = None, lazy: bool = False):
+    async def aget(self, name: str, coro=None, lazy: bool = False):
         '''
         Async get an object from the cache.
 
@@ -103,3 +105,29 @@ class FrozenGenerator:
 def frozen_generator(li):
     '''Create a FrozenGenerator and return it.'''
     return FrozenGenerator(li)
+
+
+class AutoData:
+
+    def __init__(self, func, interval=60*60*3):
+        self.interval = interval
+        self.func = func
+        self.data = None
+        self.next_update = datetime.now()
+        self.updating = False
+
+    def get(self):
+        if self.next_update < datetime.now() and not self.updating:
+            self.updating = True
+            self.data = self.func()
+            self.updating = False
+            self.next_update = datetime.now() + timedelta(seconds=self.interval)
+        return self.data
+
+    async def aget(self):
+        if self.next_update < datetime.now() and not self.updating:
+            self.updating = True
+            self.data = await thread_run(self.func)
+            self.updating = False
+            self.next_update = datetime.now() + timedelta(seconds=self.interval)
+        return self.data

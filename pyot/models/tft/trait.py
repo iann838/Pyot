@@ -45,11 +45,10 @@ class Trait(PyotCore):
     def _filter(self, indexer, data):
         return indexer.get(self.key, data["sets"][str(self.set)]["traits"], "apiName")
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
-        load = getattr(self._meta, "load")
-        self._meta.filter_key = str(load.pop("key"))
+        self._hide_load_value("key")
 
     @lazy_property
     def icon_abspath(self) -> str:
@@ -81,7 +80,7 @@ class Traits(PyotCore):
     def __len__(self):
         return len(self.traits)
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
 

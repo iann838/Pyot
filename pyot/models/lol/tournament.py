@@ -30,9 +30,9 @@ class TournamentProvider(PyotCore):
         self._meta.body = self._parse_camel(locals())
         return self
 
-    def _validate(self):
+    def _clean(self):
         if not hasattr(self._meta, "body"):
-            raise TypeError("This object is missing body parameters")
+            raise TypeError("This object's body parameters is required")
 
     def _transform(self, data):
         return {"id": data}
@@ -61,9 +61,9 @@ class Tournament(PyotCore):
         self._meta.body = self._parse_camel(locals())
         return self
 
-    def _validate(self):
+    def _clean(self):
         if not hasattr(self._meta, "body"):
-            raise TypeError("This object is missing body parameters")
+            raise TypeError("This object's body parameters is required")
 
     def _transform(self, data):
         return {"id": data}
@@ -176,9 +176,9 @@ class TournamentCodes(PyotCore):
         self._meta.body = self._parse_camel(locals())
         return self
 
-    def _validate(self):
+    def _clean(self):
         if not hasattr(self._meta, "body"):
-            raise TypeError("This object is missing body parameters")
+            raise TypeError("This object's body parameters is required")
         if not hasattr(self._meta, "query"):
             raise TypeError("This object is missing query parameters")
 

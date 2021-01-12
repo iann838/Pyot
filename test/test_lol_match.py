@@ -1,10 +1,10 @@
+from datetime import datetime, timedelta
 from pyot.utils import loop_run
 from pyot.models import lol
-from datetime import datetime, timedelta
 
 
 def assert_team(team):
-    assert isinstance(team.team_id, int)
+    assert isinstance(team.id, int)
     assert isinstance(team.win, bool)
     assert isinstance(team.first_blood, bool)
     assert isinstance(team.first_tower, bool)
@@ -137,7 +137,7 @@ async def async_match():
 
 
 async def async_match_timeline():
-    match = await lol.MatchTimeline(id=3517707030, platform="NA1").get()
+    match = await lol.Match(id=3517707030, include_timeline=True, platform="NA1").get()
     assert isinstance(match.id, int)
     assert isinstance(match.type, str)
     assert isinstance(match.mode, str)
@@ -156,8 +156,8 @@ async def async_match_timeline():
                 assert isinstance(event, lol.match.MatchEventData)
             for frame in p.timeline.frames:
                 assert isinstance(frame, lol.match.MatchFrameData)
-    blue_team2 = match.teams[0] if match.teams[0].team_id == 100 else match.teams[1]
-    red_team2 = match.teams[1] if match.teams[1].team_id == 200 else match.teams[0]
+    blue_team2 = match.teams[0] if match.teams[0].id == 100 else match.teams[1]
+    red_team2 = match.teams[1] if match.teams[1].id == 200 else match.teams[0]
     for i in range(5):
         assert len(blue_team2.participants[i].timeline.frames) > 30
         assert len(blue_team2.participants[i].timeline.events) > 50
@@ -170,14 +170,12 @@ async def async_timeline():
     timeline = await lol.Timeline(id=3517707030, platform="NA1").get()
     assert isinstance(timeline.interval, timedelta)
     assert timeline.interval == timedelta(seconds=60)
-    for event in timeline.events:
-        assert isinstance(event, lol.match.MatchEventMinuteData)
-        for e in event:
-            assert isinstance(e, lol.match.MatchEventData)
     for frame in timeline.frames:
         assert isinstance(frame, lol.match.MatchFrameMinuteData)
-        for f in frame:
+        for f in frame.participant_frames:
             assert isinstance(f, lol.match.MatchFrameData)
+        for e in frame.events:
+            assert isinstance(e, lol.match.MatchEventData)
 
 
 async def async_match_history():
@@ -198,7 +196,6 @@ async def async_match_history():
         assert isinstance(match.role, str)
         assert isinstance(match.lane, str)
         assert isinstance(match.match, lol.Match)
-        assert isinstance(match.match_timeline, lol.MatchTimeline)
         assert isinstance(match.champion, lol.Champion)
 
 

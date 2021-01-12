@@ -109,3 +109,8 @@ def bytify(obj):
 def pytify(obj):
     '''Convert a byte string to python object.'''
     return pickle.loads(obj)
+
+
+def dict_key_value_swap(dic):
+    '''Swap keys and values of a dictionary'''
+    return {v: k for k, v in dic.items()}

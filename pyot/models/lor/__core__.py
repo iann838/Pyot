@@ -2,9 +2,9 @@ from pyot.core.objects import PyotCoreObject, PyotStaticObject, PyotContainerObj
 from pyot.utils import case_insensitive_dict
 
 
-REGIONS = ["americas", "europe", "asia", "sea"]
-PLATFORMS = []
-LOCALES = ["de_de", "en_us", "es_es", "es_mx", "fr_fr", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "th_th", "tr_tr", "ru_ru", "zh_tw"]
+REGIONS = {"americas", "europe", "asia", "sea"}
+PLATFORMS = set()
+LOCALES = {"de_de", "en_us", "es_es", "es_mx", "fr_fr", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "th_th", "tr_tr", "ru_ru", "zh_tw"}
 
 LOCALIZATIONS = {
     # "br1": "en_us",

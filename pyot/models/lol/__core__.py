@@ -2,11 +2,11 @@ from pyot.core.objects import PyotCoreObject, PyotStaticObject
 from pyot.utils import case_insensitive_dict
 
 
-REGIONS = ["americas", "europe", "asia"]
-PLATFORMS = ["br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru", "pbe"]
-LOCALES = ["cs_cz", "de_de", "en_us", "el_gb", "en_au", "en_gb", "en_ph", "en_sg", "es_ar", 
-    "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro", 
-    "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"]
+REGIONS = {"americas", "europe", "asia"}
+PLATFORMS = {"br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru", "pbe"}
+LOCALES = {"cs_cz", "de_de", "en_us", "el_gb", "en_au", "en_gb", "en_ph", "en_sg", "es_ar",
+    "es_es", "es_mx", "fr_fr", "hu_hu", "it_it", "ja_jp", "ko_kr", "pl_pl", "pt_br", "ro_ro",
+    "ru_ru", "th_th", "tr_tr", "vn_vn", "zh_cn", "zh_my", "zh_tw", "default"}
 
 LOCALIZATIONS = {
     "br1": "en_us",
@@ -37,7 +37,7 @@ class ModelMixin:
     @classmethod
     def set_region(cls, region):
         cls.region = region.lower()
-    
+
     @classmethod
     def set_platform(cls, platform):
         cls.platform = platform.lower()
@@ -50,7 +50,7 @@ class ModelMixin:
     def override_locale(cls, locale_map):
         LOCALIZATIONS.update(locale_map)
         cls.Meta.localizations = case_insensitive_dict(LOCALIZATIONS)
-    
+
     def to_locale(self, platform):
         return self.Meta.localizations[platform]
 

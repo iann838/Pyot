@@ -5,42 +5,42 @@ from pyot.models import tft
 async def async_profile_icons():
     val = await tft.ProfileIcons(locale="en_us").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 
 async def async_profile_icon():
     val = await tft.ProfileIcon(id=28, locale="en_us").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_champions():
     val = await tft.Champions(set=3).get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 async def async_champion():
     val = await tft.Champion(key="TFT4_Aatrox").get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_items():
     val = await tft.Items(locale="en_us").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 async def async_item():
     val = await tft.Item(id=28).get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 async def async_traits():
     val = await tft.Traits(set=4, locale="zh_cn").get()
     for v in val:
-        v.dict(pyotify=True)
+        v.dict(recursive=True)
 
 async def async_trait():
     val = await tft.Trait(key="Divine", set=4).get()
-    val.dict(pyotify=True)
+    val.dict(recursive=True)
 
 
 def test_profile_icons():

@@ -1,7 +1,8 @@
+import asyncio
 from typing import Any, Dict, Tuple
 from dataclasses import dataclass
+
 from pyot.core import exceptions as exc
-import asyncio
 
 
 @dataclass
@@ -48,7 +49,7 @@ class RequestToken:
                 self._raise_at = params[-1]+1
             else:
                 self._raise_at = 1
-        
+
         self._tries += 1
         if strategy == "E" and self._tries < self._raise_at:
             await asyncio.sleep(params[0]**self._tries)
@@ -60,17 +61,27 @@ class RequestToken:
             raise self._exception
 
 
-@dataclass
 class PipelineToken:
+    value: str
+    hashval: str
     model: str
     server: str
     method: str
     params: Dict[str, Any]
     queries: Dict[str, Any]
 
+    def __init__(self, model: str, server: str, method: str, params: Dict[str, Any], queries: Dict[str, Any]):
+        self.model = model
+        self.server = server
+        self.method = method
+        self.params = params
+        self.queries = queries
+        self.value = (self.model + self.server + self.method + str(self.params) + str(self.queries)).replace(" ", "_")
+        self.hashval = hash((self.model, self.server, self.method, str(self.params), str(self.queries)))
+
     def __hash__(self):
-        return hash((self.model, self.server, self.method, str(self.params), str(self.queries)))
+        return self.hashval
 
     @property
     def stringify(self):
-        return (self.model + self.server + self.method + str(self.params) + str(self.queries)).replace(" ", "_")
+        return self.value

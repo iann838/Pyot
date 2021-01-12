@@ -69,7 +69,7 @@ class ApexLeague(League):
     def __init__(self, queue: str = None, platform: str = None):
         self._lazy_set(locals())
 
-    async def _clean(self):
+    async def _setup(self):
         if self.queue not in self._meta.queue_list:
             raise AttributeError(f"Invalid 'queue' attribute, '{self.queue}' was given")
 
@@ -149,7 +149,7 @@ class DivisionLeague(SummonerLeague):
         self._meta.query = self._parse_camel(locals())
         return self
 
-    async def _clean(self):
+    async def _setup(self):
         if self.queue not in self._meta.queue_list:
             raise AttributeError(f"Invalid 'queue' attribute, '{self.queue}' was given")
         if self.division not in self._meta.division_list:

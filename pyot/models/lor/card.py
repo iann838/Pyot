@@ -59,9 +59,8 @@ class Card(PyotCore):
             self.number = int(code[4:])
         self._lazy_set(locals())
 
-    def _refactor(self):
-        load = getattr(self._meta, "load")
-        self._meta.filter_key = load.pop("code")
+    def _clean(self):
+        self._hide_load_value("code")
 
     @cache_indexes
     def _filter(self, indexer, data):

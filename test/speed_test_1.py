@@ -4,7 +4,7 @@ from pyot.utils import PtrCache
 async def iterate_match_events():
     # pylint: disable=unused-variable
     cache = PtrCache()
-    match = await lol.MatchTimeline(id=3442099474).get()
+    match = await lol.Match(id=3442099474, include_timeline=True).get()
     for team in match.teams:
         for p in team.participants:
             # for event in p.timeline["events"]:

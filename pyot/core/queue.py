@@ -1,9 +1,11 @@
+import uuid
+import asyncio
 from logging import getLogger
 from typing import List, Coroutine
+
 import aiohttp
-import asyncio
-import uuid
 from pyot.pipeline import pipelines
+from .exceptions import PyotException
 
 LOGGER = getLogger(__name__)
 
@@ -14,12 +16,13 @@ class Queue:
 
     Unlike Gatherer, Queue has real workers that acts like consumers.
     A session is created and accessible on 'sid' attribute, the maxsize will default to workers * 2.
-    Normally the queue object will be passed down to coroutines to give access to session id or queue methods. 
+    Normally the queue object will be passed down to coroutines to give access to session id or queue methods.
     '''
     session: aiohttp.ClientSession
     queue: asyncio.Queue
     workers_num: int
     maxsize: int
+    is_joined: bool
     responses: List
     workers: List
     sid: str
@@ -32,7 +35,7 @@ class Queue:
         else:
             self.maxsize = maxsize
         self.log_level = log_level
-    
+
     async def worker(self, queue):
         while True:
             coro = await queue.get()
@@ -40,8 +43,8 @@ class Queue:
                 res = await coro
                 if res is not None:
                     self.responses.append(res)
-            except Exception as e:
-                LOGGER.warning(f"[Trace: Pyot Queue] WARNING: Unhandled exception '{e.__class__.__name__}: {e}' was raised and ignored")
+            except PyotException as e:
+                LOGGER.warning(f"[Trace: Pyot Queue] WARNING: Unhandled PyotException '{e.__class__.__name__}: {e}' was raised and ignored")
             finally:
                 queue.task_done()
 

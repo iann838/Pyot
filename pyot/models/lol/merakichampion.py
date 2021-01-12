@@ -196,6 +196,7 @@ class MerakiChampion(PyotCore):
     lore: str
 
     class Meta(PyotCore.Meta):
+        server_type = "locale"
         rules = {"meraki_champion_by_key": ["key"]}
         raws = ["roles"]
 
@@ -203,7 +204,7 @@ class MerakiChampion(PyotCore):
         locale = "default"
         self._lazy_set(locals())
 
-    async def _clean(self):
+    async def _setup(self):
         if not hasattr(self, "key"):
             if hasattr(self, "id"):
                 self.key = await champion_key_by_id(self.id)

@@ -1,15 +1,13 @@
+import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from collections import defaultdict
-from functools import partial
 from logging import getLogger
 from typing import List, Any
 from dateutil.parser import parse
-import asyncio
-import pickle
 import pytz
 
-from pyot.utils import SealLock, MultiDefaultDict
+from pyot.utils import MultiDefaultDict
 
 LOGGER = getLogger(__name__)
 
@@ -42,13 +40,13 @@ class LimitToken:
 
 class BaseLimiter:
     last_waited: datetime
-    
+
     def __init__(self, game, api_key, limiting_share=1):
         yesterday = datetime.now(pytz.utc) - timedelta(days=1)
         self._game = game
         self._limiting_share = limiting_share
         self._api_key = api_key
-        self._application_rates = MultiDefaultDict(lambda: [[None, 1, 20, 1],[None, 1, 100, 120]])
+        self._application_rates = MultiDefaultDict(lambda: [[None, 1, 20, 1], [None, 1, 100, 120]])
         self._application_times = MultiDefaultDict(lambda: [yesterday, yesterday])
         self._application_backoffs = defaultdict(lambda: yesterday)
         self._methods_rates = MultiDefaultDict(lambda: [[None, 1, 10, 60], [None, 1, 10, 60]])
@@ -66,7 +64,7 @@ class BaseLimiter:
         app_rate2 = r_app_rate[1]
         app_time1 = r_app_time[0]
         app_time2 = r_app_time[1]
-        now = datetime.now(pytz.utc)
+        now = datetime.now(pytz.utc) - timedelta(seconds=1)
         method_rate1 = r_method_rate[0]
         method_rate2 = r_method_rate[1]
         method_time1 = r_method_time[0]
@@ -90,7 +88,7 @@ class BaseLimiter:
 
         i_rates = [app_rate1, app_rate2, method_rate1, method_rate2]
         i_times = [app_time1, app_time2, method_time1, method_time2]
-        
+
         for i in range(4):
             if i_rates[i][0] and i_rates[i][0] + i_rates[i][1] >= int(i_rates[i][2]*self._limiting_share):
                 token.append((i_times[i]-now).total_seconds())

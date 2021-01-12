@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import sys
+from os import path
 
 from setuptools import setup, find_packages
-from os import path
 
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
@@ -29,7 +29,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="3.0.0a",
+    version="3.0.0b",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
@@ -52,7 +52,7 @@ setup(
         "Framework :: Django :: 3.0",
     ],
     license="MIT",
-    packages=find_packages(exclude=("test","test_djot")),
+    packages=find_packages(exclude=("test", "test_djot")),
     zip_safe=True,
     install_requires=install_requires,
     include_package_data=True,

@@ -79,7 +79,7 @@ class Champion(PyotCore):
     def _filter(self, indexer, data):
         return indexer.get(self.key, data["sets"][str(self.set)]["champions"], "apiName")
 
-    async def _clean(self):
+    async def _setup(self):
         if not hasattr(self, "key"):
             if hasattr(self, "lol_id"):
                 key = await champion_key_by_id(self.lol_id)
@@ -88,12 +88,10 @@ class Champion(PyotCore):
                 key = await champion_key_by_name(self.name)
                 self.key = f"TFT{self.set}_{key}"
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
-        load = getattr(self._meta, "load")
-        self._meta.filter_key = str(load.pop("key"))
-
+        self._hide_load_value("key")
     @lazy_property
     def icon_abspath(self) -> str:
         return tft_url(self.icon_path)
@@ -125,7 +123,7 @@ class Champions(PyotCore):
     def __len__(self):
         return len(self.champions)
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
 

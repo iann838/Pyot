@@ -1,6 +1,5 @@
 import datetime
-from typing import Callable, Any, TypeVar, Tuple, Dict
-from datetime import timedelta as td
+from typing import Any
 from logging import getLogger
 import pickle
 import copy
@@ -36,7 +35,7 @@ class Omnistone(StoreObject):
                     timeout = datetime.timedelta(seconds=timeout)
                 if await self._allowed():
                     value = pickle.dumps(value)
-                    self._data[token] = (value, timeout, datetime.datetime.now(), datetime.datetime.now())
+                    self._data[token.value] = (value, timeout, datetime.datetime.now(), datetime.datetime.now())
                     LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > Omnistone] SET: {self._log_template(token)}")
             if len(self._data) > self._max_entries and await self._allowed():
                 async with self._lock:
@@ -51,7 +50,7 @@ class Omnistone(StoreObject):
             raise NotFound
         async with self._lock:
             try:
-                item, timeout, entered, _ = self._data[token]
+                item, timeout, entered, _ = self._data[token.value]
             except KeyError:
                 raise NotFound
             if not expiring:
@@ -59,24 +58,22 @@ class Omnistone(StoreObject):
 
             now = datetime.datetime.now()
             if timeout == -1:
-                self._data[token] = (item, timeout, entered, now)
+                self._data[token.value] = (item, timeout, entered, now)
                 item = pickle.loads(item)
                 return item
-            
             elif now > entered + timeout:
                 try:
-                    del self._data[token]
-                except: pass
+                    del self._data[token.value]
+                except KeyError: pass
                 raise NotFound
-            
             else:
-                self._data[token] = (item, timeout, entered, now)
+                self._data[token.value] = (item, timeout, entered, now)
                 item = pickle.loads(item)
                 return item
 
     async def delete(self, token: PipelineToken) -> None:
         try:
-            del self._data[token]
+            del self._data[token.value]
             LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > Omnistone] DELETE: {self._log_template(token)}")
         except KeyError:
             raise NotFound
@@ -109,7 +106,7 @@ class Omnistone(StoreObject):
 
     async def contains(self, token: PipelineToken) -> bool:
         try:
-            _ = self._data[token]
+            _ = self._data[token.value]
             return True
         except KeyError:
             return False

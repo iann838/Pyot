@@ -185,14 +185,14 @@ class Champion(PyotCore):
     def __init__(self, id: int = None, key: str = None, name: str = None, locale: str = None):
         self._lazy_set(locals())
 
-    async def _clean(self):
+    async def _setup(self):
         if not hasattr(self, "id"):
             if hasattr(self, "key"):
                 self.id = await champion_id_by_key(self.key)
             elif hasattr(self, "name"):
                 self.id = await champion_id_by_name(self.name)
 
-    def _refactor(self):
+    def _clean(self):
         if self.locale.lower() == "en_us":
             self._meta.server = "default"
 

@@ -1,5 +1,4 @@
 from .__core__ import PyotCore
-from pyot.pipeline import pipelines
 
 
 class Account(PyotCore):

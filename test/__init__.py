@@ -1,17 +1,17 @@
-from pyot.core import Settings
 from pathlib import Path
 import os
 
+from pyot.core import Settings
 
 Settings(
-    MODEL = "LOL",
-    DEFAULT_PLATFORM = "NA1",
-    DEFAULT_REGION = "AMERICAS",
-    DEFAULT_LOCALE= "EN_US",
-    PIPELINE = [
+    MODEL="LOL",
+    DEFAULT_PLATFORM="NA1",
+    DEFAULT_REGION="AMERICAS",
+    DEFAULT_LOCALE="EN_US",
+    PIPELINE=[
         {
             "BACKEND": "pyot.stores.Omnistone",
-            # "LOG_LEVEL": 30,
+            "LOG_LEVEL": 30,
             "EXPIRATIONS": {
                 "summoner_v4_by_name": 100,
                 "match_v4_match": 600,
@@ -56,7 +56,7 @@ Settings(
             },
             "ERROR_HANDLING": {
                 400: ("T", []),
-                503: ("E", [3,3])
+                503: ("E", [3, 3])
             }
         }
     ]
@@ -64,10 +64,10 @@ Settings(
 
 
 Settings(
-    MODEL = "LOR",
-    DEFAULT_REGION = "AMERICAS",
-    DEFAULT_LOCALE = "EN_US",
-    PIPELINE = [
+    MODEL="LOR",
+    DEFAULT_REGION="AMERICAS",
+    DEFAULT_LOCALE="EN_US",
+    PIPELINE=[
         {
             "BACKEND": "pyot.stores.Omnistone",
             "LOG_LEVEL": 30,
@@ -93,7 +93,7 @@ Settings(
             },
             "ERROR_HANDLING": {
                 400: ("T", []),
-                503: ("E", [3,3])
+                503: ("E", [3, 3])
             }
         }
     ]
@@ -101,11 +101,11 @@ Settings(
 
 
 Settings(
-    MODEL = "TFT",
-    DEFAULT_PLATFORM = "NA1",
-    DEFAULT_REGION = "AMERICAS",
-    DEFAULT_LOCALE= "EN_US",
-    PIPELINE = [
+    MODEL="TFT",
+    DEFAULT_PLATFORM="NA1",
+    DEFAULT_REGION="AMERICAS",
+    DEFAULT_LOCALE="EN_US",
+    PIPELINE=[
         {
             "BACKEND": "pyot.stores.Omnistone",
             "LOG_LEVEL": 30,
@@ -127,7 +127,7 @@ Settings(
             },
             "ERROR_HANDLING": {
                 400: ("T", []),
-                503: ("E", [3,3])
+                503: ("E", [3, 3])
             }
         }
     ]
@@ -135,11 +135,11 @@ Settings(
 
 
 Settings(
-    MODEL = "VAL",
-    DEFAULT_PLATFORM = "NA",
-    DEFAULT_REGION = "AMERICAS",
-    DEFAULT_LOCALE= "EN-US",
-    PIPELINE = [
+    MODEL="VAL",
+    DEFAULT_PLATFORM="NA",
+    DEFAULT_REGION="AMERICAS",
+    DEFAULT_LOCALE="EN-US",
+    PIPELINE=[
         {
             "BACKEND": "pyot.stores.Omnistone",
             "LOG_LEVEL": 30,
@@ -153,7 +153,7 @@ Settings(
             },
             "ERROR_HANDLING": {
                 400: ("T", []),
-                503: ("E", [3,3])
+                503: ("E", [3, 3])
             }
         }
     ]

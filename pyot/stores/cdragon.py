@@ -1,10 +1,8 @@
-import re
 from datetime import datetime
-from typing import Mapping, Tuple, Dict, List, Any
+from typing import Tuple, Dict
 from json import JSONDecodeError
 from logging import getLogger
 import aiohttp
-import asyncio
 
 from pyot.core import exceptions as exc
 from pyot.pipeline.token import PipelineToken, RequestToken
