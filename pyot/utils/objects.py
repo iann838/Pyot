@@ -82,7 +82,7 @@ class PtrCache:
         self.objects = dict()
 
 
-def ptr_cache(expiration=60*60*3, max_entries=2000):
+def ptr_cache(expiration=60*60*3, max_entries=5000):
     '''Create an PtrCache and return it.'''
     return PtrCache(expiration, max_entries)
 

@@ -1,14 +1,14 @@
-from .__core__ import PyotCore
-from pyot.utils.cdragon import tft_item_sanitize, tft_url
-from pyot.core.exceptions import NotFound
 from typing import List, Iterator, Mapping
+
+from pyot.utils.cdragon import tft_item_sanitize, tft_url
+from pyot.core.functional import cache_indexes, lazy_property
+from .__core__ import PyotCore
 
 
 # PYOT CORE OBJECT
 
 class Item(PyotCore):
     description: str
-    cleaned_description: str
     effects: Mapping[str, int]
     from_ids: List[int]
     icon_path: str
@@ -18,17 +18,14 @@ class Item(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["id"]}
         raws = ["from_ids", "effects"]
-        renamed = {"from":"from_ids", "desc": "description"}
+        renamed = {"from":"from_ids", "desc": "description", "icon": "icon_path"}
 
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def _filter(self, data_):
-        data = data_["items"]
-        for item in data:
-            if item["id"] == self.id:
-                return item
-        raise NotFound
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.id, data["items"], "id")
 
     def _refactor(self):
         if self.locale.lower() == "default":
@@ -36,10 +33,13 @@ class Item(PyotCore):
         load = getattr(self._meta, "load")
         self._meta.filter_key = str(load.pop("id"))
 
-    def _transform(self, data):
-        data["iconPath"] = tft_url(data.pop("icon"))
-        data["cleanedDescription"] = tft_item_sanitize(data["desc"], data["effects"])
-        return data
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return tft_url(self.icon_path)
+
+    @lazy_property
+    def cleaned_description(self):
+        return tft_item_sanitize(self.description, self.effects)
 
     @property
     def from_items(self) -> List["Item"]:

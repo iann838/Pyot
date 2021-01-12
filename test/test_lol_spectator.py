@@ -14,7 +14,7 @@ async def async_featured_game():
         assert isinstance(game.duration, timedelta)
         assert isinstance(game.map_id, int)
         assert isinstance(game.platform, str)
-        assert isinstance(game.queue, int)
+        assert isinstance(game.queue_id, int)
         assert isinstance(game.observers_key, str)
         for team in game.teams:
             assert isinstance(team.id, int)
@@ -43,7 +43,7 @@ async def async_current_game():
     assert isinstance(game.duration, timedelta)
     assert isinstance(game.map_id, int)
     assert isinstance(game.platform, str)
-    assert isinstance(game.queue, int)
+    assert isinstance(game.queue_id, int)
     assert isinstance(game.observers_key, str)
     for team in game.teams:
         assert isinstance(team.id, int)

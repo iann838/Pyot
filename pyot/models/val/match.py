@@ -1,6 +1,6 @@
-from .__core__ import PyotCore, PyotStatic
 from datetime import datetime, timedelta
 from typing import List, Iterator
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -8,6 +8,8 @@ from typing import List, Iterator
 class MatchInfoData(PyotStatic):
     id: str
     map_id: str
+    start_millis: int
+    length_millis: int
     duration: timedelta
     creation: datetime
     provisioning_flow_id: str
@@ -19,14 +21,15 @@ class MatchInfoData(PyotStatic):
     season_id: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_length_millis": "duration", "game_start_millis": "creation", "match_id": "id"}
+        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id"}
 
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        elif name == "duration":
-            return timedelta(milliseconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.start_millis//1000)
+
+    @property
+    def duration(self) -> datetime:
+        return timedelta(seconds=self.length_millis)
 
 
 class MatchPlayerAbilityCastData(PyotStatic):
@@ -49,16 +52,13 @@ class MatchPlayerStatData(PyotStatic):
     kills: int
     deaths: int
     assists: int
+    playtime_millis: int
     playtime: timedelta
     ability_casts: MatchPlayerAbilityCastData
 
-    class Meta(PyotStatic.Meta):
-        renamed = {"playtime_millis": "playtime"}
-
-    def __getattribute__(self, name):
-        if name == "playtime":
-            return timedelta(milliseconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def playtime(self) -> timedelta:
+        return timedelta(milliseconds=self.playtime_millis)
 
 
 class MatchPlayerData(PyotStatic):
@@ -105,11 +105,13 @@ class MatchPlayerFinishingDamageData(PyotStatic):
 
 
 class MatchPlayerKillData(PyotStatic):
-    game_duration: timedelta
-    round_duration: timedelta
+    game_time_millis: int
+    round_time_millis: int
+    game_time: timedelta
+    round_time: timedelta
     killer_puuid: str
     victim_puuid: str
-    victim_location: MatchLocationData	
+    victim_location: MatchLocationData
     assistant_puuids: List[str]
     player_locations: List[MatchPlayerLocationData]
     finishing_damage: MatchPlayerFinishingDamageData
@@ -117,12 +119,15 @@ class MatchPlayerKillData(PyotStatic):
     class Meta(PyotStatic.Meta):
         raws = ["assistant_puuids"]
         renamed = {"killer": "killer_puuid", "victim": "victim_puuid", "assistants": "assistant_puuids",
-            "time_since_game_start_millis": "game_duration", "time_since_round_start_millis": "round_duration"}
+            "time_since_game_start_millis": "game_time_millis", "time_since_round_start_millis": "round_time_millis"}
 
-    def __getattribute__(self, name):
-        if name in ["game_duration", "round_duration"]:
-            return timedelta(milliseconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def game_time(self) -> timedelta:
+        return timedelta(milliseconds=self.game_time_millis)
+
+    @property
+    def round_time(self) -> timedelta:
+        return timedelta(milliseconds=self.round_time_millis)
 
     @property
     def killer(self) -> "Account":
@@ -172,10 +177,12 @@ class MatchRoundResultData(PyotStatic):
     winning_team: str
     bomb_planter_puuid: str
     bomb_defuser_puuid: str
+    plant_round_millis: int
     plant_round_time: timedelta
     plant_player_locations: List[MatchPlayerLocationData]
     plant_location: MatchLocationData
     plant_site: str
+    defuse_round_millis: int
     defuse_round_time: timedelta
     defuse_player_locations: List[MatchPlayerLocationData]
     defuse_location: MatchLocationData
@@ -183,12 +190,16 @@ class MatchRoundResultData(PyotStatic):
     round_result_code: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"bomb_planter": "bomb_planter_puuid", "bomb_defuser": "bomb_defuser_puuid"}
+        renamed = {"bomb_planter": "bomb_planter_puuid", "bomb_defuser": "bomb_defuser_puuid",
+            "plant_round_time": "plant_round_millis", "defuse_round_time": "defuse_round_millis"}
 
-    def __getattribute__(self, name):
-        if name in ["plant_round_time", "defuse_round_time"]:
-            return timedelta(milliseconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def plant_round_time(self) -> timedelta:
+        return timedelta(milliseconds=self.plant_round_millis)
+
+    @property
+    def defuse_round_time(self) -> timedelta:
+        return timedelta(milliseconds=self.defuse_round_millis)
 
     @property
     def bomb_planter(self) -> "Account":
@@ -210,20 +221,20 @@ class Match(PyotCore):
     teams: List[MatchTeamData]
     round_results: List[MatchRoundResultData]
     # <~> MatchHistory
+    start_time_millis: int
     creation: datetime
     team_id: str
 
     class Meta(PyotCore.Meta):
-        renamed = {"match_info": "info", "game_start_time_millis": "creation", "match_id": "id"}
+        renamed = {"match_info": "info", "game_start_time_millis": "start_time_millis", "match_id": "id"}
         rules = {"match_v1_match": ["id"]}
-
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
 
     def __init__(self, id: str = None, platform: str = None):
         self._lazy_set(locals())
+
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.start_time_millis//1000)
 
 
 class MatchHistory(PyotCore):
@@ -254,17 +265,14 @@ class MatchHistory(PyotCore):
 
 
 class RecentMatches(PyotCore):
+    current_timestamp: int
     current_time: datetime
     match_ids: List[str]
 
     class Meta(PyotCore.Meta):
         raws = ["match_ids"]
         rules = {"match_v1_recent": ["queue"]}
-
-    def __getattribute__(self, name):
-        if name == "current_time":
-            return datetime.fromtimestamp(super().__getattribute__(name))
-        return super().__getattribute__(name)
+        renamed = {"current_time": "current_timestamp"}
 
     def __init__(self, queue: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -279,6 +287,10 @@ class RecentMatches(PyotCore):
 
     def __len__(self):
         return len(self.matches)
+
+    @property
+    def current_time(self) -> datetime:
+        return datetime.fromtimestamp(self.current_timestamp)
 
     @property
     def matches(self) -> List["Match"]:

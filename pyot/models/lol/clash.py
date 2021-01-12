@@ -1,6 +1,6 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List
 from datetime import datetime
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -10,7 +10,7 @@ class ClashPlayerData(PyotStatic):
     team_id: str
     position: str
     role: str
-    
+
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
@@ -23,14 +23,22 @@ class ClashPlayerData(PyotStatic):
 
 class ClashTournamentPhaseData(PyotStatic):
     id: int
+    registration_timestamp: int
+    start_timestamp: int
     registration_time: datetime
     start_time: datetime
     cancelled: bool
 
-    def __getattribute__(self, name):
-        if name in ["start_time", "registration_time"]:
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
+    class Meta(PyotStatic.Meta):
+        renamed = {'start_time': 'start_timestamp', 'registration_time': 'registration_timestamp'}
+
+    @property
+    def start_time(self) -> datetime:
+        return datetime.fromtimestamp(self.start_timestamp//1000)
+
+    @property
+    def registration_time(self) -> datetime:
+        return datetime.fromtimestamp(self.registration_timestamp//1000)
 
 
 class ClashTournamentData(PyotStatic):

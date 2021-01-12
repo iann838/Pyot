@@ -49,7 +49,7 @@ def assert_team(team):
             assert isinstance(it, lol.Rune)
         for num in stats.rune_vars:
             assert len(num) == 3
-        assert isinstance(stats.rune_style, int)
+        assert isinstance(stats.rune_main_style, int)
         assert isinstance(stats.rune_sub_style, int)
         assert isinstance(stats.kills, int)
         assert isinstance(stats.deaths, int)
@@ -109,13 +109,13 @@ def assert_team(team):
         assert isinstance(stats.total_score_rank, int)
         timeline = p.timeline
         assert isinstance(timeline.participant_id, int)
-        assert isinstance(timeline.creeps_per_min_deltas, list)
-        assert isinstance(timeline.xp_per_min_deltas, list)
-        assert isinstance(timeline.gold_per_min_deltas, list)
-        assert isinstance(timeline.cs_diff_per_min_deltas, list)
-        assert isinstance(timeline.xp_diff_per_min_deltas, list)
-        assert isinstance(timeline.damage_taken_per_min_deltas, list)
-        assert isinstance(timeline.damage_taken_diff_per_min_deltas, list)
+        assert isinstance(timeline.creeps_per_min_deltas, dict)
+        assert isinstance(timeline.xp_per_min_deltas, dict)
+        assert isinstance(timeline.gold_per_min_deltas, dict)
+        assert isinstance(timeline.cs_diff_per_min_deltas, dict)
+        assert isinstance(timeline.xp_diff_per_min_deltas, dict)
+        assert isinstance(timeline.damage_taken_per_min_deltas, dict)
+        assert isinstance(timeline.damage_taken_diff_per_min_deltas, dict)
         assert isinstance(timeline.role, str)
         assert isinstance(timeline.lane, str)
 
@@ -134,8 +134,6 @@ async def async_match():
     assert isinstance(match.platform, str)
     for team in match.teams:
         assert_team(team)
-    assert_team(match.blue_team)
-    assert_team(match.red_team)
 
 
 async def async_match_timeline():
@@ -152,32 +150,20 @@ async def async_match_timeline():
     assert isinstance(match.platform, str)
     for team in match.teams:
         assert_team(team)
-    assert_team(match.blue_team)
-    assert_team(match.red_team)
     for team in match.teams:
         for p in team.participants:
             for event in p.timeline.events:
                 assert isinstance(event, lol.match.MatchEventData)
             for frame in p.timeline.frames:
                 assert isinstance(frame, lol.match.MatchFrameData)
-    blue_team = match.blue_team
-    red_team = match.red_team
     blue_team2 = match.teams[0] if match.teams[0].team_id == 100 else match.teams[1]
     red_team2 = match.teams[1] if match.teams[1].team_id == 200 else match.teams[0]
     for i in range(5):
-        frame_len = len(blue_team2.participants[i].timeline.frames)
-        event_len = len(blue_team2.participants[i].timeline.events)
-        for j in range(frame_len):
-            assert blue_team2.participants[i].timeline.frames[j].minions_killed == blue_team.participants[i].timeline.frames[j].minions_killed
-        for j in range(event_len):
-            assert blue_team2.participants[i].timeline.events[j].type == blue_team.participants[i].timeline.events[j].type
+        assert len(blue_team2.participants[i].timeline.frames) > 30
+        assert len(blue_team2.participants[i].timeline.events) > 50
     for i in range(5):
-        frame_len = len(red_team2.participants[i].timeline.frames)
-        event_len = len(red_team2.participants[i].timeline.events)
-        for j in range(frame_len):
-            assert red_team2.participants[i].timeline.frames[j].minions_killed == red_team.participants[i].timeline.frames[j].minions_killed
-        for j in range(event_len):
-            assert red_team2.participants[i].timeline.events[j].type == red_team.participants[i].timeline.events[j].type
+        assert len(red_team2.participants[i].timeline.frames) > 30
+        assert len(red_team2.participants[i].timeline.events) > 50
 
 
 async def async_timeline():

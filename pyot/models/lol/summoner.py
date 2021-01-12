@@ -1,5 +1,5 @@
-from .__core__ import PyotCore
 from datetime import datetime
+from .__core__ import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -11,6 +11,7 @@ class Summoner(PyotCore):
     level: int
     puuid: str
     profile_icon_id: int
+    revision_date_millis: int
     revision_date: datetime
 
     class Meta(PyotCore.Meta):
@@ -20,15 +21,14 @@ class Summoner(PyotCore):
             "summoner_v4_by_puuid": ["puuid"],
             "summoner_v4_by_name": ["name"],
         }
-        renamed = {"summoner_level": "level"}
-
-    def __getattribute__(self, name):
-        if name == "revision_date":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
+        renamed = {"summoner_level": "level", "revision_date": "revision_date_millis"}
 
     def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = None):
         self._lazy_set(locals())
+
+    @property
+    def revision_date(self) -> datetime:
+        return datetime.fromtimestamp(self.revision_date_millis//1000)
 
     @property
     def champion_masteries(self) -> "ChampionMasteries":

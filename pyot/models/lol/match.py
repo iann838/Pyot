@@ -1,9 +1,9 @@
-from .__core__ import PyotCore, PyotStatic
 from datetime import datetime, timedelta
-from typing import List, get_type_hints, Iterator
+from typing import List, Iterator, Dict
 import asyncio
 
 from pyot.utils import fast_copy
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -37,7 +37,7 @@ class MatchParticipantStatData(PyotStatic):
     rune_ids: List[int]
     stat_rune_ids: List[int]
     rune_vars: List[List[int]]
-    rune_style: int
+    rune_main_style: int
     rune_sub_style: int
     kills: int
     deaths: int
@@ -98,7 +98,7 @@ class MatchParticipantStatData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         raws = ["item_ids", "dominion_scores", "rune_ids", "spell_ids", "rune_vars", "stat_rune_ids"]
-        renamed = {"time_c_cing_others": "time_ccing_others"}
+        renamed = {"time_c_cing_others": "time_ccing_others", "perk_primary_style": "rune_main_style", "perk_sub_style": "rune_sub_style"}
 
     @property
     def items(self) -> List["Item"]:
@@ -160,6 +160,7 @@ class MatchEventData(PyotStatic):
     position: MatchPositionData
     killer_id: int
     timestamp: float
+    time: timedelta
     assisting_participant_ids: List[int]
     building_type: str
     victim_id: int
@@ -169,7 +170,7 @@ class MatchEventData(PyotStatic):
 
     @property
     def time(self) -> timedelta:
-        return timedelta(self.timestamp)
+        return timedelta(milliseconds=self.timestamp)
 
     @property
     def after_item(self) -> "Item":
@@ -204,30 +205,24 @@ class MatchEventData(PyotStatic):
 
 class MatchParticipantTimelineData(PyotStatic):
     participant_id: int
-    creeps_per_min_deltas: List[float]
-    xp_per_min_deltas: List[float]
-    gold_per_min_deltas: List[float]
-    cs_diff_per_min_deltas: List[float]
-    xp_diff_per_min_deltas: List[float]
-    damage_taken_per_min_deltas: List[float]
-    damage_taken_diff_per_min_deltas: List[float]
+    creeps_per_min_deltas: Dict[str, float]
+    xp_per_min_deltas: Dict[str, float]
+    gold_per_min_deltas: Dict[str, float]
+    cs_diff_per_min_deltas: Dict[str, float]
+    xp_diff_per_min_deltas: Dict[str, float]
+    damage_taken_per_min_deltas: Dict[str, float]
+    damage_taken_diff_per_min_deltas: Dict[str, float]
     role: str
     lane: str
     frames: List[MatchFrameData]
     events: List[MatchEventData]
 
     class Meta(PyotStatic.Meta):
-        raws = ["creeps_per_min_deltas", "xp_per_min_deltas", "gold_per_min_deltas", "cs_diff_per_min_deltas", 
+        raws = ["creeps_per_min_deltas", "xp_per_min_deltas", "gold_per_min_deltas", "cs_diff_per_min_deltas",
             "xp_diff_per_min_deltas", "damage_taken_per_min_deltas", "damage_taken_diff_per_min_deltas"]
 
 
-class MatchParticipantData(PyotStatic):
-    id: int
-    team_id: int
-    champion_id: int
-    spell_ids: List[int]
-    stats: MatchParticipantStatData
-    timeline: MatchParticipantTimelineData
+class MatchParticipantIdentityPlayerData(PyotStatic):
     profile_icon_id: int
     account_id: str
     match_history_uri: str
@@ -236,6 +231,43 @@ class MatchParticipantData(PyotStatic):
     summoner_name: str
     summoner_id: str
     platform: str
+
+    class Meta(PyotStatic.Meta):
+        renamed = {"profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
+
+    @property
+    def account(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(account_id=self.account_id, platform=self.current_platform)
+
+    @property
+    def current_account(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(account_id=self.current_account_id, platform=self.current_platform)
+
+    @property
+    def summoner(self) -> "Summoner":
+        from .summoner import Summoner
+        return Summoner(id=self.summoner_id, platform=self.current_platform)
+
+    @property
+    def profile_icon(self) -> "ProfileIcon":
+        from .profileicon import ProfileIcon
+        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.current_platform))
+
+
+class MatchParticipantIdentityData(PyotStatic):
+    participant_id: int
+    player: MatchParticipantIdentityPlayerData
+
+
+class MatchParticipantData(MatchParticipantIdentityPlayerData, PyotStatic):
+    id: int
+    team_id: int
+    champion_id: int
+    spell_ids: List[int]
+    stats: MatchParticipantStatData
+    timeline: MatchParticipantTimelineData
 
     class Meta(PyotStatic.Meta):
         renamed = {"participant_id": "id", "profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
@@ -255,26 +287,6 @@ class MatchParticipantData(PyotStatic):
     def spells(self) -> List["Spell"]:
         from .spell import Spell
         return [Spell(id=i, locale=self.to_locale(self.platform)) for i in self.spell_ids]
-
-    @property
-    def account(self) -> "Summoner":
-        from .summoner import Summoner
-        return Summoner(account_id=self.account_id, platform=self.platform)
-
-    @property
-    def current_account(self) -> "Summoner":
-        from .summoner import Summoner
-        return Summoner(account_id=self.current_account_id, platform=self.current_platform)
-
-    @property
-    def summoner(self) -> "Summoner":
-        from .summoner import Summoner
-        return Summoner(id=self.summoner_id, platform=self.current_platform)
-
-    @property
-    def profile_icon(self) -> "ProfileIcon":
-        from .profileicon import ProfileIcon
-        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
 
 
 class MatchTeamData(PyotStatic):
@@ -303,18 +315,17 @@ class MatchHistoryData(PyotStatic):
     champion_id: int
     queue_id: int
     season_id: int
+    timestamp: int
     creation: datetime
     role: str
     lane: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"platform_id": "platform", "game_id": "id", "champion": "champion_id", "queue": "queue_id",
-            "season": "season_id", "timestamp": "creation"}
+        renamed = {"platform_id": "platform", "game_id": "id", "champion": "champion_id", "queue": "queue_id", "season": "season_id"}
 
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.timestamp//1000)
 
     @property
     def champion(self) -> "Champion":
@@ -387,28 +398,22 @@ class Match(PyotCore):
     map_id: int
     season_id: int
     queue_id: int
+    creation_millis: int
+    duration_secs: int
     creation: datetime
-    duration: timedelta #not milliseconds
+    duration: timedelta
     platform: str
     teams: List[MatchTeamData]
-    blue_team: MatchTeamData
-    red_team: MatchTeamData
     tournament_code: str
 
     class Meta(PyotCore.Meta):
+        turbo_level = 3
         rules = {
             "match_v4_tournament_match": ["tournament_code", "id"],
             "match_v4_match": ["id"],
         }
-        renamed = {"game_id": "id", "platform_id": "platform", "game_creation": "creation", "game_duration": "duration",
+        renamed = {"game_id": "id", "platform_id": "platform", "game_creation": "creation_millis", "game_duration": "duration_secs",
             "game_version": "version", "game_mode": "mode", "game_type": "type", "queue": "queue_id"}
-
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        elif name == "duration":
-            return timedelta(seconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
 
     def __init__(self, id: int = None, tournament_code: str = None, platform: str = None):
         self._lazy_set(locals())
@@ -417,96 +422,52 @@ class Match(PyotCore):
         if data["teams"][0]["teamId"] == 100:
             blue_team = data["teams"][0]
             red_team = data["teams"][1]
-        elif data["teams"][0]["teamId"] == 200:
+        else:
             red_team = data["teams"][0]
             blue_team = data["teams"][1]
-        else:
-            blue_team = data["teams"][0]
-            red_team = data["teams"][1]
 
         blue_team["participants"] = []
         red_team["participants"] = []
 
-        if blue_team["win"] == "Win":
-            blue_team["win"] = True
-        else:
-            blue_team["win"] = False
-        
-        if red_team["win"] == "Win":
-            red_team["win"] = True
-        else:
-            red_team["win"] = False
+        for team in (blue_team, red_team):
+            if team["win"] == "Win": team["win"] = True
+            else: team["win"] = False
 
         for p in data["participants"]:
-            p["spellIds"] = [p.pop("spell1Id"), p.pop("spell2Id")]
             stats = p["stats"]
-            stats["spellIds"] = p["spellIds"]
-            
-            stats["dominionScores"] = []
-            for i in range(10):
-                score = stats.pop("playerScore"+str(i))
-                stats["dominionScores"].append(score)
-            
-            stats["itemIds"] = []
-            for i in range(7):
-                item = stats.pop("item"+str(i))
-                stats["itemIds"].append(item)
+            p["spellIds"] = stats["spellIds"] = [p["spell1Id"], p["spell2Id"]]
 
-            stats["runeIds"] = []
-            stats["runeVars"] = []
-            for i in range(6):
-                rune = stats.pop("perk"+str(i))
-                stats["runeIds"].append(rune)
-                statset = []
-                for j in range(1, 4):
-                    st = stats.pop("perk"+str(i)+"Var"+str(j))
-                    statset.append(st)
-                stats["runeVars"].append(statset)
-            
-            stats["runeStyle"] = stats.pop("perkPrimaryStyle", None)
-            stats["runeSubStyle"] = stats.pop("perkSubStyle", None)
+            stats["dominionScores"] = [stats["playerScore"+str(i)] for i in range(10)]
+            stats["itemIds"] = [stats["item"+str(i)] for i in range(7)]
+            stats["runeIds"] = [stats["perk"+str(i)] for i in range(6)]
+            stats["runeVars"] = [[stats["perk"+str(i)+"Var"+str(j)] for j in range(1, 4)] for i in range(6)]
+            stats["statRuneIds"] = [stats["statPerk"+str(i)] for i in range(3)]
 
-            stats["statRuneIds"] = []
-            for i in range(3):
-                statrune = stats.pop("statPerk"+str(i))
-                stats["statRuneIds"].append(statrune)
-
-            timeline = p["timeline"]
-
-            for key, val in timeline.items():
-                if "Deltas" in key:
-                    deltaset = []
-                    for i in range(6):
-                        try: deltaset.append(val[f"{i*10}-{i*10+10}"])
-                        except KeyError: break
-                    timeline[key] = deltaset
-            
-            if p["teamId"] == 100:
-                blue_team["participants"].append(p)
-            elif p["teamId"] == 200:
-                red_team["participants"].append(p)
+            if p["teamId"] == 100: blue_team["participants"].append(p)
+            elif p["teamId"] == 200: red_team["participants"].append(p)
 
         for pi in data["participantIdentities"]:
             try:
-                if pi["player"]["platformId"].lower() == "na":
-                    pi["player"]["platformId"] = "NA1"
-                if pi["player"]["currentPlatformId"].lower() == "na":
-                    pi["player"]["currentPlatformId"] = "NA1"
-                pid = pi["participantId"]
-                for p in blue_team["participants"]:
-                    if p["participantId"] == pid:
-                        p.update(pi["player"])
-                for p in red_team["participants"]:
-                    if p["participantId"] == pid:
-                        p.update(pi["player"])
-            except KeyError:
-                pass
-        
+                for platform_key in ("platformId", "currentPlatformId"):
+                    if pi["player"][platform_key].lower() == "na":
+                        pi["player"][platform_key] = "NA1"
+                for team in (blue_team, red_team):
+                    for p in team["participants"]:
+                        if p["participantId"] == pi["participantId"]:
+                            p.update(pi["player"])
+            except KeyError: pass
+
         data.pop("participants")
         data.pop("participantIdentities")
-        data["blueTeam"] = blue_team
-        data["redTeam"] = red_team
         return data
+
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.creation_millis//1000)
+
+    @property
+    def duration(self) -> datetime:
+        return timedelta(seconds=self.duration_secs)
 
     @property
     def timeline(self) -> "Timeline":
@@ -514,7 +475,7 @@ class Match(PyotCore):
 
 
 class MatchTimeline(Match, PyotCore):
-    
+
     class Meta(Match.Meta):
         rules = {
             "match_v4_tournament_match": ["tournament_code", "id"],
@@ -566,12 +527,12 @@ class MatchTimeline(Match, PyotCore):
                 if p != 0:
                     events[p].append(event)
         for key in frames:
-            for i in range(len(teams)):
+            for team in teams:
                 found = False
-                for j in range(len(teams[i]["participants"])):
-                    if teams[i]["participants"][j]["participantId"] == key:
-                        teams[i]["participants"][j]["timeline"]["frames"] = frames[key]
-                        teams[i]["participants"][j]["timeline"]["events"] = events[key]
+                for participant in team["participants"]:
+                    if participant["participantId"] == key:
+                        participant["timeline"]["frames"] = frames[key]
+                        participant["timeline"]["events"] = events[key]
                         found = True
                         break
                 if found: break
@@ -581,15 +542,13 @@ class MatchTimeline(Match, PyotCore):
 class Timeline(PyotCore):
     frames: List[MatchFrameMinuteData]
     events: List[MatchEventMinuteData]
+    interval_millis: int
     interval: timedelta
 
     class Meta(PyotCore.Meta):
+        turbo_level = 1
         rules = {"match_v4_timeline": ["id"]}
-
-    def __getattribute__(self, name):
-        if name == "interval":
-            return timedelta(milliseconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+        renamed = {"interval": "interval_millis"}
 
     def __init__(self, id: int = None, platform: str = None):
         self._lazy_set(locals())
@@ -605,6 +564,10 @@ class Timeline(PyotCore):
             new_data["events"].append(f["events"])
         return new_data
 
+    @property
+    def interval(self) -> datetime:
+        return timedelta(milliseconds=self.interval_millis)
+
 
 class MatchHistory(PyotCore):
     entries: List[MatchHistoryData]
@@ -612,7 +575,7 @@ class MatchHistory(PyotCore):
     end_index: int
     total_games: int
     account_id: str
-    
+
     class Meta(PyotCore.Meta):
         allow_query = True
         renamed = {"matches": "entries"}
@@ -634,7 +597,7 @@ class MatchHistory(PyotCore):
 
     def query(self, champion_ids: List[int] = None, queue_ids: List[int] = None, season_ids: List[int] = None, end_time: int = None, begin_time: int = None, end_index: int = None, begin_index: int = None):
         '''Add query parameters to the object.'''
-        kargs = {key if key[-3:] != "ids" else key[:-3] : val for (key,val) in locals().items()}
+        kargs = {key if key[-3:] != "ids" else key[:-3] : val for (key, val) in locals().items()}
         for i in [champion_ids, queue_ids, season_ids]:
             if not isinstance(i, list) and i is not None:
                 raise RuntimeError("Query parameters 'champion_ids', 'queue_ids' and 'season_ids' must be a list of values")
@@ -666,7 +629,7 @@ class Matches(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v4_tournament_matches": ["tournament_code"]}
         raws = ["ids"]
-    
+
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)

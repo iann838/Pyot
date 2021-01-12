@@ -1,4 +1,5 @@
 from typing import Dict, List, Mapping, Any, get_type_hints
+import inspect
 import re
 import json
 
@@ -7,9 +8,7 @@ from pyot.pipeline.token import PipelineToken
 from pyot.utils import PtrCache, camelcase, fast_copy
 from pyot.pipeline import pipelines
 
-
-normalizer_cache = PtrCache()
-typing_cache = PtrCache()
+from .functional import lazy_property, save_raw_response, laziable
 
 
 class PyotLazyObject:
@@ -46,50 +45,37 @@ class PyotLazyObject:
         return instance._fill()
 
 
-class PyotStaticObject:
+class PyotMetaClass(type):
 
-    class Meta:
-        # BE CAREFUL WHEN MANIPULATING MUTABLE OBJECTS
-        # ALL MUTABLE OBJECTS SHOULD BE OVERRIDDEN ON ITS SUBCLASS !
-        server_map: List[str]
-        types: Dict[str, Any]
-        data: Dict[str, Any]
-        raws: List[str] = []
-        removed: List[str] = []
-        renamed: Dict[str, str] = {}
-
-    region: str = ""
-    platform: str = ""
-    locale: str = ""
-
-    def __init__(self, data):
-        # META CLASS UNIQUE MUTABLE OBJECTS
-        self._meta = self.Meta()
-        self._meta.data = data
-        self._meta.types = typing_cache.get(self.__class__, lambda: self._get_types, True)
-
-    def __getattribute__(self, name):
-        try:
-            attr = super().__getattribute__(name)
-            if attr.__class__ == PyotLazyObject:
-                obj = attr()
-                setattr(self, name, obj)
-                return obj
-            return attr
-        except (KeyError, AttributeError) as e:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'") from e
-
-    def __getitem__(self, item):
-        return self._meta.data[item]
+    def __new__(cls, name, bases, attrs):
+        if 'Meta' not in attrs and cls.is_static_core(bases):
+            attrs['Meta'] = type('Meta', (cls.get_static_core(bases).Meta,), {'__module__': attrs['__module__'] + f".{name}"})
+        clas = super().__new__(cls, name, bases, attrs)
+        clas.Meta.types = cls.get_types(clas)
+        clas.Meta.nomcltrs = {}
+        if cls.is_static_core(bases):
+            clas.Meta.lazy_props = cls.get_lazy_props(clas, [])
+            # if cls.get_static_core(bases).__name__ == "PyotCore" and clas.Meta.turbo_level > 0:
+            #     clas._transform = save_raw_response(clas._transform)
+        return clas
 
     @staticmethod
-    def _laziable(obj):
-        if isinstance(obj, dict) or isinstance(obj, list):
-            return True
-        return False
+    def is_static_core(bases):
+        base_names = set()
+        for base in bases:
+            base_names |= {cl.__name__ for cl in inspect.getmro(base)}
+        return 'PyotStatic' in base_names or 'PyotCore' in base_names
 
-    def _get_types(self):
-        types = get_type_hints(self.__class__)
+    @staticmethod
+    def get_static_core(bases):
+        deep_bases = set()
+        for base in bases:
+            deep_bases |= set(inspect.getmro(base))
+        return next(base for base in deep_bases if base.__name__ == 'PyotStatic' or base.__name__ == 'PyotCore')
+
+    @staticmethod
+    def get_types(clas):
+        types = get_type_hints(clas)
         for typ, clas in types.items():
             try:
                 if clas.__origin__ is list:
@@ -98,24 +84,63 @@ class PyotStaticObject:
                 pass
         return types
 
+    @staticmethod
+    def get_lazy_props(clas, props, prefix=""):
+        props += [prefix + p for p in dir(clas) if isinstance(getattr(clas, p), lazy_property)]
+        types = {attr:cl for attr, cl in clas.Meta.types.items() if inspect.isclass(cl) and issubclass(cl, PyotStaticObject)}
+        for typ, cl in types.items():
+            PyotMetaClass.get_lazy_props(cl, props, prefix + typ + ".")
+        return props
+
+
+class PyotStaticObject(metaclass=PyotMetaClass):
+
+    class Meta:
+        # Mutable objects should be overriden on inheritance
+        server_type: str
+        server_map: List[str]
+        nomcltrs: Dict[str, Any]
+        types: Dict[str, Any]
+        data: Dict[str, Any]
+        raws: List[str] = []
+        renamed: Dict[str, str] = {}
+
+    region: str = ""
+    platform: str = ""
+    locale: str = ""
+
+    def __init__(self, data):
+        # Instantiate Meta class, isolating data dict
+        self._meta = self.Meta()
+        self._meta.data = data
+
+    def __getattr__(self, name):
+        try:
+            lazy = self.__dict__['_lazy__' + name]
+            obj = lazy()
+            setattr(self, name, obj)
+            return obj
+        except (KeyError, AttributeError) as e:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'") from e
+
+    def __getitem__(self, item):
+        return self._meta.data[item]
+
     def _rename(self, key):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
         newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
-        # if newkey in self._meta.removed:
-        #     return None
         if newkey in self._meta.renamed:
             newkey = self._meta.renamed[newkey]
         return newkey
 
     def _fill(self):
-        # BIND SERVER > NORMALIZE > RAW > LAZY
         try:
             server_type = self._meta.server_map
             self._meta.server_type = server_type[0]
             setattr(self, server_type[0], server_type[1])
         except AttributeError: pass
 
-        mapping = normalizer_cache.get(self.__class__, dict)
+        mapping = self._meta.nomcltrs
 
         for key, val in self._meta.data.items():
             try:
@@ -124,15 +149,12 @@ class PyotStaticObject:
                 attr = self._rename(key)
                 mapping[key] = attr
 
-            # if attr is None:
-            #     continue
-
-            if self._laziable(val):
+            if laziable(val):
                 if attr in self._meta.raws:
                     setattr(self, attr, val)
                 else:
                     server = getattr(self, self._meta.server_type)
-                    setattr(self, attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
+                    setattr(self, '_lazy__' + attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
             else:
                 setattr(self, attr, val)
 
@@ -152,12 +174,12 @@ class PyotStaticObject:
             if remove_server:
                 dic.pop(self._meta.server_type, None)
             for key, val in dic.items():
-                if type(val) is PyotLazyObject:
+                if isinstance(val, PyotLazyObject):
                     obj = val()
                     if isinstance(obj, list):
                         dic[key] = []
-                        for i in range(len(obj)):
-                            inner = recursive(obj[i])
+                        for ob in obj:
+                            inner = recursive(ob)
                             dic[key].append(inner)
                     else:
                         inner = recursive(obj)
@@ -181,6 +203,7 @@ class PyotContainerObject:
 
     class Meta:
         # THIS META CLASS IS NOT INHERITED ON CORE, USED ONLY ON CONTAINER
+        server: str
         server_type: str = "locale"
         region_list = []
         platform_list = []
@@ -204,8 +227,10 @@ class PyotContainerObject:
                 server = getattr(self, server_type)
                 list_ = getattr(self._meta, server_type+"_list")
                 if server.lower() not in list_:
-                    raise ValueError(f"Invalid '{server_type}' value, '{server}' was given \
-                        {'. Did you activate the settings and set a default value ?' if not server else ''}")
+                    raise ValueError(
+                        f"Invalid '{server_type}' value, '{server}' was given "
+                        f"{'. Did you activate the settings and set a default value ?' if not server else ''}"
+                    )
                 self._meta.server = server.lower()
                 break
             if server_type == "locale": # if server is last and still not found, raise
@@ -240,6 +265,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         region_list = []
         platform_list = []
         locale_list = []
+        turbo_level: int = 0
         raw_data: Any
 
     async def get(self, sid: str = None, pipeline: str = None, keep_raw: bool = False, ptr_cache: PtrCache = None):
@@ -302,7 +328,7 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         self._meta = self.Meta()
         self._meta.query = {}
         self._meta.data = {}
-        self._meta.types = typing_cache.get(self.__class__, lambda: self._get_types, True)
+        self._meta.body = {}
 
         self._set_server_type(kwargs)
         for name, val in kwargs.items():
@@ -333,9 +359,10 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
             raise RuntimeError(f"Pipeline '{pipeline}' does not exist, inactive or dead") from e
         return self
 
-    def _parse_camel(self, kwargs) -> Dict:
+    @staticmethod
+    def _parse_camel(kwargs) -> Dict:
         '''Parse locals to json compatible camelcased keys'''
-        return {camelcase(key): val for (key,val) in kwargs.items() if key != "self" and val is not None}
+        return {camelcase(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
 
     async def create_token(self, search: str = None) -> PipelineToken:
         '''Awaitable. Create a pipeline token that identifies this object (its parameters).'''
@@ -355,8 +382,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
             load = {}
             for a in attr:
                 try:
-                    load[a] = self.__dict__[a]
-                except KeyError:
+                    load[a] = getattr(self, a)
+                except AttributeError:
                     break
             if len(load) != len(attr):
                 continue
@@ -366,10 +393,8 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
         raise TypeError("Incomplete values to create request token")
 
     def raw(self):
-        """Return the dictionary containing the raw data, only available if `keep_raw=True` was passed when calling `get()`"""
-        if hasattr(self._meta, "raw_data"):
-            return self._meta.raw_data
-        raise AttributeError("Raw data is not stored, pass `keep_raw=True` to `get()`")
+        """Return the raw response of the request, only available for Core objects"""
+        return self._meta.raw_data
 
     async def _clean(self):
         pass

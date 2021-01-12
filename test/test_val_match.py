@@ -88,8 +88,8 @@ async def async_match():
             assert isinstance(ps.puuid, str)
             assert isinstance(ps.score, int)
             for k in ps.kills:
-                assert isinstance(k.game_duration, timedelta)
-                assert isinstance(k.round_duration, timedelta)
+                assert isinstance(k.game_time, timedelta)
+                assert isinstance(k.round_time, timedelta)
                 assert isinstance(k.killer_puuid, str)
                 assert isinstance(k.victim_puuid, str)
                 assert k.assistant_puuids is not None

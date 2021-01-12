@@ -1,5 +1,5 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List, Iterator
+from .__core__ import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
@@ -50,7 +50,7 @@ class League(PyotCore):
     queue: str
     name: str
     entries: List[LeagueEntryData]
-    
+
     class Meta(PyotCore.Meta):
         rules = {"league_v4_league_by_league_id": ["id"]}
         renamed = {"league_id": "id"}
@@ -62,13 +62,13 @@ class League(PyotCore):
 class ApexLeague(League):
     queue: str
     id: str
-    
+
     class Meta(League.Meta):
         queue_list = ["RANKED_SOLO_5x5", "RANKED_FLEX_SR"]
-    
+
     def __init__(self, queue: str = None, platform: str = None):
         self._lazy_set(locals())
-    
+
     async def _clean(self):
         if self.queue not in self._meta.queue_list:
             raise AttributeError(f"Invalid 'queue' attribute, '{self.queue}' was given")
@@ -79,19 +79,19 @@ class ApexLeague(League):
 
 
 class ChallengerLeague(ApexLeague):
-    
+
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_challenger_league": ["queue"]}
 
 
 class GrandmasterLeague(ApexLeague):
-    
+
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_grandmaster_league": ["queue"]}
 
 
 class MasterLeague(ApexLeague):
-    
+
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_master_league": ["queue"]}
 
@@ -105,12 +105,12 @@ class SummonerLeague(PyotCore):
 
     def __init__(self, summoner_id: str = None, platform: str = None):
         self._lazy_set(locals())
-    
+
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)
         return self.entries[item]
-    
+
     def __iter__(self) -> Iterator[SummonerLeagueEntryData]:
         return iter(self.entries)
 
@@ -121,7 +121,7 @@ class SummonerLeague(PyotCore):
         new_data = {}
         new_data["entries"] = data
         return new_data
-    
+
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner

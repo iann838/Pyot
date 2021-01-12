@@ -13,9 +13,10 @@ def cdragon_url(link: str) -> str:
     '''Return the CDragon url for the given game asset url'''
     if link is None: return link
     link = link.lower()
-    if len(link.split("/lol-game-data/assets/")) == 2:
-        link = _base_url+ "plugins/rcp-be-lol-game-data/global/default/" + link.split("/lol-game-data/assets/")[1]
-    return link
+    splited = link.split("/lol-game-data/assets/")
+    if len(splited) == 2:
+        return _base_url + "plugins/rcp-be-lol-game-data/global/default/" + splited[1]
+    return _base_url + "plugins/rcp-be-lol-game-data/global/default/" + link
 
 
 def tft_url(link: str) -> str:
@@ -24,8 +25,7 @@ def tft_url(link: str) -> str:
     link = link.lower()
     if link[-3:] not in ["png","jpg","jpeg"]:
         link = link[:-3] + "png"
-    link = _base_url + "game/" + link
-    return link
+    return _base_url + "game/" + link
 
 
 def cdragon_sanitize(string: str) -> str:

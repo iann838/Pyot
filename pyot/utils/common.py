@@ -1,7 +1,8 @@
 from functools import partial
 from inspect import getmembers, isfunction
-from typing import List, Any
+from typing import List, Any, Set, Dict
 from importlib import import_module
+import itertools
 import asyncio
 import pickle
 import re
@@ -25,6 +26,18 @@ def inherit_docstrings(cls):
             if hasattr(parent, name):
                 func.__doc__ = getattr(parent, name).__doc__
     return cls
+
+
+def case_combinations(string: str) -> Set[str]:
+    return set(map(''.join, itertools.product(*((c.upper(), c.lower()) for c in string))))
+
+
+def case_insensitive_dict(dic: Dict) -> Dict:
+    new_dic = {}
+    for key, val in dic.items():
+        for ikey in case_combinations(key):
+            new_dic[ikey] = val
+    return new_dic
 
 
 def snakecase(attr: str) -> str:

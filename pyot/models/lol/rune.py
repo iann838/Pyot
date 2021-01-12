@@ -1,8 +1,8 @@
-from .__core__ import PyotCore
-from pyot.utils import cdragon_url, cdragon_sanitize
-from pyot.core.exceptions import NotFound
 from typing import List, Iterator
 
+from pyot.utils import cdragon_url, cdragon_sanitize
+from pyot.core.functional import cache_indexes, lazy_property
+from .__core__ import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -12,23 +12,22 @@ class Rune(PyotCore):
     name: str
     major_patch: str
     description: str
+    tooltip: str
     long_description: str
-    cleaned_description: str
     icon_path: str
+    end_of_game_stat_descs: List[str]
 
     class Meta(PyotCore.Meta):
-        removed = ["tooltip", "end_of_game_stat_descs"]
+        raws = ["end_of_game_stat_descs"]
         rules = {"cdragon_rune_full": ["id"]}
         renamed = {"major_change_patch_version": "major_patch", "long_desc": "long_description", "short_desc": "description"}
 
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def _filter(self, data):
-        for item in data:
-            if item["id"] == self.id:
-                return item
-        raise NotFound
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.id, data, "id")
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
@@ -36,10 +35,13 @@ class Rune(PyotCore):
         load = getattr(self._meta, "load")
         self._meta.filter_key = str(load.pop("id"))
 
-    def _transform(self, data):
-        data["iconPath"] = cdragon_url(data["iconPath"])
-        data["cleanedDescription"] = cdragon_sanitize(data["longDesc"])
-        return data
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return cdragon_url(self.icon_path)
+
+    @lazy_property
+    def cleaned_description(self) -> str:
+        return cdragon_sanitize(self.long_description)
 
 
 class Runes(PyotCore):

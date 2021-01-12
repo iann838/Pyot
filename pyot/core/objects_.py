@@ -66,6 +66,7 @@ class PyotStaticObject:
         # BE CAREFUL WHEN MANIPULATING MUTABLE OBJECTS
         # ALL MUTABLE OBJECTS SHOULD BE OVERRIDDEN ON ITS SUBCLASS !
         server_map: List[str]
+        server_type: List[str]
         types: Dict[str, Any]
         data: Dict[str, Any]
         raws: List[str] = []
@@ -140,7 +141,7 @@ class PyotStaticObject:
             except KeyError:
                 attr = self._rename(key)
                 mapping[key] = attr
-            
+
             if attr is None:
                 continue
 
@@ -169,12 +170,12 @@ class PyotStaticObject:
             if remove_server:
                 dic.pop(self._meta.server_type, None)
             for key, val in dic.items():
-                if type(val) is PyotLazyObject:
+                if isinstance(val, PyotLazyObject):
                     obj = val()
                     if isinstance(obj, list):
                         dic[key] = []
-                        for i in range(len(obj)):
-                            inner = recursive(obj[i])
+                        for ob in obj:
+                            inner = recursive(ob)
                             dic[key].append(inner)
                     else:
                         inner = recursive(obj)
@@ -198,6 +199,7 @@ class PyotContainerObject:
 
     class Meta:
         # THIS META CLASS IS NOT INHERITED ON CORE, USED ONLY ON CONTAINER
+        server: str
         server_type: str = "locale"
         region_list = []
         platform_list = []
@@ -350,9 +352,10 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
             raise RuntimeError(f"Pipeline '{pipeline}' does not exist, inactive or dead") from e
         return self
 
-    def _parse_camel(self, kwargs) -> Dict:
+    @staticmethod
+    def _parse_camel(kwargs) -> Dict:
         '''Parse locals to json compatible camelcased keys'''
-        return {camelcase(key): val for (key,val) in kwargs.items() if key != "self" and val is not None}
+        return {camelcase(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
 
     async def create_token(self, search: str = None) -> PipelineToken:
         '''Awaitable. Create a pipeline token that identifies this object (its parameters).'''

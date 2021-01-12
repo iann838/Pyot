@@ -1,6 +1,6 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List, Iterator
 from datetime import datetime, timedelta
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -69,16 +69,19 @@ class MatchInfoParticipantData(PyotStatic):
     placement: int
     players_eliminated: int
     puuid: str
+    time_eliminated_secs: int
     time_eliminated: timedelta
     total_damage_to_players: int
     traits: List[MatchInfoTraitData]
     units: List[MatchInfoUnitData]
     _pyot_calculated_platform: str
 
-    def __getattribute__(self, name):
-        if name == "time_eliminated":
-            return timedelta(seconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    class Meta(PyotStatic.Meta):
+        renamed = {"time_eliminated": "time_eliminated_secs"}
+
+    @property
+    def time_eliminated(self) -> timedelta:
+        return timedelta(seconds=self.time_eliminated_secs)
 
     @property
     def summoner(self) -> "Summoner":
@@ -87,6 +90,8 @@ class MatchInfoParticipantData(PyotStatic):
 
 
 class MatchInfoData(PyotStatic):
+    data_millis: int
+    length_secs: int
     creation: datetime
     duration: timedelta
     variation: str
@@ -96,14 +101,15 @@ class MatchInfoData(PyotStatic):
     tft_set_number: int
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_datetime": "creation", "game_length": "duration", "game_variation": "variation", "game_version": "version"}
+        renamed = {"game_datetime": "data_millis", "game_length": "length_secs", "game_variation": "variation", "game_version": "version"}
 
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        elif name == "duration":
-            return timedelta(seconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.data_millis//1000)
+
+    @property
+    def duration(self) -> datetime:
+        return timedelta(seconds=self.length_secs)
 
 
 # PYOT CORE OBJECTS
@@ -123,7 +129,7 @@ class Match(PyotCore):
         platform = self.id.split("_")[0]
         for i in range(len(data["info"]["participants"])):
             data["info"]["participants"][i]["_pyot_calculated_platform"] = platform
-        return data                        
+        return data
 
 
 class MatchHistory(PyotCore):
@@ -134,7 +140,7 @@ class MatchHistory(PyotCore):
         rules = {"match_v1_matchlist": ["puuid"]}
         raws = ["ids"]
         allow_query = True
-    
+
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)

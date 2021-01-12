@@ -1,23 +1,30 @@
 from pyot.core.objects import PyotCoreObject, PyotStaticObject
+from pyot.utils import case_insensitive_dict
 
 
-class PyotBaseObject:
+REGIONS = ["americas", "europe", "asia"]
+PLATFORMS = ["ap", "br", "eu", "kr", "latam", "na"]
+LOCALES = ["ar-ae", "de-de", "en-gb", "en-us", "es-es", "es-mx", "fr-fr", "id-id",
+    "it-it", "ja-jp", "ko-kr", "pl-pl", "pt-br", "ru-ru", "th-th", "tr-tr",
+    "vi-vn", "zh-cn", "zh-tw"]
+
+LOCALIZATIONS = {
+    "ap": "en-us",
+    "br": "en-us",
+    "eu": "en-us",
+    "kr": "en-us",
+    "latam": "en-us",
+    "na": "en-us",
+}
+
+
+class ModelMixin:
 
     class Meta:
-        region_list = ["americas", "europe", "asia"]
-        platform_list = ["ap", "br", "eu", "kr", "latam", "na"]
-        locale_list = ["ar-ae", "de-de", "en-gb", "en-us", "es-es", "es-mx", "fr-fr", "id-id",
-            "it-it", "ja-jp", "ko-kr", "pl-pl", "pt-br", "ru-ru", "th-th", "tr-tr",
-            "vi-vn", "zh-cn", "zh-tw"]
-
-        to_locale = {
-            "ap": "en-us",
-            "br": "en-us",
-            "eu": "en-us",
-            "kr": "en-us",
-            "latam": "en-us",
-            "na": "en-us",
-        }
+        region_list = REGIONS
+        platform_list = PLATFORMS
+        locale_list = LOCALES
+        localizations = case_insensitive_dict(LOCALIZATIONS)
 
     @classmethod
     def set_region(cls, region):
@@ -33,26 +40,24 @@ class PyotBaseObject:
 
     @classmethod
     def override_locale(cls, locale_map):
-        cls.Meta.to_locale.update(locale_map)
+        LOCALIZATIONS.update(locale_map)
+        cls.Meta.localizations = case_insensitive_dict(LOCALIZATIONS)
     
     def to_locale(self, platform):
-        return self.Meta.to_locale[platform]
-
-
-class PyotCore(PyotBaseObject, PyotCoreObject):
-
-    class Meta(PyotBaseObject.Meta, PyotCoreObject.Meta):
-        pass
+        return self.Meta.localizations[platform]
 
     @classmethod
     def bind_pipeline(cls, pipeline):
         cls.Meta.pipeline = pipeline
 
 
-class PyotStatic(PyotStaticObject):
+class PyotCore(ModelMixin, PyotCoreObject):
 
-    class Meta(PyotBaseObject.Meta, PyotStaticObject.Meta):
+    class Meta(ModelMixin.Meta, PyotCoreObject.Meta):
         pass
 
-    def to_locale(self, platform):
-        return self.Meta.to_locale[platform]
+
+class PyotStatic(ModelMixin, PyotStaticObject):
+
+    class Meta(ModelMixin.Meta, PyotStaticObject.Meta):
+        pass

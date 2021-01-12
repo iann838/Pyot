@@ -1,7 +1,9 @@
-from .__core__ import PyotCore, PyotStatic
+from typing import List, Iterator, Dict
+
 from pyot.utils import tft_url, cdragon_sanitize
+from pyot.core.functional import cache_indexes, lazy_property
 from pyot.core.exceptions import NotFound
-from typing import List, Iterator, Mapping, Dict
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECT
@@ -25,11 +27,10 @@ class Trait(PyotCore):
     effects: List[TraitEffectData]
     icon_path: str
     description: str
-    cleaned_description: str
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_tft_full": ["set","key"]}
-        renamed = {"api_name": "key", "desc": "description"}
+        rules = {"cdragon_tft_full": ["set", "key"]}
+        renamed = {"api_name": "key", "desc": "description", "icon": "icon_path"}
 
     def __init__(self, key: str = None, set: int = None, locale: str = None):
         a = locals()
@@ -40,15 +41,9 @@ class Trait(PyotCore):
                 raise RuntimeError("Could not parse 'set' value from key")
         self._lazy_set(a)
 
-    def _filter(self, data_):
-        try:
-            data = data_["sets"][str(self.set)]["traits"]
-        except KeyError:
-            raise NotFound
-        for item in data:
-            if item["apiName"] == self.key:
-                return item
-        raise NotFound
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.key, data["sets"][str(self.set)]["traits"], "apiName")
 
     def _refactor(self):
         if self.locale.lower() == "default":
@@ -56,10 +51,13 @@ class Trait(PyotCore):
         load = getattr(self._meta, "load")
         self._meta.filter_key = str(load.pop("key"))
 
-    def _transform(self, data):
-        data["iconPath"] = tft_url(data.pop("icon"))
-        data["cleanedDescription"] = cdragon_sanitize(data["desc"])
-        return data
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return tft_url(self.icon_path)
+
+    @lazy_property
+    def cleaned_description(self) -> str:
+        return cdragon_sanitize(self.description)
 
 
 class Traits(PyotCore):
@@ -87,12 +85,11 @@ class Traits(PyotCore):
         if self.locale.lower() == "default":
             self._meta.server = "en_us"
 
-    def _filter(self, data_):
+    def _filter(self, data):
         try:
-            data = data_["sets"][str(self.set)]["traits"]
+            return data["sets"][str(self.set)]["traits"]
         except KeyError:
-            raise NotFound
-        return data
+            raise NotFound("Request was successful but filtering gave no matching item")
 
     def _transform(self, data):
         return {"traits": data}

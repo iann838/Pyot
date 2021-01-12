@@ -1,7 +1,6 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List, Iterator
 from datetime import datetime, timedelta
-import copy
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -100,7 +99,7 @@ class FeaturedGameParticipantData(PyotStatic):
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
-        
+
     @property
     def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
@@ -131,26 +130,29 @@ class FeaturedGameData(PyotStatic):
     id: int
     type: str
     mode: str
+    start_millis: int
+    length_secs: int #not milliseconds
     creation: datetime
-    duration: timedelta #not milliseconds
+    duration: timedelta
     map_id: int
     platform: str
-    queue: int
+    queue_id: int
     observers_key: str
     teams: List[FeaturedGameTeamData]
     blue_team: FeaturedGameTeamData
     red_team: FeaturedGameTeamData
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_id": "id", "game_type": "type", "game_start_time": "creation", "game_mode": "mode",
-            "game_length": "duration", "platform_id": "platform", "game_queue_config_id": "queue"}
-    
-    def __getattribute__(self, name):
-        if name == "creation":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        elif name == "duration":
-            return timedelta(seconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+        renamed = {"game_id": "id", "game_type": "type", "game_start_time": "start_millis", "game_mode": "mode",
+            "game_length": "length_secs", "platform_id": "platform", "game_queue_config_id": "queue_id"}
+
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.start_millis//1000)
+
+    @property
+    def duration(self) -> datetime:
+        return timedelta(seconds=self.length_secs)
 
 
 # PYOT CORE OBJECTS
@@ -211,16 +213,12 @@ class CurrentGame(FeaturedGameData, PyotCore):
 
 class FeaturedGames(PyotCore):
     games: List[FeaturedGameData]
+    refresh_interval_secs: int
     refresh_interval: timedelta
 
     class Meta(PyotCore.Meta):
         rules = {"spectator_v4_featured_games": []}
-        renamed = {"client_refresh_interval": "refresh_interval", "game_list": "games"}
-
-    def __getattribute__(self, name):
-        if name == "refresh_interval":
-            return timedelta(seconds=super().__getattribute__(name))
-        return super().__getattribute__(name)
+        renamed = {"client_refresh_interval": "refresh_interval_secs", "game_list": "games"}
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -272,3 +270,7 @@ class FeaturedGames(PyotCore):
             data["gameList"][i]["blueTeam"] = data["gameList"][i]["teams"][0]
             data["gameList"][i]["redTeam"] = data["gameList"][i]["teams"][1]
         return data
+
+    @property
+    def refresh_interval(self) -> datetime:
+        return timedelta(seconds=self.refresh_interval_secs)

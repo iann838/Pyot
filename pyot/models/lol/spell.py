@@ -1,7 +1,8 @@
-from .__core__ import PyotCore
-from pyot.utils.cdragon import cdragon_url
-from pyot.core.exceptions import NotFound
 from typing import List, Iterator
+
+from pyot.utils.cdragon import cdragon_url
+from pyot.core.functional import cache_indexes, lazy_property
+from .__core__ import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -23,11 +24,9 @@ class Spell(PyotCore):
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def _filter(self, data):
-        for item in data:
-            if item["id"] == self.id:
-                return item
-        raise NotFound
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.id, data, "id")
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
@@ -35,9 +34,9 @@ class Spell(PyotCore):
         load = getattr(self._meta, "load")
         self._meta.filter_key = str(load.pop("id"))
 
-    def _transform(self, data):
-        data["iconPath"] = cdragon_url(data["iconPath"])
-        return data
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return cdragon_url(self.icon_path)
 
 
 class Spells(PyotCore):

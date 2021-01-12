@@ -1,7 +1,9 @@
+from typing import List
+
+from pyot.utils.champion import champion_id_by_key, champion_id_by_name
+from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
+from pyot.core.functional import lazy_property
 from .__core__ import PyotCore, PyotStatic
-from pyot.utils import champion_id_by_key, champion_id_by_name
-from pyot.utils.cdragon import cdragon_url, start_k, cdragon_sanitize
-from typing import Any, List
 
 
 # PYOT STATIC OBJECTS
@@ -41,6 +43,10 @@ class ChampionSkinChromaData(PyotStatic):
     class Meta(PyotStatic.Meta):
         raws = ["colors"]
 
+    @lazy_property
+    def chroma_abspath(self) -> str:
+        return cdragon_url(self.chroma_path)
+
 
 class ChampionSkinData(PyotStatic):
     id: int
@@ -50,6 +56,7 @@ class ChampionSkinData(PyotStatic):
     uncentered_splash_path: str
     tile_path: str
     load_screen_path: str
+    load_screen_vintage_path: str
     skin_type: str
     rarity: str
     is_legacy: bool
@@ -57,20 +64,62 @@ class ChampionSkinData(PyotStatic):
     chromas: List[ChampionSkinChromaData]
     skin_line: int
     description: str
+    splash_video_path: str
+    collection_splash_video_path: str
+    features_text: str
+    region_rarity_id: int
+    rarity_gem_path: str
 
-    class Meta(PyotStatic.Meta):  # Emblems are removed as its only available to China TENCENT
-        removed = ["splash_video_path", "features_text", "rarity_gem_path", "region_rarity_id", "load_screen_vintage_path", "emblems"]
+    class Meta(PyotStatic.Meta):
+        raws = ["emblems"]
         renamed = {"skin_lines": "skin_line"}
+
+    @lazy_property
+    def splash_abspath(self) -> str:
+        return cdragon_url(self.splash_path)
+
+    @lazy_property
+    def uncentered_splash_abspath(self) -> str:
+        return cdragon_url(self.uncentered_splash_path)
+
+    @lazy_property
+    def tile_abspath(self) -> str:
+        return cdragon_url(self.tile_path)
+
+    @lazy_property
+    def load_screen_abspath(self) -> str:
+        return cdragon_url(self.load_screen_path)
+
+    @lazy_property
+    def load_screen_vintage_abspath(self) -> str:
+        return cdragon_url(self.load_screen_vintage_path)
+
+    @lazy_property
+    def chroma_abspath(self) -> str:
+        return cdragon_url(self.chroma_path)
+
+    @lazy_property
+    def splash_video_abspath(self) -> str:
+        return cdragon_url(self.splash_video_path)
+
+    @lazy_property
+    def collection_splash_video_abspath(self) -> str:
+        return cdragon_url(self.collection_splash_video_path)
 
 
 class ChampionPassiveData(PyotStatic):
     name: str
     icon_path: str
     description: str
+    ability_video_path: str
+    ability_video_image_path: str
 
     class Meta(PyotStatic.Meta):
-        removed = ["ability_video_path", "ability_video_image_path"]
         renamed = {"ability_icon_path": "icon_path"}
+
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return cdragon_url(self.icon_path)
 
 
 class ChampionSpellData(PyotStatic):
@@ -82,12 +131,21 @@ class ChampionSpellData(PyotStatic):
     range: List[int]
     description: str
     long_description: str
-    cleaned_description: str
+    ability_video_path: str
+    ability_video_image_path: str
+    max_level: int
 
     class Meta(PyotStatic.Meta):
-        raws = ["cost", "cooldown", "range"]
-        removed = ["ability_video_path", "ability_video_image_path"]
+        raws = {"cost", "cooldown", "range", "formulas", "coefficients", "effect_amounts", "ammo"}
         renamed = {"spell_key": "key", "ability_icon_path": "icon_path", "dynamic_description": "long_description"}
+
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return cdragon_url(self.icon_path)
+
+    @lazy_property
+    def cleaned_description(self) -> str:
+        return cdragon_sanitize(self.long_description)
 
 
 class ChampionAbilityData(PyotStatic):
@@ -108,17 +166,21 @@ class Champion(PyotCore):
     tactical_info: ChampionTacticalData
     play_style: ChampionPlayerStyleData
     square_path: str
+    stinger_sfx_path: str
+    choose_vo_path: str
+    ban_vo_path: str
     roles: List[str]
     skins: List[ChampionSkinData]
     abilities: ChampionAbilityData
+    passive: ChampionPassiveData
+    recommended_item_defaults: List[str]
 
     class Meta(PyotCore.Meta):
         rules = {
             "cdragon_champion_by_id": ["id"],
         }
-        raws = ["roles"]
+        raws = ["roles", "recommended_item_defaults"]
         renamed = {"alias": "key", "short_bio": "lore", "playstyle_info": "play_style", "square_portrait_path": "square_path", "spells": "abilities"}
-        removed = ["stinger_sfx_path", "choose_vo_path", "ban_vo_path", "recommended_item_defaults"]
 
     def __init__(self, id: int = None, key: str = None, name: str = None, locale: str = None):
         self._lazy_set(locals())
@@ -135,42 +197,32 @@ class Champion(PyotCore):
             self._meta.server = "default"
 
     def _transform(self, data):
-        data["squarePortraitPath"] = cdragon_url(data["squarePortraitPath"])
-        data["tacticalInfo"]["damageType"] = start_k(data["tacticalInfo"]["damageType"])
-        skins = []
         for skin in data["skins"]:
-            skin["splashPath"] = cdragon_url(skin.pop("splashPath", None))
-            skin["uncenteredSplashPath"] = cdragon_url(skin.pop("uncenteredSplashPath", None))
-            skin["tilePath"] = cdragon_url(skin.pop("tilePath", None))
-            skin["loadScreenPath"] = cdragon_url(skin.pop("loadScreenPath", None))
-            skin["rarity"] = start_k(skin.pop("rarity", None))
-            skin["chromaPath"] = cdragon_url(skin.pop("chromaPath", None))
-            if "chromas" in skin:
-                chromas = []
-                for chroma in skin["chromas"]:
-                    chroma["chromaPath"] = cdragon_url(chroma.pop("chromaPath", None))
-                    chromas.append(chroma)
-                skin["chromas"] = chromas
             if skin["skinLines"] is not None:
                 skin["skinLines"] = skin["skinLines"][0]["id"]
-            skins.append(skin)
-        data["skins"] = skins
-        data["passive"]["abilityIconPath"] = cdragon_url(data["passive"]["abilityIconPath"])
         spells = {}
         for spell in data["spells"]:
-            spell["abilityIconPath"] = cdragon_url(spell["abilityIconPath"])
             spell["cost"] = spell.pop("costCoefficients")[:5]
             spell["cooldown"] = spell.pop("cooldownCoefficients")[:5]
-            spell["cleanedDescription"] = cdragon_sanitize(spell["dynamicDescription"])
-            spell.pop("formulas", None)
-            spell.pop("coefficients", None)
-            spell.pop("effectAmounts", None)
-            spell.pop("ammo", None)
-            spell.pop("maxLevel", None)
             spells[spell["spellKey"]] = spell
-        spells["p"] = data.pop("passive")
         data["spells"] = spells
         return data
+
+    @lazy_property
+    def square_abspath(self) -> str:
+        return cdragon_url(self.square_path)
+
+    @lazy_property
+    def stinger_sfx_abspath(self) -> str:
+        return cdragon_url(self.stinger_sfx_path)
+
+    @lazy_property
+    def choose_vo_abspath(self) -> str:
+        return cdragon_url(self.choose_vo_path)
+
+    @lazy_property
+    def ban_vo_abspath(self) -> str:
+        return cdragon_url(self.ban_vo_path)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":

@@ -1,12 +1,11 @@
-from functools import partial
 from typing import List, Iterator, Union
+
 from lor_deckcodes.encode import encode_deck
 from lor_deckcodes.decode import decode_deck
+from pyot.core.functional import cache_indexes
+from pyot.utils import batch_to_ccac
 from .__core__ import PyotCore, PyotStatic, PyotContainer
-from pyot.core.exceptions import NotFound
-from pyot.utils import PtrCache, batch_to_ccac
 
-indexer = PtrCache()
 
 # PYOT STATIC OBJECTS
 
@@ -49,9 +48,8 @@ class Card(PyotCore):
     number: int
 
     class Meta(PyotCore.Meta):
-        raws = ["keywords", "keyword_refs", "subtypes", "associated_card_codes"]
-        removed = ["associated_cards"]
-        renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes"}
+        raws = ["keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards"]
+        renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes", "associated_cards": "_deleted__associated_cards"}
         rules = {"ddragon_lor_set_data": ["set", "code", "locale"]}
 
     def __init__(self, code: str = None, locale: str = None):
@@ -65,19 +63,9 @@ class Card(PyotCore):
         load = getattr(self._meta, "load")
         self._meta.filter_key = load.pop("code")
 
-    def filter_func(self, data):
-        for ind, card in enumerate(data):
-            if card["cardCode"] == self.code:
-                return ind
-        raise NotFound
-
-    def _filter(self, data): # BE VERY CAREFUL
-        ind = indexer.get(self.code, partial(self.filter_func, data))
-        if data[ind]["cardCode"] == self.code: # RETURN ONLY IF CODE MATCHES
-            return data[ind]
-        ind = self.filter_func(data)
-        indexer.set(self.code, ind)
-        return data[ind]
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.code, data, "cardCode")
 
     def _transform(self, data):
         data["set"] = int(data["set"][3:])

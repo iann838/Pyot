@@ -22,12 +22,17 @@ class StatusUpdateData(PyotStatic):
 
     class Meta(PyotCore.Meta):
         raws = ["publish_locations"]
+        renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime"}
 
-    def __getattribute__(self, name):
-        if name in ["created_at", "updated_at"]:
-            timestr = super().__getattribute__(name)
-            return parse(timestr) if timestr is not None else timestr
-        return super().__getattribute__(name)
+    @property
+    def created_at(self) -> datetime:
+        timestr = self.created_at_strftime
+        return parse(timestr) if timestr is not None else timestr
+
+    @property
+    def updated_at(self) -> datetime:
+        timestr = self.updated_at_strftime
+        return parse(timestr) if timestr is not None else timestr
 
 
 class StatusDetailData(PyotStatic):
@@ -43,12 +48,22 @@ class StatusDetailData(PyotStatic):
 
     class Meta(PyotCore.Meta):
         raws = ["platforms"]
+        renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime", "archive_at": "archive_at_strftime"}
 
-    def __getattribute__(self, name):
-        if name in ["created_at", "archive_at", "updated_at"]:
-            timestr = super().__getattribute__(name)
-            return parse(timestr) if timestr is not None else timestr
-        return super().__getattribute__(name)
+    @property
+    def created_at(self) -> datetime:
+        timestr = self.created_at_strftime
+        return parse(timestr) if timestr is not None else timestr
+
+    @property
+    def archive_at(self) -> datetime:
+        timestr = self.archive_at_strftime
+        return parse(timestr) if timestr is not None else timestr
+
+    @property
+    def updated_at(self) -> datetime:
+        timestr = self.updated_at_strftime
+        return parse(timestr) if timestr is not None else timestr
 
 
 # PYOT CORE OBJECTS

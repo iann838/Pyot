@@ -1,11 +1,9 @@
-from .__core__ import PyotCore, PyotStatic
-from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
-from pyot.core.exceptions import NotFound
-from pyot.utils import PtrCache
-from functools import partial
 from typing import List, Iterator
 
-indexer = PtrCache()
+from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
+from pyot.core.functional import cache_indexes, lazy_property
+from .__core__ import PyotCore
+
 
 # PYOT CORE OBJECT
 
@@ -13,7 +11,6 @@ class Item(PyotCore):
     id: int
     name: str
     description: str
-    cleaned_description: str
     active: bool
     in_store: bool
     from_ids: List[int]
@@ -23,8 +20,10 @@ class Item(PyotCore):
     max_stacks: int
     modes: List[str]
     required_champion_key: str
+    required_ally: str
     required_currency: str
     required_currency_cost: int
+    is_enchantment: bool
     special_recipe: int
     self_cost: int
     total_cost: int
@@ -36,24 +35,13 @@ class Item(PyotCore):
         renamed = {"from":"from_ids", "to": "to_ids", "map_string_id_inclusions": "maps", "mode_name_inclusions": "modes",
             "required_buff_currency_name": "required_currency", "required_buff_currency_cost": "required_currency_cost",
             "price": "self_cost", "price_total": "total_cost"}
-        removed = ["required_ally", "is_enchantment"]
 
     def __init__(self, id: int = None, locale: str = None):
         self._lazy_set(locals())
 
-    def filter_func(self, data):
-        for ind, item in enumerate(data):
-            if item["id"] == self.id:
-                return ind
-        raise NotFound
-
-    def _filter(self, data): # BE VERY CAREFUL
-        ind = indexer.get(self.id, partial(self.filter_func, data))
-        if data[ind]["id"] == self.id: # RETURN ONLY IF ID MATCHES
-            return data[ind]
-        ind = self.filter_func(data)
-        indexer.set(self.id, ind)
-        return data[ind]
+    @cache_indexes
+    def _filter(self, indexer, data):
+        return indexer.get(self.id, data, "id")
 
     def _refactor(self):
         if self.locale.lower() == "en_us":
@@ -62,14 +50,20 @@ class Item(PyotCore):
         self._meta.filter_key = str(load.pop("id"))
 
     def _transform(self, data):
-        data["iconPath"] = cdragon_url(data["iconPath"])
-        data["cleanedDescription"] = cdragon_sanitize(data["description"])
         if data["requiredChampion"] == "":
             data["requiredChampion"] = None
         if data["requiredBuffCurrencyName"] == "":
             data["requiredBuffCurrencyName"] = "GOLD"
             data["requiredBuffCurrencyCost"] = data["price"]
         return data
+
+    @lazy_property
+    def icon_abspath(self) -> str:
+        return cdragon_url(self.icon_path)
+
+    @lazy_property
+    def cleaned_description(self) -> str:
+        return cdragon_sanitize(self.description)
 
     @property
     def from_items(self) -> List["Item"]:

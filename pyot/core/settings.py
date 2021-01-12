@@ -25,28 +25,24 @@ class Settings:
         '''Make the settings take effect.'''
         # IMPORT THE MODULE
         module = import_module(f"pyot.models.{self.MODEL.lower()}.__core__")
-        # GET PYOT BASE FROM MODULE
-        pyot_base = getattr(module, "PyotBaseObject")
         # CHECK THAT DEFAULTS MATCHES THE BASE AND SET IT
         if self.DEFAULT_PLATFORM:
-            self._check_platform(self.DEFAULT_PLATFORM, pyot_base)
-            pyot_base.set_platform(self.DEFAULT_PLATFORM)
+            self._check_platform(self.DEFAULT_PLATFORM, module)
+            module.ModelMixin.set_platform(self.DEFAULT_PLATFORM)
         if self.DEFAULT_REGION:
-            self._check_region(self.DEFAULT_REGION, pyot_base)
-            pyot_base.set_region(self.DEFAULT_REGION)
+            self._check_region(self.DEFAULT_REGION, module)
+            module.ModelMixin.set_region(self.DEFAULT_REGION)
         if self.DEFAULT_LOCALE:
-            self._check_locale(self.DEFAULT_LOCALE, pyot_base)
-            pyot_base.set_locale(self.DEFAULT_LOCALE)
-        self._check_locale_map(self.LOCALE_MAP, pyot_base)
+            self._check_locale(self.DEFAULT_LOCALE, module)
+            module.ModelMixin.set_locale(self.DEFAULT_LOCALE)
+        self._check_locale_map(self.LOCALE_MAP, module)
         self.LOCALE_MAP = {key.lower(): val.lower() for (key, val) in self.LOCALE_MAP.items()}
-        pyot_base.override_locale(self.LOCALE_MAP)
+        module.ModelMixin.override_locale(self.LOCALE_MAP)
         if self.PIPELINE is None:
             return
-        # GET PYOT CORE FROM MODULE
-        pyot_obj = getattr(module, "PyotCore")
         # MAKE PIPELINE AND APPEND IT
         self.pipeline = Pipeline(self.MODEL.lower(), self._make_pipeline(self.PIPELINE))
-        pyot_obj.bind_pipeline(self.pipeline)
+        module.ModelMixin.bind_pipeline(self.pipeline)
         # REGISTER THE PIPELINE
         pipelines[self.MODEL.lower()] = self.pipeline
 
@@ -64,27 +60,27 @@ class Settings:
             stores.append(store)
         return stores
 
-    def _check_platform(self, value, base):
-        if value.lower() not in base.Meta.platform_list:
+    def _check_platform(self, value, module):
+        if value.lower() not in module.PLATFORMS:
             raise AttributeError(f"Invalid 'platform' attribute, '{value}' was given")
 
-    def _check_region(self, value, base):
-        if value.lower() not in base.Meta.region_list:
+    def _check_region(self, value, module):
+        if value.lower() not in module.REGIONS:
             raise AttributeError(f"Invalid 'region' attribute, '{value}' was given")
 
-    def _check_locale(self, value, base):
-        if value.lower() not in [l.lower() for l in base.Meta.locale_list]:
+    def _check_locale(self, value, module):
+        if value.lower() not in [l.lower() for l in module.LOCALES]:
             raise AttributeError(f"Invalid 'locale' attribute, '{value}' was given")
 
-    def _check_locale_map(self, locale, base):
+    def _check_locale_map(self, locale, module):
         if "*" in locale:
             locale_val = locale.pop("*")
-            for key in base.Meta.to_locale:
+            for key in module.LOCALIZATIONS:
                 if key not in locale:
                     locale[key] = locale_val
         for key, val in locale.items():
             try:
-                self._check_platform(key, base)
+                self._check_platform(key, module)
             except AttributeError:
-                self._check_region(key, base)
-            self._check_locale(val, base)
+                self._check_region(key, module)
+            self._check_locale(val, module)

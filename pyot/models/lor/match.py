@@ -46,18 +46,18 @@ class MatchPlayerData(PyotStatic):
 class MatchInfoData(PyotStatic):
     mode: str # (Legal values: Constructed, Expeditions, Tutorial)
     type: str # (Legal values: Ranked, Normal, AI, Tutorial, VanillaTrial, Singleton, StandardGauntlet)
-    creation: datetime
+    start_strftime: str
+    # creation: datetime
     version: str
     players: List[MatchPlayerData]
     total_turn_count: int
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_mode": "mode", "game_type": "type", "game_start_time_utc": "creation", "game_version": "version"}
+        renamed = {"game_mode": "mode", "game_type": "type", "game_start_time_utc": "start_strftime", "game_version": "version"}
 
-    def __getattribute__(self, name):
-        if name == "creation":
-            return parse(super().__getattribute__(name))
-        return super().__getattribute__(name)
+    @property
+    def creation(self):
+        return parse(self.start_strftime)
 
 
 ## PYOT CORE OBJECTS

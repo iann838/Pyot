@@ -1,5 +1,5 @@
-from .__core__ import PyotStatic, PyotCore
 from typing import List
+from .__core__ import PyotStatic, PyotCore
 
 
 # PYOT STATIC OBJECTS
@@ -27,6 +27,7 @@ class MerakiItemStatData(PyotStatic):
     health_regen: MerakiItemStatDetailData
     lethality: MerakiItemStatDetailData
     lifesteal: MerakiItemStatDetailData
+    tenacity: MerakiItemStatDetailData
     magic_penetration: MerakiItemStatDetailData
     magic_resistance: MerakiItemStatDetailData
     mana: MerakiItemStatDetailData
@@ -94,13 +95,14 @@ class MerakiItem(PyotCore):
         renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids", "required_champion": "required_champion_key"}
 
     def __init__(self, id: int = None):
+        # pylint: disable=possibly-unused-variable
         locale = "default"
         self._lazy_set(locals())
 
     @property
     def item(self) -> "Item":
         from .item import Item
-        return Item(id=self.id, locale="en_us") 
+        return Item(id=self.id, locale="en_us")
 
     @property
     def meraki_builds_from(self) -> List["MerakiItem"]:

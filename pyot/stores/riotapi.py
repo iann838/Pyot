@@ -1,7 +1,6 @@
-from typing import Mapping, Dict, Any, List
+from typing import Mapping, Dict, Any
 from json.decoder import JSONDecodeError
 from logging import getLogger
-from datetime import datetime
 import asyncio
 import aiohttp
 import requests
@@ -23,6 +22,7 @@ class RiotAPI(StoreObject):
     def __init__(self, game: str, api_key: str, rate_limiter: Mapping[str, str] = None, error_handling: Mapping[int, Any] = None, log_level: int = 10):
         handler = ErrorHandler()
         self._game = game
+        self._game_upper = game.upper()
         self._api_key = api_key
         self._endpoints = RiotAPIEndpoint(game)
         self._rate_limiter = self.create_rate_limiter(rate_limiter if rate_limiter else {})
@@ -57,9 +57,9 @@ class RiotAPI(StoreObject):
                     response.status = response.status_code
                 else:
                     response = await session.request(method=request_method, url=url, headers=headers, json=body)
-                LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > RiotAPI] {request_method}: {self._log_template(token)}")
+                LOGGER.log(self._log_level, f"[Trace: {self._game_upper} > RiotAPI] {request_method}: {self._log_template(token)}")
             except Exception as e:
-                LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request")
+                LOGGER.warning(f"[Trace: {self._game_upper} > RiotAPI] WARNING: '{e.__class__.__name__}: {e}' was raised during the request")
                 response = None
 
             await self._rate_limiter.stream(response, server, regmethod, limit_token)
@@ -88,11 +88,11 @@ class RiotAPI(StoreObject):
 
             await self._check_backoff(response, server, regmethod, code, self._log_template(token))
             await request_token.stream(code, how, self._log_template(token))
-    
+
     async def _check_backoff(self, response: Any, server: str, regmethod: str, code: int, origin: str):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
-            LOGGER.warning(f"[Trace: {self._game.upper()} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupts your task if this persists. "
+            LOGGER.warning(f"[Trace: {self._game_upper} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupts your task if this persists. "
                            f"Origin: {origin}, Backing off for {seconds} seconds and retrying.")
             type_ = response.headers["X-Rate-Limit-Type"]
             await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, regmethod)
@@ -136,7 +136,7 @@ class RiotAPIEndpoint:
             "match_v4_timeline": "/lol/match/v4/timelines/by-match/{id}",
             "match_v4_matchlist": "/lol/match/v4/matchlists/by-account/{account_id}",
             "match_v4_tournament_match": "/lol/match/v4/matches/{id}/by-tournament-code/{tournament_code}",
-            "match_v4_tournament_matches": "/lol/match/v4/matches/by-tournament-code/{tournament_code}/ids", 
+            "match_v4_tournament_matches": "/lol/match/v4/matches/by-tournament-code/{tournament_code}/ids",
             "spectator_v4_current_game": "/lol/spectator/v4/active-games/by-summoner/{summoner_id}",
             "spectator_v4_featured_games": "/lol/spectator/v4/featured-games",
             "summoner_v4_by_name": "/lol/summoner/v4/summoners/by-name/{name}",
@@ -182,7 +182,7 @@ class RiotAPIEndpoint:
             "status_v1_platform_data": "/val/status/v1/platform-data",
         }
     }
-    
+
     _base_url = "https://{server}.api.riotgames.com"
 
     def __init__(self, game):
@@ -204,7 +204,7 @@ class RiotAPIEndpoint:
                 else:
                     query = query + "&" + str(a) + "=" + str(b)
             if len(query) > 1:
-                query= "?" + query[1:]
+                query = "?" + query[1:]
             return base + url + query
         except KeyError:
             raise exc.NotFindable

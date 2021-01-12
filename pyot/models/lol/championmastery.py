@@ -1,6 +1,6 @@
-from .__core__ import PyotCore, PyotStatic
 from datetime import datetime
 from typing import List, Iterator
+from .__core__ import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -9,23 +9,24 @@ class ChampionMastery(PyotCore):
     champion_id: int
     champion_level: int
     champion_points: int
+    last_play_timestamp: int
     last_play_time: datetime
     champion_points_since_last_level: int
     champion_points_until_next_level: int
     chest_granted: bool
     tokens_earned: int
     summoner_id: str
-    
+
     class Meta(PyotCore.Meta):
         rules = {"champion_mastery_v4_by_champion_id": ["summoner_id", "champion_id"]}
-
-    def __getattribute__(self, name):
-        if name == "last_play_time":
-            return datetime.fromtimestamp(super().__getattribute__(name)//1000)
-        return super().__getattribute__(name)
+        renamed = {'last_play_time': 'last_play_timestamp'}
 
     def __init__(self, summoner_id: str = None, champion_id: int = None, platform: str = None):
         self._lazy_set(locals())
+
+    @property
+    def last_play_time(self) -> datetime:
+        return datetime.fromtimestamp(self.last_play_timestamp//1000)
 
     @property
     def summoner(self) -> "Summoner":
