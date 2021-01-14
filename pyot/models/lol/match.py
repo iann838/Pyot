@@ -501,7 +501,7 @@ class Match(PyotCore):
 
     @handle_import_error("roleml")
     def roleml(self):
-        roles = roleml.predict(self._meta.raw, self._meta.raw_timeline)
+        roles = roleml.predict(self._meta.raw_data, self._meta.raw_timeline)
         for team in self.teams:
             for participant in team.participants:
                 participant.timeline.position = roles[participant.id]
