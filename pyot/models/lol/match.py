@@ -407,7 +407,7 @@ class Match(PyotCore):
     async def get(self, sid: str = None, pipeline: str = None, deepcopy: bool = False):
         if not self.include_timeline:
             return await super().get(sid, pipeline, deepcopy)
-        get_timeline = asyncio.create_task(Timeline(id=self.id).get(sid, pipeline, deepcopy))
+        get_timeline = asyncio.create_task(Timeline(id=self.id, platform=self.platform).get(sid, pipeline, deepcopy))
         get_match = asyncio.create_task(super().get(sid, pipeline, deepcopy))
         await get_match
         timeline = await get_timeline
