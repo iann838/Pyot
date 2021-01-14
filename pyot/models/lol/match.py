@@ -506,17 +506,21 @@ class Match(PyotCore):
             for participant in team.participants:
                 participant.timeline.position = roles[participant.id]
                 participant.timeline._meta.data['position'] = roles[participant.id]
+        return roles
 
     @handle_import_error("roleidentification")
     def roleidentification(self):
+        resp = {}
         for team in self.teams:
             roles = dict_key_value_swap(roleidentification.get_roles(
                 champion_roles.get(),
                 [participant.champion_id for participant in team.participants]
             ))
+            resp[team.id] = roles
             for participant in team.participants:
                 participant.timeline.position = roles[participant.champion_id]
                 participant.timeline._meta.data['position'] = roles[participant.champion_id]
+        return resp
 
     def raw_timeline(self):
         return self._meta.raw_timeline

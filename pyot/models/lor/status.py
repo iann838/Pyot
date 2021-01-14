@@ -1,8 +1,8 @@
-from .__core__ import PyotCore, PyotStatic
-from dateutil.parser import parse
 from datetime import datetime
 from typing import List
 
+from dateutil.parser import parse
+from .__core__ import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 

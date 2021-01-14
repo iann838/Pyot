@@ -9,3 +9,4 @@ from .decorators import cached_property, silence_event_loop_closed
 from .locks import SealLock, RedisLock
 from .time import timeit, atimeit
 from .lor import batch_to_ccac
+from .sync import async_to_sync

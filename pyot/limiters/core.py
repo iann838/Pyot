@@ -64,7 +64,7 @@ class BaseLimiter:
         app_rate2 = r_app_rate[1]
         app_time1 = r_app_time[0]
         app_time2 = r_app_time[1]
-        now = datetime.now(pytz.utc) - timedelta(seconds=1)
+        now = datetime.now(pytz.utc) - timedelta(seconds=0.6)
         method_rate1 = r_method_rate[0]
         method_rate2 = r_method_rate[1]
         method_time1 = r_method_time[0]

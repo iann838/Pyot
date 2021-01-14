@@ -21,13 +21,10 @@ Celery does not support async functions, there is 2 solution.
 
 ### Using AsyncToSync decorator
 
-```shell
-pip install asgiref
-```
 Wrap the tasks
 
 ```python
-from asgiref.sync import async_to_sync
+from pyot.utils.sync import async_to_sync
 from .celery import app
 
 @app.task
@@ -38,7 +35,7 @@ async def mytask():
 
 ### Calling asyncio.run 
 
-Using asyncio.run involves in creating a proxy synchronous function, which is not so clean. You can also create a decorator that functions similarly to `async_to_sync`.
+Using asyncio.run involves in creating a proxy synchronous function, which is not so clean.
 
 ```python
 import asyncio
@@ -51,4 +48,3 @@ async def mytask():
 def my_proxy_task():
     asyncio.run(mytask())
 ```
-

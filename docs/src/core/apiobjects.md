@@ -11,25 +11,24 @@ This is main type of objects that developers works with. Below is a list of gene
 > ### `__init__(**kwargs)` <Badge text="Pyot Core" vertical="middle"/>
 > Creates an instance of the Pyot Core Object. Parameters vary per API.
 
-> ### `get(sid: str = None, pipeline: str = None, keep_raw: bool = False, ptr_cache: PtrCache = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> ### `get(sid: str = None, pipeline: str = None, deepcopy: bool = False)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
 > Awaitable that executes `get` request to the pipeline, finds the requested data, returns it and sinks through the pipeline.
 > - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
 > - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
-> - `keep_raw` <Badge text="param" type="warning" vertical="middle"/>: Optional, boolean flag for storing raw data of the request as a dictionary that is later accessible through `.raw()`, typically for third party libraries to comsume.
-> - `ptr_cache` <Badge text="param" type="warning" vertical="middle"/>: Optional, Intercepts a PtrCache, usage details please refer to [PtrCache](/utils/objects.html#PtrCache).
-> ::: WARNING
-> A bug returning duplicate objects from `ptr_cache` is fixed in v2.0.8
+> - `deepcopy` <Badge text="param" type="warning" vertical="middle"/> <Badge text="New 3.0.0" type="error" vertical="middle"/>: Optional, flag to save raw response using `fast_copy` (True) or transformers smart copy (False). Defaults to False.
+> - ~~`keep_raw`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
+> - ~~`ptr_cache`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
+> ::: danger DEPRECATED
+> `keep_raw` and `ptr_cache` param removed since v3.0.0
 > :::
 
-> ### `post(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> ### `post(sid: str = None, pipeline: str = None, deepcopy: bool = False)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
 > Awaitable that executes `post` request to the pipeline, finds the correct service to execute and return the response if given. Unlike `get()` responses are not sinked through the pipeline.
-> - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
-> - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
+> * Parameters are the same of `get()`
 
-> ### `put(sid: str = None, pipeline: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
+> ### `put(sid: str = None, pipeline: str = None, deepcopy: bool = False)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/> <Badge text="unchainable" type="warning" vertical="middle"/>
 > Awaitable that executes `put` request to the pipeline, finds the correct service to execute and return the response if given. Unlike `get()` responses are not sinked through the pipeline.
-> - `sid` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the sid identifying the created session on the pipeline to reuse, typically session created by `Queue`.
-> - `pipeline` <Badge text="param" type="warning" vertical="middle"/>: Optional, provide the name identifying the pipeline to execute on, typically only passed when used with objects of the RIOT model.
+> * Parameters are the same of `get()`
 
 > ### `query(**kwargs)` <Badge text="function" type="error" vertical="middle"/>
 > Appends query parameters to the object, these are mostly query parameters specified in endpoints of Riot Dev Portal. Query parameters vary per object.
@@ -40,25 +39,21 @@ This is main type of objects that developers works with. Below is a list of gene
 > ### `create_token()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Creates a Pyot Pipeline Token that can make calls on the low level pipeline API. This can be useful for using high performance local `PtrCache` or manually calling pipeline methods.
 
-> ### `set_session_id(id: str)` <Badge text="function" type="error" vertical="middle"/>
->::: danger DEPRECATED
->This method has been removed since v1.1.0, now is accessible through an argument on the `get()` method.
->:::
-
-> ### `dict(pyotify=False, remove_server=True)` <Badge text="function" type="error" vertical="middle"/>
-> This method returns the python dictionary representation of the object. This object does not strictly return the original data that the store responded with, for that please call `get()` with `keep_raw=True` and `raw()`.
-> - `pyotify`<Badge text="param" type="warning" vertical="middle"/>: Define if dictionary returned should be the Meta cached data or an exact same copy of the Pyot object by going recursive all the way down to the bottom of the object structure. Getting from the Meta cached data has a complexity of O(1), it has the same structure as the object with some exceptions: 1. Most keys are camelCased, 2. Some renamed keys are not reflected, 3. Some values that returns python builtin objects might return raw params (e.g. `creation: datetime` is returned as `gameStartTime: unix millis`), meanwhile setting this param to `True` will get the exact copy but as a dict with the cost of more time and memory complexity. Defaults to `False`.
->
-> - `remove_server`<Badge text="param" type="warning" vertical="middle"/>: This only affects if `pyotify` is set to True, by nature the Core object will pass down the server (`platform`, `region`, `locale`) info to the Static objects in order to make correct "bridges", by setting to `False` the dict will not remove the server info for each object. Defaults to `True`.
+> ### `dict(deepcopy=False, lazy_props=False, recursive=True)` <Badge text="function" type="error" vertical="middle"/>
+> This method returns the python dictionary representation of the object. Description placeholder
+> - `deepcopy` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
+> - `lazy_props` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
+> - `recursive` <Badge text="param" type="warning" vertical="middle"/>: Define if dictionary returned should be the Meta cached data or an exact same copy of the Pyot object by going recursive all the way down to the bottom of the object structure. Getting from the Meta cached data has a complexity of O(1), it has the same structure as the object with some exceptions: 1. Most keys are camelCased, 2. Some renamed keys are not reflected, 3. Some values that returns python builtin objects might return raw params (e.g. `creation: datetime` is returned as `gameStartTime: unix millis`), meanwhile setting this param to `True` will get the exact copy but as a dict with the cost of more time and memory complexity. Defaults to `False`.
+> - ~~`remove_server`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
+> - ~~`pyotify`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Renamed 3.0.0" type="error" vertical="middle"/>
 
 > ### `json(pyotify=False, remove_server=True)` <Badge text="function" type="error" vertical="middle"/>
-> This method returns the json serialized representation of the object, it is a shorcut of the long typed `json.dumps(x.dict())` where `x` is the Pyot Object.
-> - `pyotify`<Badge text="param" type="warning" vertical="middle"/>: Refer to above description of the params
->
-> - `remove_server`<Badge text="param" type="warning" vertical="middle"/>: Refer to above description of the params
+> ::: danger DEPRECATED
+> This method has been removed since v3.0.0.
+> :::
 
 > ### `raw()` <Badge text="function" type="error" vertical="middle"/>
-> This method returns the dictionary containing the raw data, only available if `keep_raw=True` was passed when calling `get()`, the difference from `dict()` is that this dictionary will contain the original data returned by the store without any type of serialization nor transformation.
+> This method returns the dictionary containing the raw data, the difference from `dict()` is that this dictionary will contain the original data returned by the store without any type of serialization nor transformation.
 
 
 ## Pyot Static
@@ -67,18 +62,18 @@ This is main type of objects that developers works with. Below is a list of gene
 
 These are objects that are nested into the Pyot Core Objects, inheriting some partial functions of the Pyot Core. Below is a list of general member methods:
 
-
-> ### `dict(pyotify=False, remove_server=True)` <Badge text="function" type="error" vertical="middle"/>
-> This method returns a python dictionary of the object.
-> - `pyotify`<Badge text="param" type="warning" vertical="middle"/>: Refer to Pyot Core description of the params
->
-> - `remove_server`<Badge text="param" type="warning" vertical="middle"/>: Refer to Pyot Core description of the params
+> ### `dict(deepcopy=False, lazy_props=False, recursive=True)` <Badge text="function" type="error" vertical="middle"/>
+> This method returns the python dictionary representation of the object. Description placeholder
+> - `deepcopy` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
+> - `lazy_props` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
+> - `recursive` <Badge text="param" type="warning" vertical="middle"/>: Define if dictionary returned should be the Meta cached data or an exact same copy of the Pyot object by going recursive all the way down to the bottom of the object structure. Getting from the Meta cached data has a complexity of O(1), it has the same structure as the object with some exceptions: 1. Most keys are camelCased, 2. Some renamed keys are not reflected, 3. Some values that returns python builtin objects might return raw params (e.g. `creation: datetime` is returned as `gameStartTime: unix millis`), meanwhile setting this param to `True` will get the exact copy but as a dict with the cost of more time and memory complexity. Defaults to `False`.
+> - ~~`remove_server`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
+> - ~~`pyotify`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Renamed 3.0.0" type="error" vertical="middle"/>
 
 > ### `json(pyotify=False, remove_server=True)` <Badge text="function" type="error" vertical="middle"/>
-> This method returns a json serialized object, it is a shorcut of the long typed `json.dumps(x.dict())` where `x` is the Pyot Object.
-> - `pyotify`<Badge text="param" type="warning" vertical="middle"/>: Refer to Pyot Core description of the params
->
-> - `remove_server`<Badge text="param" type="warning" vertical="middle"/>: Refer to Pyot Core description of the params
+> ::: danger DEPRECATED
+> This method has been removed since v3.0.0.
+> :::
 
 ## Pyot Container
 

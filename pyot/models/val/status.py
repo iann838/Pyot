@@ -1,8 +1,8 @@
-from .__core__ import PyotCore, PyotStatic
-from dateutil.parser import parse
 from datetime import datetime
 from typing import List
 
+from dateutil.parser import parse
+from .__core__ import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
@@ -19,8 +19,8 @@ class StatusUpdateData(PyotStatic):
     translations: List[StatusContentData]
     created_at_strftime: str
     updated_at_strftime: str
-    # created_at: datetime
-    # updated_at: datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Meta(PyotCore.Meta):
         raws = ["publish_locations"]
@@ -46,9 +46,9 @@ class StatusDetailData(PyotStatic):
     created_at_strftime: str
     archive_at_strftime: str
     updated_at_strftime: str
-    # created_at: datetime
-    # archive_at: datetime
-    # updated_at: datetime
+    created_at: datetime
+    archive_at: datetime
+    updated_at: datetime
     platforms: List[str]
 
     class Meta(PyotCore.Meta):
