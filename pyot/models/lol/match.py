@@ -560,6 +560,7 @@ class Timeline(PyotCore):
 
     def _transform(self, data):
         data = data.copy()
+        data["frames"] = data["frames"].copy()
         for i, f in enumerate(data["frames"]):
             data["frames"][i] = f.copy()
             data["frames"][i]["participantFrames"] = list(f["participantFrames"].values())
