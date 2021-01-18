@@ -1,4 +1,4 @@
-![Pyot](https://github.com/paaksing/pyot/blob/master/banner.jpg)
+![Pyot](banner.jpg)
 # Pyot
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/paaksing/pyot/blob/master/LICENSE)
 
