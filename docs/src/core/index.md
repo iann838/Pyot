@@ -1,7 +1,7 @@
 # Pyot
 ##### <Badge text="Stable" vertical="middle"/> [<Badge text="MIT Licensed" type="warning" vertical="middle"/>](https://github.com/paaksing/pyot/blob/master/LICENSE)
 
-Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT, that encourages rapid development and clean, pragmatic design. It specializes at doing tasks in an async environment to get the expected result faster than synchronous code. Thanks for checking it out.
+Pyot is an asyncIO based high-level Python Riot Games API framework that encourages rapid development and clean, pragmatic design. Built by experienced Riot Games Third Party Developers, it takes care of much of the hassle of the Riot Games API, so you can focus on writing your app without needing to reinvent the wheel. It’s free and open source.
 
 ### Pyot 3
 
