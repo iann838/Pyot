@@ -16,10 +16,6 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 > #### `key: str`
 > The Riot API key to be used for this model/pipeline.
 >
-> #### `limiting_share: float = 1`
-> ::: danger DEPRECATED
-> Since v1.1.0: The `limiting_share` param, now is a sub setting of the new `rate_limiter` param.
-> :::
 > #### `rate_limiter: Mapping[str, str] = None`
 > Accepts a Dict containing the settings for the rate limiter. Please refer to Limiters tab section.
 >
@@ -28,13 +24,6 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >
 > #### `log_level: int = 10`
 > Set the log level for the store. Defaults to 10 (DEBUG level).
-
-## Initialization
-
-> ### initialize() <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
->::: danger DEPRECATED
->Removed since v1.1.0, due to adding unnecessary delays on imports.
->:::
 
 ## Endpoints
 
@@ -157,6 +146,8 @@ Some endpoints may return 403 due to api key policies restrictions. During late 
 >`"match_v1_recent"`
 >
 >`"content_v1_contents"`
+>
+>`"ranked_v1_leaderboards"`
 >
 >`"status_v1_platform_data"`
 

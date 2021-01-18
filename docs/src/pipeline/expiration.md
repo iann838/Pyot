@@ -15,11 +15,6 @@ By passing this argument, you **_override_** the default endpoints expirations s
 ```
 This will override the `summoner_v4_by_name` endpoint to cache 2 minutes, and `league_v4_challenger_league` to cache for only 10 minutes, and leaving the rest of the default expirations untouched.
 
-## Wildcard Endpoint
-::: danger DEPRECATED
-Removed since v1.1.0, due to unclear concept and mismatch to new default expirations
-:::
-
 ## Default Expiration
 Supposing the following import
 ```python
@@ -164,6 +159,8 @@ Only data returned by the `get()` method is sinked through the pipeline, and thu
 >`"match_v1_matchlist": 0`
 >
 >`"match_v1_recent": 0`
+>
+>`"ranked_v1_leaderboards": 0`
 >
 >`"status_v1_platform_data": 0`
 >

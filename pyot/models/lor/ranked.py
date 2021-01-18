@@ -1,5 +1,5 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List, Iterator
+from .__core__ import PyotCore, PyotStatic
 
 ## PYOT STATIC OBJECTS
 

@@ -28,7 +28,7 @@ List of major changes in Pyot 3.
 > `pyotify` param has renamed to `recursive`. Two new optional params are addded.
 
 ### Static objects absolute urls are now lazy.
-> All urls of CDragon objects were already modified, this adds extra serialization when it is not needed. They are now migrated to `lazy_property`, object `dict` method will not return these properties by default, to return it, pass `lazy_props=True` param to `dict()` method.
+> All urls of CDragon objects were already modified, this adds extra serialization when it is not needed. They are now migrated to `lazy_property` in a syntax of `*_abspath`, object `dict` method will not return these properties by default, to return it, pass `lazy_props=True` param to `dict()` method.
 
 ### Pyot Queue will NO longer handle non-Pyot exceptions.
 > The supressing was originally designed to avoid log overload, but turned out to brutantly affect the debug process. Shrinking the fench down to Pyot Specific exceptions. Note: This will only let the python interpreter raise the exception and log the traceback, the Queue WILL NOT STOP running.

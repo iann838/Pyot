@@ -29,7 +29,7 @@ class ModelMixin:
     @classmethod
     def set_region(cls, region):
         cls.region = region.lower()
-    
+
     @classmethod
     def set_platform(cls, platform):
         cls.platform = platform.lower()
@@ -42,7 +42,7 @@ class ModelMixin:
     def override_locale(cls, locale_map):
         LOCALIZATIONS.update(locale_map)
         cls.Meta.localizations = case_insensitive_dict(LOCALIZATIONS)
-    
+
     def to_locale(self, platform):
         return self.Meta.localizations[platform]
 

@@ -111,6 +111,6 @@ def pytify(obj):
     return pickle.loads(obj)
 
 
-def dict_key_value_swap(dic):
+def dict_key_value_swap(dic: Dict) -> Dict:
     '''Swap keys and values of a dictionary'''
     return {v: k for k, v in dic.items()}

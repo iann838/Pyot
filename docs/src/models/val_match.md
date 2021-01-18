@@ -1,5 +1,5 @@
 # Match
-Model: Valorant
+Model: VALORANT
 
 ## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -17,6 +17,8 @@ Model: Valorant
 >`teams: List[MatchTeamData]`
 >
 >`round_results: List[MatchRoundResultData]`
+>
+>`start_time_millis: int` <Badge text="supertyped by MatchHistory" type="error" vertical="middle"/>
 >
 >`creation: datetime` <Badge text="supertyped by MatchHistory" type="error" vertical="middle"/>
 >
@@ -42,25 +44,22 @@ Model: Valorant
 
 >`"match_v1_recent": ["queue"]` <Badge text="endpoint" type="error" vertical="middle"/>
 
+>`current_timestamp: int`
+>
 >`current_time: datetime`
 >
 >`match_ids: List[str]`
 
 >`matches(self) -> List["Match"]` <Badge text="bridge" type="error" vertical="middle"/> <Badge text="Iterator" type="warning" vertical="middle"/>
 
-## `MatchHistoryData` <Badge text="Pyot Static" vertical="middle"/>
->`id: str`
->
->`creation: datetime`
->
->`team_id: str`
-
->`match -> "Match"` <Badge text="bridge" type="error" vertical="middle"/>
-
 ## `MatchInfoData` <Badge text="Pyot Static" vertical="middle"/>
 >`id: str`
 >
 >`map_id: str`
+>
+>`start_millis: int`
+>
+>`length_millis: int`
 >
 >`duration: timedelta`
 >
@@ -93,6 +92,8 @@ Model: Valorant
 >
 >`bomb_defuser_puuid: str`
 >
+`plant_round_millis: int`
+>
 >`plant_round_time: timedelta`
 >
 >`plant_player_locations: List[MatchPlayerLocationData]`
@@ -100,6 +101,8 @@ Model: Valorant
 >`plant_location: MatchLocationData`
 >
 >`plant_site: str`
+>
+>`defuse_round_millis: int`
 >
 >`defuse_round_time: timedelta`
 >
@@ -160,9 +163,13 @@ Model: Valorant
 >`spent: int`
 
 ## `MatchPlayerKillData` <Badge text="Pyot Static" vertical="middle"/>
->`game_duration: timedelta`
+>`game_time_millis: int`
 >
->`round_duration: timedelta`
+>`round_time_millis: int`
+>
+>`game_time: timedelta`
+>
+>`round_time: timedelta`
 >
 >`killer_puuid: str`
 >
@@ -213,6 +220,10 @@ Model: Valorant
 ## `MatchPlayerData` <Badge text="Pyot Static" vertical="middle"/>
 >`puuid: str`
 >
+>`game_name: str`
+>
+>`tag_line: str`
+>
 >`team_id: str`
 >
 >`party_id: str`
@@ -239,6 +250,8 @@ Model: Valorant
 >`deaths: int`
 >
 >`assists: int`
+>
+>`playtime_millis: int`
 >
 >`playtime: timedelta`
 >

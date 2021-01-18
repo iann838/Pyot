@@ -1,5 +1,5 @@
-from .__core__ import PyotCore, PyotStatic
 from typing import List
+from .__core__ import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -62,6 +62,11 @@ class ContentActData(PyotStatic):
     localized_names: ContentLocalizedNamesData
     is_active: bool
 
+    @property
+    def leaderboard(self) -> "Leaderboard":
+        from .ranked import Leaderboard
+        return Leaderboard(act_id=self.id, platform=self.platform)
+
 
 # PYOT CORE OBJECTS
 
@@ -94,4 +99,3 @@ class Content(PyotCore):
             raise RuntimeError(f"Query 'locale' is not valid, '{locale}' was passed")
         self._meta.query = self._parse_camel(locals())
         return self
-

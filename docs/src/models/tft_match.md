@@ -32,6 +32,10 @@ Model: Teamfight Tactics
 >`metadata: MatchMetadataData`
 
 ## `MatchInfoData` <Badge text="Pyot Static" vertical="middle"/>
+>`date_millis: int`
+>
+>`length_secs: int`
+>
 >`creation: datetime`
 >
 >`duration: timedelta`
@@ -69,6 +73,8 @@ Model: Teamfight Tactics
 >`players_eliminated: int`
 >
 >`puuid: str`
+>
+>`time_eliminated_secs: int`
 >
 >`time_eliminated: timedelta`
 >

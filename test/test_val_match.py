@@ -1,6 +1,6 @@
+from datetime import datetime, timedelta
 from pyot.utils import loop_run
 from pyot.models import val, riot
-from datetime import datetime, timedelta
 
 async def async_match_history():
     account = await riot.Account(name="Lamb", tag="7926", region="AMERICAS").get(pipeline="val")
@@ -48,10 +48,10 @@ async def async_match():
         assert isinstance(stat.playtime, timedelta)
         ability = stat.ability_casts
         if ability is not None:
-            assert isinstance(ability.grenade_casts, int) if ability.grenade_casts is not None else True 
-            assert isinstance(ability.ability1_casts, int) if ability.ability1_casts is not None else True 
-            assert isinstance(ability.ability2_casts, int) if ability.ability2_casts is not None else True 
-            assert isinstance(ability.ultimate_casts, int) if ability.ultimate_casts is not None else True 
+            assert isinstance(ability.grenade_casts, int) if ability.grenade_casts is not None else True
+            assert isinstance(ability.ability1_casts, int) if ability.ability1_casts is not None else True
+            assert isinstance(ability.ability2_casts, int) if ability.ability2_casts is not None else True
+            assert isinstance(ability.ultimate_casts, int) if ability.ultimate_casts is not None else True
     for i in teams:
         assert isinstance(i.id, str)
         assert isinstance(i.won, bool)

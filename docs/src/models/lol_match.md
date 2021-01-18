@@ -1,18 +1,16 @@
 # Match
 Model: League of Legends
 
-:::warning PERFORMANCE TOPIC
-Timeline objects are bottlenecked by the python runtime, for more info about this topic and its **solution** please read **[Pyot slowing down on serialization](/topics/slow.html).**
-:::
-
-:::tip NEW
-***Since v2.0.5***: `Match` and `MatchTimeline` objects support the tournament match endpoint. `Matches` class is added with the get match ids by tournament code endpoint. `Timeline` remains the same since both normal and tournament matches share the same timeline endpoint.
+:::tip OPTIMIZATIONS
+When iterating through mass amount of matches, code and execution time might need optimizations, here is a guide: **[How to optimize Pyot CPU time](/topics/slow.html).**
 :::
 
 ## `Match` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`tournament_code: str = None` <Badge text="param" type="warning" vertical="middle"/>
+>
+>`include_timeline: bool = False` <Badge text="param" type="warning" vertical="middle"/>
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
@@ -34,6 +32,10 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 >
 >`queue_id: int`
 >
+>`creation_millis: int`
+>
+>`duration_secs: int`
+>
 >`creation: datetime`
 >
 >`duration: timedelta`
@@ -42,11 +44,19 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 >
 >`teams: List[MatchTeamData]`
 >
->`blue_team: MatchTeamData`
+>`participants -> List[MatchParticipantData]` <Badge text="property" type="error" vertical="middle"/>
 >
->`red_team: MatchTeamData`
+>`blue_team -> MatchTeamData` <Badge text="property" type="error" vertical="middle"/>
+>
+>`red_team -> MatchTeamData` <Badge text="property" type="error" vertical="middle"/>
 
 >`timeline -> "Timeline"` <Badge text="bridge" type="error" vertical="middle"/>
+
+> #### `roleml()` <Badge text="extension" type="error" vertical="middle"/>
+> Executes `roleml.predict()` using raw match and raw timeline data, injects the returned position to `teams[].participants[].timeline.position` attribute and return the original response. This extension requires timeline data to work.
+>
+> #### `roleidentification()` <Badge text="extension" type="error" vertical="middle"/>
+> Executes `roleidentification.getroles()` using raw match and the returned champion roles from `roleidentification.pull_data()` (This data is rotated every 3 hours if task is long lived, missing keys from data will be handled aswell), injects the returned position to `teams[].participants[].timeline.position` attribute and return the original response in a dict based on team ids. 
 
 ## `Timeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
@@ -58,56 +68,14 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 
 >`frames: List[MatchFrameMinuteData]`
 >
->`events: List[MatchEventMinuteData]`
+>`interval_millis: int`
 >
 >`interval: timedelta`
 
-## `MatchTimeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
-
->:::tip ABOUT THIS CLASS
->This class inherits from `Match` and therefore has the same structure, `get()` will inject `events` and `frames` into each participant's timeline from `"match_v4_timeline"` response. Some events are not included because they are mainly team based (any event that has no `participantId` or similar).
->
->Both `match_v4_match` and `match_v4_timeline` endpoints are called cocurrently and filled. Total of 2 calls instead of 1.
->:::
->
->`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
->
->`tournament_code: str = None` <Badge text="param" type="warning" vertical="middle"/>
->
->`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
-
->`"match_v4_tournament_match": ["tournament_code", "id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
->
->`"match_v4_match": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
->
->`"match_v4_timeline": ["id"]` <Badge text="endpoint" type="error" vertical="middle"/> <Badge text="concurrent" type="error" vertical="middle"/>
-
->`id: int`
->
->`type: str`
->
->`mode: str`
->
->`version: str`
->
->`map_id: int`
->
->`season_id: int`
->
->`queue_id: int`
->
->`creation: datetime`
->
->`duration: timedelta`
->
->`platform: str`
->
->`teams: List[MatchTeamData]`
->
->`blue_team: MatchTeamData`
->
->`red_team: MatchTeamData`
->
+## ~~`MatchTimeline`~~ <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
+> :::danger DEPRECATED
+> This class has been removed since v3.0.0, `frames` and `events` data from participants timeliens will be injected directly through `lol.Match` by setting `include_timeline=True` in constructor.
+> :::
 
 ## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 >`account_id: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -142,24 +110,16 @@ Timeline objects are bottlenecked by the python runtime, for more info about thi
 >
 >`matches: List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
 >
->`match_timelines: List[MatchTimeline]` <Badge text="bridge" type="error" vertical="middle"/>
+>`match_timelines: List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
 >
 >`timelines: List[Timeline]` <Badge text="bridge" type="error" vertical="middle"/>
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
-:::tip NEW
-Starting v1.2.0:
-- `matches` is renamed to `entries`.
+:::tip HELP
 - `matches` returns a list of instantiated `Match` objects.
-- `match_timelines` returns a list of instantiated `MatchTimeline` objects.
+- `match_timelines` returns a list of instantiated `Match` objects with `include_timeline=True`.
 - `timelines` returns a list of instantiated `Timeline` objects.
-
-Example of iterating over `MatchTimeline` objects of the match history please now do:
-```python
-for match in history.match_timelines:
-    await match.get()
-```
 :::
 
 ## `Matches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
@@ -182,12 +142,13 @@ for match in history.match_timelines:
 
 
 ## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
-
->`data: List[MatchFrameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
-
-## `MatchEventMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
-
->`data: List[MatchEventData]` <Badge text="Iterator" type="warning" vertical="middle"/>
+>`participant_frames: List[MatchFrameData]`
+>
+>`events: List[MatchEventData]`
+>
+>`timestamp: int`
+>
+>`time: timedelta`
 
 ## `MatchHistoryMatchData` <Badge text="Pyot Static" vertical="middle"/> 
 >`platform: str`
@@ -509,7 +470,9 @@ for match in history.match_timelines:
 >
 >`killer_id: int`
 >
->`timestamp: timedelta`
+>`timestamp: int`
+>
+>`time: timedelta`
 >
 >`assisting_participant_ids: List[int]`
 >

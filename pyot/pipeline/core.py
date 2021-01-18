@@ -1,7 +1,4 @@
-from typing import List, Any, Dict, Callable
-from aiohttp import ClientSession
-import pickle
-import asyncio
+from typing import List, Any
 import aiohttp
 
 from pyot.core.exceptions import NotFound, NotFindable

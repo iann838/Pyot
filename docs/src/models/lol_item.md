@@ -21,7 +21,7 @@ Model: League of Legends
 >
 >`description: str`
 >
->`cleaned_description: str`
+>`cleaned_description: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`active: bool`
 >
@@ -52,6 +52,8 @@ Model: League of Legends
 >`total_cost: int`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 
 >`from_items -> List["Item"]` <Badge text="bridge" type="error" vertical="middle"/>
 >

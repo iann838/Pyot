@@ -17,13 +17,15 @@ Model: Teamfight Tactics
 
 >`description: str`
 >
->`cleaned_description: str`
+>`cleaned_description: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`effects: Mapping[str, int]`
 >
 >`from_ids: List[int]`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`id: int`
 >

@@ -5,9 +5,9 @@ from pyot.models import val
 async def async_content_locale():
     content = await val.Content(platform="NA").query(locale="en-US").get()
     assert isinstance(content.version, str)
-    for item in [content.characters, content.maps, content.chromas, content.skins, 
-        content.skin_levels, content.equips, content.game_modes, content.sprays, 
-        content.spray_levels, content.charms, content.charm_levels, content.player_cards, 
+    for item in [content.characters, content.maps, content.chromas, content.skins,
+        content.skin_levels, content.equips, content.game_modes, content.sprays,
+        content.spray_levels, content.charms, content.charm_levels, content.player_cards,
         content.player_titles]:
         for i in item:
             assert isinstance(i.name, str)
@@ -16,9 +16,9 @@ async def async_content_locale():
 async def async_content_full():
     content = await val.Content(platform="NA").get()
     assert isinstance(content.version, str)
-    for item in [content.characters, content.maps, content.chromas, content.skins, 
-        content.skin_levels, content.equips, content.game_modes, content.sprays, 
-        content.spray_levels, content.charms, content.charm_levels, content.player_cards, 
+    for item in [content.characters, content.maps, content.chromas, content.skins,
+        content.skin_levels, content.equips, content.game_modes, content.sprays,
+        content.spray_levels, content.charms, content.charm_levels, content.player_cards,
         content.player_titles]:
         for i in item:
             assert isinstance(i.name, str)

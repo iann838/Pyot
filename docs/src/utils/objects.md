@@ -6,33 +6,25 @@ Asynchronous callbacks are only runable on a-prefixed methods, e.g. `aget`.
 
 ### Submodule: `objects`
 
-:::danger DEPRECATED
-Starting v1.2.0
-- `ArrowCache` has been renamed to `PtrCache`.
-- `CloneGenerator` has been renamed to `FrozenGenerator`.
-:::
-
 ## `PtrCache`
 > A high performance mini local cache based on reference keeping. Be aware that this cache is NOT isolated, hence the performance difference (This one is much faster) from Omnistone.
 > ::: warning
 > This cache will not copy the objects on get/put, modification to objects affects cached objects.
 > :::
-> ::: tip NEW
-> **Since v2.0.0:** You can intercept the cache into the `get()` method of a Pyot Core object for syntax sugar.
-> ```python
-> cache = PtrCache()
-> item = lol.Item(id=2003).get(ptr_cache=cache)
-> ```
+> ::: danger DEPRECATED
+> **Since v3.0.0:** ptr_cache intersepting on PyotCore `get()` method removed.
 > :::
 > ### `__init__(expiration=60*60*3, max_entries=5000)`
 > - `expiration` <Badge text="param" type="warning" vertical="middle"/>: Expiration time of objects (number of seconds). Negative value will be treated as "cache forever".
 > - `max_entries` <Badge text="param" type="warning" vertical="middle"/>: Max number of objects before culling, for sanity of preventing memory leak.
-> ### `get(name: str, func = None)` <Badge text="function" type="error" vertical="middle"/>
+> ### `get(name: str, func = None, lazy = False)` <Badge text="function" type="error" vertical="middle"/>
 > Get an object from the cache.
 > - `func` <Badge text="param" type="warning" vertical="middle"/> will be called when provided and if object doesn't exist, put the returned value to the cache and return it.
-> ### `aget(name: str, coro = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
+> - `lazy` <Badge text="param" type="warning" vertical="middle"/> flag if `func` needs to be called before running it, therefore achieve lazy eval during runtime. If this param is set to True, `func` should be a callable that returns itself (e.g. `lambda: myfunc`).
+> ### `aget(name: str, coro = None, lazy = False)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Async get an object from the cache.
 > - `coro` <Badge text="param" type="warning" vertical="middle"/> will be awaited when provided and if object doesn't exist, put the returned value to the cache and return it. If the `coro` doesn't need to be awaited it will be closed and not raise warnings.
+> - `lazy` <Badge text="param" type="warning" vertical="middle"/> flag if `coro` needs to be called before running it, therefore achieve lazy eval during runtime. If this param is set to True, `coro` should be a callable that returns itself (e.g. `lambda: mycoro`).
 > ### `set(name: str, val, exp: int = None)` <Badge text="function" type="error" vertical="middle"/>
 > Put an object to the cache. Expiration can be provided to override default expiration on cache instantiation.
 > ### `clear()` <Badge text="function" type="error" vertical="middle"/>

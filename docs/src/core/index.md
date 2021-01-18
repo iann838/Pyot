@@ -3,21 +3,27 @@
 
 Pyot is a Python Framework for the Riot Games API, including League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT, that encourages rapid development and clean, pragmatic design. It specializes at doing tasks in an async environment to get the expected result faster than synchronous code. Thanks for checking it out.
 
-Pyot is highly inspired by [Cassiopeia](https://github.com/meraki-analytics/cassiopeia), you will notice that both has similar internal workings. 
+### Pyot 3
+
+- Code will run 3 ~ 5 times faster compared to Pyot 2.
+- Support for RoleML and Roleidentification.
+- Refactored objects to use non-destructive design.
+
+Migration Guide: [Version 2 → 3](v2tov3.html)
 
 ## Features
 
 Features that Pyot has and can provide to your development.
 
-- **_AsyncIO Based_**: No more waiting forever, concurrent calls and jobs are made faster, highly configurable settings and wide range of tools to speed all your I/O tasks.
-- **_Synchronous Compatible_**: An adapted version of Pyot that runs on synchronous environment, **Pyot will expose part of its API synchronously in its secondary module called [Syot](syot.html)** <Badge text="installed by default" vertical="middle"/>.
-- **_Django Support_**: Full support for Django Caches Framework and its new 3.1 async Views, just add `pyot` to the installed apps and point your setting modules on your `settings.py` file. [More details](django.html).
-- **_Community Projects Integrated_**: Take a step to dump the late and poorly updated DDragon, we are currently beta testing directly using CDragon and Meraki. BangingHeads' DDragon replacement is also coming soon.
+- **_AsyncIO Based_**: Go 60x faster with asyncIO and coroutines, highly configurable settings and wide range of tools to speed your I/O tasks.
+- **_Django Support_**: Full support for Django Caches Framework and its new 3.1 async Views, enable as installed app and point your setting modules on your `settings.py` file. [More details](django.html).
+- **_Community Projects Integrated_**: Includes support for CDragon, MerakiCDN, RoleML, RoleIdentification. DDragon is Forbidden due to incompatible APIs.
 - **_Caches Integrated_**: A wide range of Caches Stores is available right out of the box, we currently have Omnistone(Runtime), RedisCache(RAM), DiskCache(Disk) and MongoDB(NoSQL).
 - **_Multiple Models_**: Available models are League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT.
-- **_Autocompletion Included_**: Forget standard dictionary keys, triple your code efficiency now with autocompletion.
+- **_Code Autocompletion_**: Access data through attributes and properties, maximize your code efficiency now with autocompletion.
 - **_Perfect Rate Limiter_**: Pyot's Rate Limiter is production tested in all asynchronous, multithreaded and even multiprocessed environments. Pyot's rate limiters are made for perfectionists.
-- **_User Friendly Docs_**: Meet friendly docs that "should" be easy to read and understand.
+- **_User Friendly Docs_**: Meet a human redable documentation that covers guides and all the available high-level and low-level APIs in Pyot.
+- **_Synchronous Compatible_**: An adapted version of Pyot that runs on synchronous environment, exposing part of its API synchronously on [Syot](syot.html).
 
 ## About the Documentation
 
@@ -49,6 +55,6 @@ If this framework is useful to you, a **star** to the repo is appreciated.
 
 Contributions are welcome! If you have ideas or opinions on how things can be improved, don’t hesitate to let us know by posting an issue on GitHub or @ing me on the Riot API Discord channel. We always want to hear from our users, even (especially) if it’s just letting us know how you are using Pyot.
 
-Check out [Developers](/devs/) for information about getting involved.
+Check out [Developers](/devs/) for contributing.
 
 Finally thanks for Django docs, I literally copied their doc format and changed the names. Yikes

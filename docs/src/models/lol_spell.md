@@ -28,3 +28,5 @@ Model: League of Legends
 >`modes: List[str]`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>

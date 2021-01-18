@@ -42,6 +42,8 @@ Model: Teamfight Tactics
 >`lol_id: int`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 
 >`traits -> List["Trait"]` <Badge text="bridge" type="error" vertical="middle"/>
 
@@ -71,9 +73,11 @@ Model: Teamfight Tactics
 >
 >`description: str`
 >
->`cleaned_description: str`
+>`cleaned_description: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`variables: List[ChampionAbilityVariableData]`
 

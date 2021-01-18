@@ -25,6 +25,8 @@ Model: League of Legends
 >
 >`long_description: str`
 >
->`cleaned_description: str`
+>`cleaned_description: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>

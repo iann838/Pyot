@@ -12,7 +12,7 @@ Each model will have its own pipeline, this is needed to create isolated environ
 
 # Low Level API
 
-Each created pipeline can be accessed as a **_dictionary_** at ~~Pyot's root level~~(Removed since v1.1.0) the pipeline module. The keys are the models names **_in lower case_**.
+Each created pipeline can be accessed as a **_dictionary_** at the `pipeline` module. The keys are the models names **_in lower case_**.
 
 ```python{1}
 from pyot.pipeline import pipelines
@@ -27,33 +27,15 @@ This object is created per `Settings` instance created. Below is a list of metho
 > - `model` <Badge text="param" type="warning" vertical="middle"/> -> str: Name of the object.
 > - `stores` <Badge text="param" type="warning" vertical="middle"/> -> List[StoreObject]: List of Stores to add on the pipeline.
 
-> ## `initialize()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
->::: danger DEPRECATED
->Removed since v1.1.0, due to adding unnecessary delays on imports.
->:::
-
-> ## `transform_key(store_cls, method, key, content)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
->::: danger DEPRECATED
->Removed since v1.1.0, concept not clear, the helper functions are now accessible on the `utils` module.
->:::
-
 > ## `get(token: PipelineToken, sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
-> Method that starts lookup on stores, internal used by `PyotCore` objects **_and automatically sinks the data through the pipeline, so `put()` is not necessary._**
+> Method that starts lookup on stores, internal used by `PyotCore` objects **_and automatically sinks the data through the pipeline, so `set()` is not necessary afterwards._**
 > - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
 > - `sid` <Badge text="param" type="warning" vertical="middle"/> -> str: The sid identifying the session to reuse.
->
->::: warning DEPRECATED
->Removed since v1.1.0: the `filter` param, now `_filter` is called at pyot object level.
->:::
 
 > ## `set(self, token: PipelineToken, value: Any, stop=None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required
 > - `value` <Badge text="param" type="warning" vertical="middle"/> -> Any: The data value to be cached on the pipeline Stores of type <Badge text="Pyot Cache" vertical="middle" />. Required
 > - `stop` <Badge text="param" type="warning" vertical="middle"/> -> PyotStoreObject: The instance of the store that it should stop (hence not sink further).
->
->::: warning DEPRECATED
-> This method has been renamed from the original `put` since v1.1.0, it is a reserved method for pyot's future undisclosable implementation.
->:::
 
 > ## `post(self, token: PipelineToken, body: Any, sid: str = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > - `token` <Badge text="param" type="warning" vertical="middle"/> -> PipelineToken: The token to use for identifying the data, created using `create_token()` on Pyot Core objects. Required

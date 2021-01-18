@@ -32,6 +32,8 @@ Model: League of Legends
 >
 >`profile_icon_id: int`
 >
+>`revision_date_millis: int`
+>
 >`revision_date: datetime`
 
 >`champion_masteries -> "ChampionMasteries"` <Badge text="bridge" type="error" vertical="middle"/>

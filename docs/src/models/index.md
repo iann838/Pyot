@@ -33,9 +33,15 @@ Some models don't need a pipeline on startup, but need a pipeline at runtime. Fo
 
 -<Badge text="endpoint" type="error" vertical="middle"/>: The endpoint that the Pyot Core object will use to make external request to gather the data. Typically a legend for manipulating the default expiration maps of Stores of type Cache.
 
+-<Badge text="lazy" type="error" vertical="middle"/>: An attribute/property that is lazy loaded, `dict()` can return these properties even if they are not loaded by passing `lazy_props=True`.
+
+-<Badge text="property" type="error" vertical="middle"/>: An exclusive utility property that won't be returned by `dict()`.
+
 -<Badge text="bridge" type="error" vertical="middle"/>: A "bridge" that returns a instance of another Pyot Core object (e.g. when a `rune_id` is available in the object, there is a high chance that a `rune` bridge is available to return a `Rune` object).
 
 -<Badge text="method" type="error" vertical="middle"/>: This is a member method of the documented object.
+
+-<Badge text="extension" type="error" vertical="middle"/>: Same as <Badge text="method" type="error" vertical="middle"/> but it will extend functionality of what the object is expected to provide, it might modify the object.
 
 -<Badge text="Iterable" type="warning" vertical="middle"/>: Flags the Pyot Object that it is iterable, meaning it can be indexed or iterated in a loop statement (e.g. `for mastery in champion_masteries: ...` or `champion_masteries[0]` where `champion_masteries` is an instance of `ChampionMasteries`).
 

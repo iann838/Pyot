@@ -37,6 +37,8 @@ Model: Legends of Runeterra
 >
 > `type: str` (Legal values: Ranked, Normal, AI, Tutorial, VanillaTrial, Singleton, StandardGauntlet)
 >
+> `start_strftime: str`
+>
 > `creation: datetime`
 >
 > `version: str`
@@ -44,6 +46,7 @@ Model: Legends of Runeterra
 > `players: List[MatchPlayerData]`
 >
 > `total_turn_count: int`
+
 
 ## `MatchMetaData` <Badge text="Pyot Static" vertical="middle"/>
 >`data_version: str`

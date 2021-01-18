@@ -17,14 +17,6 @@ Until now, champion abilities in particular were unavailable because ddragon's (
 > #### `log_level: int = 10`
 > Set the log level for the store. Defaults to 10 (DEBUG level).
 
-
-## Initialization
-
-> ### initialize() <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
->::: danger DEPRECATED
->Removed since v1.1.0, due to adding unnecessary delays on imports.
->:::
-
 ## Endpoints
 
 > ### `LOL` <Badge text="Model" type="warning" vertical="middle" />

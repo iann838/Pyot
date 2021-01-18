@@ -63,6 +63,8 @@ class MatchPlayerStatData(PyotStatic):
 
 class MatchPlayerData(PyotStatic):
     puuid: str
+    game_name: str
+    tag_line: str
     team_id: str
     party_id: str
     character_id: str

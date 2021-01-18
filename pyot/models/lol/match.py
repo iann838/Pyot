@@ -14,7 +14,7 @@ except (ImportError, ValueError):
 
 try:
     import roleidentification
-    champion_roles = AutoData(defaultdict(lambda: {}, roleidentification.pull_data()))
+    champion_roles = AutoData(lambda: defaultdict(lambda: {}, roleidentification.pull_data()))
 except ImportError:
     pass
 
@@ -235,7 +235,13 @@ class MatchParticipantTimelineData(PyotStatic):
             "xp_diff_per_min_deltas", "damage_taken_per_min_deltas", "damage_taken_diff_per_min_deltas"]
 
 
-class MatchParticipantIdentityPlayerData(PyotStatic):
+class MatchParticipantData(PyotStatic):
+    id: int
+    team_id: int
+    champion_id: int
+    spell_ids: List[int]
+    stats: MatchParticipantStatData
+    timeline: MatchParticipantTimelineData
     profile_icon_id: int
     account_id: str
     match_history_uri: str
@@ -246,7 +252,23 @@ class MatchParticipantIdentityPlayerData(PyotStatic):
     platform: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
+        renamed = {"participant_id": "id", "profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
+        raws = ["spell_ids"]
+
+    @property
+    def champion(self) -> "Champion":
+        from .champion import Champion
+        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+
+    @property
+    def meraki_champion(self) -> "MerakiChampion":
+        from .merakichampion import MerakiChampion
+        return MerakiChampion(id=self.champion_id)
+
+    @property
+    def spells(self) -> List["Spell"]:
+        from .spell import Spell
+        return [Spell(id=i, locale=self.to_locale(self.platform)) for i in self.spell_ids]
 
     @property
     def account(self) -> "Summoner":
@@ -267,39 +289,6 @@ class MatchParticipantIdentityPlayerData(PyotStatic):
     def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
         return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.current_platform))
-
-
-class MatchParticipantIdentityData(PyotStatic):
-    participant_id: int
-    player: MatchParticipantIdentityPlayerData
-
-
-class MatchParticipantData(MatchParticipantIdentityPlayerData, PyotStatic):
-    id: int
-    team_id: int
-    champion_id: int
-    spell_ids: List[int]
-    stats: MatchParticipantStatData
-    timeline: MatchParticipantTimelineData
-
-    class Meta(PyotStatic.Meta):
-        renamed = {"participant_id": "id", "profile_icon": "profile_icon_id", "platform_id": "platform", "current_platform_id": "current_platform"}
-        raws = ["spell_ids"]
-
-    @property
-    def champion(self) -> "Champion":
-        from .champion import Champion
-        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
-
-    @property
-    def meraki_champion(self) -> "MerakiChampion":
-        from .merakichampion import MerakiChampion
-        return MerakiChampion(id=self.champion_id)
-
-    @property
-    def spells(self) -> List["Spell"]:
-        from .spell import Spell
-        return [Spell(id=i, locale=self.to_locale(self.platform)) for i in self.spell_ids]
 
 
 class MatchTeamData(PyotStatic):
@@ -501,7 +490,10 @@ class Match(PyotCore):
 
     @handle_import_error("roleml")
     def roleml(self):
-        roles = roleml.predict(self._meta.raw_data, self._meta.raw_timeline)
+        try:
+            roles = roleml.predict(self._meta.raw_data, self._meta.raw_timeline)
+        except AttributeError as e:
+            raise TypeError("This method requires timeline data to execute") from e
         for team in self.teams:
             for participant in team.participants:
                 participant.timeline.position = roles[participant.id]
@@ -544,6 +536,13 @@ class Match(PyotCore):
     @property
     def red_team(self) -> MatchTeamData:
         return next(team for team in self.teams if team.id == 200)
+
+    @property
+    def participants(self) -> List[MatchParticipantData]:
+        participants = []
+        for team in self.teams:
+            participants += team.participants
+        return participants
 
 
 class Timeline(PyotCore):

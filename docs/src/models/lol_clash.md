@@ -87,6 +87,10 @@ Model: League of Legends
 ## `ClashTournamentPhaseData` <Badge text="Pyot Static" vertical="middle"/>
 >`id: int`
 >
+>`registration_timestamp: int`
+>
+>`start_timestamp: int`
+>
 >`registration_time: datetime`
 >
 >`start_time: datetime`

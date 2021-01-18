@@ -1,7 +1,7 @@
-from .__core__ import PyotCore, PyotStatic
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Iterator
 from dateutil.parser import parse
+from .__core__ import PyotCore, PyotStatic
 
 ## PYOT STATIC OBJECTS
 
@@ -47,7 +47,7 @@ class MatchInfoData(PyotStatic):
     mode: str # (Legal values: Constructed, Expeditions, Tutorial)
     type: str # (Legal values: Ranked, Normal, AI, Tutorial, VanillaTrial, Singleton, StandardGauntlet)
     start_strftime: str
-    # creation: datetime
+    creation: datetime
     version: str
     players: List[MatchPlayerData]
     total_turn_count: int

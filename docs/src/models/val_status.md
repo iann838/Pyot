@@ -1,6 +1,6 @@
 # Status
-Model: Valorant
 
+Model: VALORANT
 
 ## `Status` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
@@ -31,6 +31,12 @@ Model: Valorant
 >
 > `updates: List[StatusUpdateData]`
 >
+> `created_at_strftime: str`
+>
+> `archive_at_strftime: str`
+>
+> `updated_at_strftime: str`
+>
 > `created_at: datetime`
 >
 > `archive_at: datetime`
@@ -52,10 +58,13 @@ Model: Valorant
 >
 > `translations: List[StatusContentData]`
 >
+> `created_at_strftime: str`
+>
+> `updated_at_strftime: str`
+>
 > `created_at: datetime`
 >
 > `updated_at: datetime`
-
 
 ## `StatusContentData` <Badge text="Pyot Static" vertical="middle"/>
 

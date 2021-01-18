@@ -1,5 +1,5 @@
 # Content
-Model: Valorant
+Model: VALORANT
 
 ## `Content` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -46,6 +46,8 @@ Model: Valorant
 >`localized_names: ContentLocalizedNamesData`
 >
 >`is_active: bool`
+
+>`leaderboard -> "Leaderboard"` <Badge text="bridge" type="error" vertical="middle"/>
 
 ## `ContentItemData` <Badge text="Pyot Static" vertical="middle"/>
 >`name: str`

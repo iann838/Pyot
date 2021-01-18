@@ -2,7 +2,7 @@ from .tournament import Tournament, TournamentProvider, TournamentCodes, Tournam
 from .championmastery import ChampionMasteries, ChampionMastery
 from .league import League, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeague, DivisionLeague
 from .clash import ClashPlayers, ClashTeam, ClashTournaments, ClashTournament
-from .match import Match, Timeline, MatchHistory
+from .match import Match, Timeline, MatchHistory, Matches
 from .profileicon import ProfileIcon, ProfileIcons
 from .spectator import FeaturedGames, CurrentGame
 from .championrotation import ChampionRotation

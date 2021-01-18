@@ -84,6 +84,7 @@ class ExpirationManager:
             "match_v1_matchlist": 0,
             "match_v1_recent": 0,
             "content_v1_contents": 0,
+            "ranked_v1_leaderboards": 0,
             "status_v1_platform_data": 0,
         }
     }
@@ -109,7 +110,7 @@ class ExpirationManager:
                 except Exception:
                     raise AttributeError(f"Expiration value not allowed, {type(expirations_[key])} was given")
         return expirations_
-        
+
     def get_timeout(self, key):
         try:
             return self.expirations[key]

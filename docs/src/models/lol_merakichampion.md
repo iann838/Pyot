@@ -256,13 +256,23 @@ Model: League of Legends
 >
 > `splash_path: str`
 >
+> `splash_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 > `uncentered_splash_path: str`
+>
+> `uncentered_splash_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 > `tile_path: str`
 >
+> `tile_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 > `load_screen_path: str`
 >
+> `load_screen_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 > `load_screen_vintage_path: str`
+>
+> `load_screen_vintage_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 > `new_effects: bool`
 >
@@ -284,6 +294,8 @@ Model: League of Legends
 > `name: str`
 >
 > `chroma_path: str`
+>
+> `chroma_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 > `colors: List[str]`
 >

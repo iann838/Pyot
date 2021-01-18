@@ -26,11 +26,15 @@ Model: League of Legends
 >
 >`square_path: str`
 >
+>`square_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 >`roles: List[str]`
 >
 >`skins: List[ChampionSkinData]`
 >
 >`abilities: ChampionAbilityData `
+>
+>`recommended_item_defaults: List[str]`
 
 > `meraki_champion -> "MerakiChampion"` <Badge text="bridge" type="error" vertical="middle"/>
 
@@ -52,6 +56,8 @@ Model: League of Legends
 >
 >`icon_path: str`
 >
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 >`cost: List[int]`
 >
 >`cooldown: List[int]`
@@ -62,12 +68,28 @@ Model: League of Legends
 >
 >`long_description: str`
 >
->`cleaned_description: str`
+>`cleaned_description: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
+>`ability_video_path: str`
+>
+>`ability_video_image_path: str`
+>
+>`max_level: int`
+>
+>`formulas: Dict`
+>
+>`coefficients: Dict[str, int]`
+>
+>`effect_amounts: Dict[str, List[int]]`
+>
+>`ammo: Dict[str, List[int]]`
 
 ## `ChampionPassiveData` <Badge text="Pyot Static" vertical="middle"/>
 >`name: str`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`description: str`
 
@@ -80,11 +102,19 @@ Model: League of Legends
 >
 >`splash_path: str`
 >
+>`splash_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 >`uncentered_splash_path: str`
+>
+>`uncentered_splash_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`tile_path: str`
 >
+>`tile_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 >`load_screen_path: str`
+>
+>`load_screen_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`skin_type: str`
 >
@@ -93,6 +123,8 @@ Model: League of Legends
 >`is_legacy: bool`
 >
 >`chroma_path: str`
+>
+>`chroma_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 >`chromas: List[ChampionSkinChromaData]`
 >
@@ -106,6 +138,8 @@ Model: League of Legends
 > `name: str`
 >
 > `chroma_path: str`
+>
+> `chroma_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
 >
 > `colors: List[str]`
 >

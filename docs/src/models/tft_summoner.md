@@ -32,6 +32,8 @@ Model: Teamfight Tactics
 >
 >`profile_icon_id: int`
 >
+>`revision_date_millis: int`
+>
 >`revision_date: datetime`
 
 >`league_entries -> "SummonerLeague"` <Badge text="bridge" type="error" vertical="middle"/>

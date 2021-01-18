@@ -145,5 +145,4 @@ class ClashTournament(ClashTournamentData, PyotCore):
     @property
     def team(self) -> "ClashTeam":
         return ClashTeam(id=self.team_id, platform=self.platform)
-
     

@@ -28,10 +28,17 @@ class Status(SyotBase, val.Status):
     def get(self, **kwargs):
         return asyncio.run(super().get(**kwargs))
 
+# from .ranked import Leaderboard
+
+class Leaderboard(SyotBase, val.Leaderboard):
+    def get(self, **kwargs):
+        return asyncio.run(super().get(**kwargs))
+
 SyotBase._bridges = {
     "Match": Match,
     "MatchHistory": MatchHistory,
     "Content": Content,
+    "Leaderboard": Leaderboard,
     "Status": Status,
 }
 

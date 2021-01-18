@@ -18,3 +18,5 @@ Model: Teamfight Tactics
 >`id: int`
 >
 >`icon_path: str`
+>
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>

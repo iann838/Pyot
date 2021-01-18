@@ -31,6 +31,8 @@ Model: Teamfight Tactics
 >
 >`icon_path: str`
 >
+>`icon_abspath: str` <Badge text="lazy" type="error" vertical="middle"/>
+>
 >`description: str`
 >
 >`cleaned_description: str`

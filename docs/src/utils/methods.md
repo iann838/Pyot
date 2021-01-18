@@ -8,6 +8,12 @@
 > ## `thread_run(func)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>
 > Run a blocking function in a thread.
 
+> ## `case_combinations(string: str) -> Set[str]` <Badge text="function" type="error" vertical="middle"/>
+> Return all posible case combinations of a string in set.
+
+> ## `case_insensitive_dict(dic: Dict) -> Dict:` <Badge text="function" type="error" vertical="middle"/>
+> Return a dict with all possible case combinations for each key.
+
 > ## `snakecase(camel_str: str) -> str` <Badge text="function" type="error" vertical="middle"/>
 > Convert string to python snakecase.
 
@@ -31,6 +37,8 @@
 > - `param` <Badge text="param" type="warning" vertical="middle"/>: param to shuffle based on, either the an attribute or key.
 > - `size` <Badge text="param" type="warning" vertical="middle"/>: size of the returned chunks, e.g. `size=10` will return a new list with items of the same `param` every 10 items. Typically used for mixing pyot objects regions and platforms to better regulate rate limits.
 
+> ## `dict_key_value_swap(dic: Dict) -> Dict` <Badge text="function" type="error" vertical="middle"/>
+> Swap key and value of a dictionary, this will not work for duplicated values.
 
 ### Submodule: `cdragon`
 

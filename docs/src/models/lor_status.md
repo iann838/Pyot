@@ -31,6 +31,12 @@ Model: Legends of Runeterra
 >
 > `updates: List[StatusUpdateData]`
 >
+> `created_at_strftime: str`
+>
+> `archive_at_strftime: str`
+>
+> `updated_at_strftime: str`
+>
 > `created_at: datetime`
 >
 > `archive_at: datetime`
@@ -51,6 +57,10 @@ Model: Legends of Runeterra
 > `publish_locations: List[str]`
 >
 > `translations: List[StatusContentData]`
+>
+> `created_at_strftime: str`
+>
+> `updated_at_strftime: str`
 >
 > `created_at: datetime`
 >

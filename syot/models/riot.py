@@ -15,7 +15,7 @@ class ActiveShard(SyotBase, riot.ActiveShard):
     def get(self, **kwargs):
         return asyncio.run(super().get(**kwargs))
 
-SyotBase._bridges = {
+SyotBase._bridges, SyotBaseObject._bridges = {
     "Account": Account,
     "ActiveShard": ActiveShard,
 }

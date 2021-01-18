@@ -73,7 +73,10 @@ class PyotMetaClass(type):
         deep_bases = set()
         for base in bases:
             deep_bases |= set(inspect.getmro(base))
-        return next(base for base in deep_bases if base.__name__ == 'PyotStatic' or base.__name__ == 'PyotCore')
+        try:
+            return next(base for base in deep_bases if base.__name__ == 'PyotCore')
+        except StopIteration:
+            return next(base for base in deep_bases if base.__name__ == 'PyotStatic')
 
     @staticmethod
     def get_types(clas):

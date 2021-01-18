@@ -69,7 +69,7 @@ class RiotAPI(StoreObject):
                 try:
                     try:
                         if not decode_failed:
-                            return await asyncio.wait_for(response.json(encoding="utf-8"), timeout=5)
+                            return await asyncio.wait_for(response.json(encoding="utf-8", content_type=None), timeout=5)
                         else:
                             return await thread_run(response.json, encoding="utf-8")
                     except JSONDecodeError:
@@ -92,8 +92,10 @@ class RiotAPI(StoreObject):
     async def _check_backoff(self, response: Any, server: str, regmethod: str, code: int, origin: str):
         if code == 429 and hasattr(response, "headers") and "X-Rate-Limit-Type" in response.headers and response.headers["X-Rate-Limit-Type"] != "service":
             seconds = response.headers["Retry-After"] if "Retry-After" in response.headers else 5
-            LOGGER.warning(f"[Trace: {self._game_upper} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupts your task if this persists. "
-                           f"Origin: {origin}, Backing off for {seconds} seconds and retrying.")
+            LOGGER.warning(
+                f"[Trace: {self._game_upper} > RiotAPI] WARNING: The server responded with non service 429 Rate Limited, interrupt your task if this persists. "
+                f"Origin: {origin}, Backing off for {seconds} seconds and retrying."
+            )
             type_ = response.headers["X-Rate-Limit-Type"]
             await self._rate_limiter.inmediate_backoff(int(seconds), type_, server, regmethod)
 
@@ -179,6 +181,7 @@ class RiotAPIEndpoint:
             "match_v1_matchlist": "/val/match/v1/matchlists/by-puuid/{puuid}",
             "match_v1_recent": "/val/match/v1/recent-matches/by-queue/{queue}",
             "content_v1_contents": "/val/content/v1/contents",
+            "ranked_v1_leaderboards": "/val/ranked/v1/leaderboards/by-act/{act_id}",
             "status_v1_platform_data": "/val/status/v1/platform-data",
         }
     }

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from pyot.utils.champion import champion_id_by_key, champion_id_by_name
 from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
@@ -134,6 +134,10 @@ class ChampionSpellData(PyotStatic):
     ability_video_path: str
     ability_video_image_path: str
     max_level: int
+    formulas: Dict
+    coefficients: Dict[str, int]
+    effect_amounts: Dict[str, List[int]]
+    ammo: Dict[str, List[int]]
 
     class Meta(PyotStatic.Meta):
         raws = {"cost", "cooldown", "range", "formulas", "coefficients", "effect_amounts", "ammo"}

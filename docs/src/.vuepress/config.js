@@ -74,10 +74,6 @@ module.exports = {
         text: 'Github',
         link: 'https://github.com/paaksing/pyot'
       },
-      {
-        text: 'VuePress',
-        link: 'https://v1.vuepress.vuejs.org'
-      }
     ],
     sidebar: {
       '/core/': [
@@ -109,6 +105,14 @@ module.exports = {
             'gatherer',
             'queue',
             'exceptions',
+          ]
+        },
+        {
+          title: 'Migrations',
+          collapsable: false,
+          sidebarDepth: 2,
+          children: [
+            'v2tov3'
           ]
         },
       ],

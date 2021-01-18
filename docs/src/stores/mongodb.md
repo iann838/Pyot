@@ -4,7 +4,7 @@
 - Description: Store that uses Mongo NoSQL DBs as Caches. This cache provides high speed read/write in disk persistent storage, objects expirations are handled by Mongo's TTL indexes.
 
 :::tip INFO ABOUT THIS STORE
-This store is best for production environment due to its high speed, TTL indexes and mainly disk based storage. Built on top of Python Async Driver of MongoDB called [Motor](https://motor.readthedocs.io/en/stable/).
+This store is best for production environment due to its high speed, TTL indexes and mainly disk based storage. Built on top of Python Async Driver of MongoDB [Motor](https://motor.readthedocs.io/en/stable/).
 
 Multiple instances of MongoDB is allowed, DB level sharding is also possible by following the Mongo's docs for sharding and pass the necessary kwargs to the settings.
 

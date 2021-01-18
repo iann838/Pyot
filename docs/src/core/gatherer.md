@@ -7,22 +7,12 @@ This manager is only recommended for working with a small amount of Pyot Core Ob
 :::
 
 :::warning INFO
-All of the `statements` provided needs to be an instance of the Pyot Core object and **_`get()` must NOT be appended to the instance, as `get()` is "unchainable" so Pyot Gatherer has no way of calling `get(sid=...)` again_**. It will raise a `RuntimeError` if this happens.
+All of the `statements` provided needs to be an instance of the Pyot Core object and **`get()` must NOT be appended to the instance, as `get()` is "unchainable" so Pyot Gatherer has no way of calling `get(sid=...)` again**. It will raise a `RuntimeError` if this happens.
 
-`query()` and other methods (that are not coroutines) that returns `self` **_are safe and can be appended to the `statement`_**.
+`query()` and other methods (that are not coroutines) that returns `self` **can be appended to the `statement`**.
 Pyot Gatherer will automatically append `get()` to the instance after setting the session id.
 
 Gatherer workers are NOT real workers, that is the size of the chunk to gather.
-:::
-:::danger MEMORY AWARENESS
-Misusing the Gatherer might end up causing memory leaks, consider the following example:
-```python{4}
-matches = list_with_30k_match_timelines # <-- Suppose
-async with Gatherer() as gatherer:
-    gatherer.statements = matches
-    await gatherer.gather() # <-- This will load aprox. 10 GB to memory
-```
-This is because `matches` is a mutable object, so it will be passed to the gatherer by reference. It will end up filling the 30k matches on that list. A workaround to this would be to load your matches in a loop scope so that Python can garbage collect it, or even better you can use the utils `FrozenGenerator` along with the other gathering tool `Queue`.
 :::
 
 ::: warning RELEVANT TOPIC
@@ -81,6 +71,18 @@ async def pull_leagues():
 
 loop_run(pull_leagues())
 ```
+
+:::danger MEMORY AWARENESS
+Misusing the Gatherer might end up causing memory leaks, consider the following example:
+```python{4}
+matches = list_with_30k_match_timelines # <-- Suppose
+async with Gatherer() as gatherer:
+    gatherer.statements = matches
+    await gatherer.gather() # <-- This will load aprox. 10 GB to memory
+```
+This is because `matches` is a mutable object, so it will be passed to the gatherer by reference. It will end up filling the 30k matches on that list. A workaround to this would be to load your matches in a loop scope so that Python can garbage collect it, or even better you can use the utils `FrozenGenerator` along with the other gathering tool `Queue`.
+:::
+
 :::tip
 A good use of inline type hinting can help you with IDE autocompletion. For example, in line 9 I added the type hint of the expected response objects class via comments, then on the next `for` loop you don't lose IDE autocompletion. Note: You might not be able to use this if responses contain more than 1 Pyot Core object type.
 :::

@@ -22,8 +22,8 @@ class PtrCache:
         '''
         Get an object from the cache.
 
-        `func` will be called when provided and if object doesn't exist,
-        put the returned value to the cache and return it.
+        `func` will be called when provided and if object doesn't exist, set the returned value before returning.\n
+        `lazy` flag if `func` needs to be called before running it, therefore achieve lazy eval during runtime.  
         '''
         try:
             data = self.objects[name]
@@ -42,8 +42,9 @@ class PtrCache:
         '''
         Async get an object from the cache.
 
-        `coro` will be awaited when provided and if object doesn't exist,
-        put the returned value to the cache and return it.
+        `coro` will be awaited when provided and if object doesn't exist, set the returned value before returning.\n
+        `lazy` flag if `coro` needs to be called before running it, therefore achieve lazy eval during runtime.\n
+
         If the `coro` doesn't need to be awaited it will be closed and not raise warnings.
         '''
         try:

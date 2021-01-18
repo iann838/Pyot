@@ -15,9 +15,11 @@ Model: League of Legends
 >
 >`mode: str`
 >
->`creation: datetime`
+>`start_millis: int`
 >
->`duration: timedelta #not milliseconds`
+>`length_secs: int`
+>
+>`duration: timedelta`
 >
 >`map_id: int`
 >
@@ -44,6 +46,8 @@ Model: League of Legends
 
 >`games: List[FeaturedGameData]` <Badge text="Iterator" type="warning" vertical="middle"/>
 >
+>`refresh_interval_secs: int`
+>
 >`refresh_interval: timedelta`
 
 ## `FeaturedGameData` <Badge text="Pyot Static" vertical="middle"/>
@@ -52,6 +56,10 @@ Model: League of Legends
 >`type: str`
 >
 >`mode: str`
+>
+>`start_millis: int`
+>
+>`length_secs: int`
 >
 >`creation: datetime`
 >

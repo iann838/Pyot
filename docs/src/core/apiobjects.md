@@ -47,13 +47,13 @@ This is main type of objects that developers works with. Below is a list of gene
 > - ~~`remove_server`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
 > - ~~`pyotify`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Renamed 3.0.0" type="error" vertical="middle"/>
 
-> ### `json(pyotify=False, remove_server=True)` <Badge text="function" type="error" vertical="middle"/>
+> ### ~~`json(pyotify=False, remove_server=True)`~~ <Badge text="function" type="error" vertical="middle"/>
 > ::: danger DEPRECATED
 > This method has been removed since v3.0.0.
 > :::
 
 > ### `raw()` <Badge text="function" type="error" vertical="middle"/>
-> This method returns the dictionary containing the raw data, the difference from `dict()` is that this dictionary will contain the original data returned by the store without any type of serialization nor transformation.
+> Returns the raw response saved on the requesting methods (get, put, post), by default the raw response is saved using smart copying which is non-destructive but can have changes on it, to get the exact raw response, pass `deepcopy=True` to the requesting methods.
 
 
 ## Pyot Static
@@ -63,9 +63,9 @@ This is main type of objects that developers works with. Below is a list of gene
 These are objects that are nested into the Pyot Core Objects, inheriting some partial functions of the Pyot Core. Below is a list of general member methods:
 
 > ### `dict(deepcopy=False, lazy_props=False, recursive=True)` <Badge text="function" type="error" vertical="middle"/>
-> This method returns the python dictionary representation of the object. Description placeholder
-> - `deepcopy` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
-> - `lazy_props` <Badge text="param" type="warning" vertical="middle"/>: Description placeholder.
+> This method returns the python dictionary representation of the object.
+> - `deepcopy` <Badge text="param" type="warning" vertical="middle"/>: The dictionary returned will be a copy of itself, thus mutation will not affect object indirectly.
+> - `lazy_props` <Badge text="param" type="warning" vertical="middle"/>: Execute all `lazy_property`'s of the object (recursively) before returning the dictionary.
 > - `recursive` <Badge text="param" type="warning" vertical="middle"/>: Define if dictionary returned should be the Meta cached data or an exact same copy of the Pyot object by going recursive all the way down to the bottom of the object structure. Getting from the Meta cached data has a complexity of O(1), it has the same structure as the object with some exceptions: 1. Most keys are camelCased, 2. Some renamed keys are not reflected, 3. Some values that returns python builtin objects might return raw params (e.g. `creation: datetime` is returned as `gameStartTime: unix millis`), meanwhile setting this param to `True` will get the exact copy but as a dict with the cost of more time and memory complexity. Defaults to `False`.
 > - ~~`remove_server`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Removed 3.0.0" type="error" vertical="middle"/>
 > - ~~`pyotify`~~ <Badge text="param" type="warning" vertical="middle"/> <Badge text="Renamed 3.0.0" type="error" vertical="middle"/>
@@ -82,11 +82,3 @@ These are objects that are nested into the Pyot Core Objects, inheriting some pa
 These objects are made for managing groups of objects to ease development. For example, if you need a better way to manage a deck returned by `lor.Match`, it will return a `lor.Deck` container with its own unique methods to manipulate the deck.
 
 > Methods are different on each container class. Check each of the models' documentation.
-
-## Pyot Lazy
-
-* This object is identified using the badge <Badge text="Pyot Lazy" vertical="middle"/>
-
-These objects are made to prevent overhead on the both Pyot Core and Pyot Static objects. It prevents loading unnecessary objects, more specifically when the Core object gets data back to fill or when a Static object is called to fill. Nested objects are not filled directly, but instead create an instance of `PyotLazyObject` that contains the nested data. When the nested data is called or touched, `PyotLazyObject` proceeds to fill the next level and returns the nested object.
-
-> No methods are intended for direct usage, if you want to override a method, check source code to do so.
