@@ -119,36 +119,9 @@ class PyotStaticObject(metaclass=PyotMetaClass):
         raws: List[str] = []
         renamed: Dict[str, str] = {}
 
-    region: str
-    platform: str
-    locale: str
-    _region: str = ""
-    _platform: str = ""
-    _locale: str = ""
-
-    @property
-    def region(self) -> str:
-        return self._region
-
-    @region.setter
-    def region(self, val: str):
-        self._region = val.lower()
-
-    @property
-    def platform(self) -> str:
-        return self._platform
-
-    @region.setter
-    def platform(self, val: str):
-        self._platform = val.lower()
-
-    @property
-    def locale(self) -> str:
-        return self._locale
-
-    @region.setter
-    def locale(self, val: str):
-        self._locale = val.lower()
+    region: str = ""
+    platform: str = ""
+    locale: str = ""
 
     def __init__(self, data):
         # Instantiate Meta class, isolating data dict

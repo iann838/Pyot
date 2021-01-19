@@ -41,10 +41,10 @@ class Settings:
         if self.PIPELINE is None:
             return
         # MAKE PIPELINE AND APPEND IT
-        self.pipeline = Pipeline(self.MODEL.lower(), self._make_pipeline(self.PIPELINE))
-        module.ModelMixin.bind_pipeline(self.pipeline)
+        pipeline = Pipeline(self.MODEL.lower(), self._make_pipeline(self.PIPELINE))
+        module.ModelMixin.bind_pipeline(pipeline)
         # REGISTER THE PIPELINE
-        pipelines[self.MODEL.lower()] = self.pipeline
+        pipelines[self.MODEL.lower()] = pipeline
 
     def _make_pipeline(self, pipeline_configs):
         stores = []

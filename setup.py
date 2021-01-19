@@ -29,7 +29,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="3.0.0",
+    version="3.0.1",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
@@ -52,7 +52,7 @@ setup(
         "Framework :: Django :: 3.0",
     ],
     license="MIT",
-    packages=find_packages(exclude=("test", "test_djot")),
+    packages=find_packages(exclude=("test")),
     zip_safe=True,
     install_requires=install_requires,
     include_package_data=True,

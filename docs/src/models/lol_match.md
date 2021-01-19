@@ -58,6 +58,13 @@ When iterating through mass amount of matches, code and execution time might nee
 > #### `roleidentification()` <Badge text="extension" type="error" vertical="middle"/>
 > Executes `roleidentification.getroles()` using raw match and the returned champion roles from `roleidentification.pull_data()` (This data is rotated every 3 hours if task is long lived, missing keys from data will be handled aswell), injects the returned position to `teams[].participants[].timeline.position` attribute and return the original response in a dict based on team ids. 
 
+> #### `raw_timeline()` <Badge text="method" type="error" vertical="middle"/>
+> Returns the saved raw timeline data, only if `include_timeline` is True and `get()` was called before.
+
+:::tip THIRD PARTY PACKAGES
+For other third party packages (e.g. Solari) that receives raw data returned by the API, methods `.raw()` and `.raw_timeline()` may be used.
+:::
+
 ## `Timeline` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 
 >`id: int = None` <Badge text="param" type="warning" vertical="middle"/>
@@ -74,7 +81,7 @@ When iterating through mass amount of matches, code and execution time might nee
 
 ## ~~`MatchTimeline`~~ <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
 > :::danger DEPRECATED
-> This class has been removed since v3.0.0, `frames` and `events` data from participants timeliens will be injected directly through `lol.Match` by setting `include_timeline=True` in constructor.
+> This class has been removed since v3.0.0, `frames` and `events` data from participants timelines will be injected directly through `lol.Match` by setting `include_timeline=True` in constructor.
 > :::
 
 ## `MatchHistory` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
