@@ -61,3 +61,6 @@ List of minor changes in Pyot 3.
 ### `val.match.MatchPlayerKillData.game_duration` and `val.match.MatchPlayerKillData.round_duration` renamed.
 > A more suited attribute name is `game_time`.
 > A more suited attribute name is `round_time`.
+
+### region, platform, locale will no longer be lowercase forever.
+> For scenario where you need to validate against a database in choices (e.g. Django's ORM `choices` param), just `.lower()` instead.
