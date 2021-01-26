@@ -19,3 +19,4 @@ disable=
     super-init-not-called,
     abstract-method,
     logging-fstring-interpolation,
+    too-many-arguments,

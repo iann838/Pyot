@@ -22,9 +22,13 @@ class StoreObject:
 
     async def expire(self, *args, **kwargs):
         raise NotImplementedError
-    
+
     async def delete(self, token, *args, **kwargs):
         raise NotImplementedError
 
     async def contains(self, token, *args, **kwargs):
         raise NotImplementedError
+
+    @property
+    def classname(self):
+        return self.__class__.__name__

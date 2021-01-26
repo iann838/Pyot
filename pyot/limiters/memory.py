@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
-from pyot.utils import SealLock
-from typing import Any
 from collections import defaultdict
-import pytz
 
+import pytz
+from pyot.utils import MultiDefaultDict, SealLock
 from .core import LimitToken, BaseLimiter
-from pyot.utils import MultiDefaultDict
 
 
 class MemoryLimiter(BaseLimiter):

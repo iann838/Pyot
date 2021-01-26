@@ -1,17 +1,24 @@
-from typing import List, Any
+from typing import List, Any, Iterator
 import aiohttp
 
 from pyot.core.exceptions import NotFound, NotFindable
 from .token import PipelineToken
+from .objects import StoreObject
 
 
 class Pipeline:
     '''Pyot Pipeline object, backbone of the entire framework.'''
 
-    def __init__(self, model: str, stores: List[Any]):
+    def __init__(self, model: str, stores: List[StoreObject]):
         self.model = model
         self.stores = stores
         self.sessions = {}
+
+    def __iter__(self) -> Iterator[StoreObject]:
+        return iter(self.stores)
+
+    def __getitem__(self, item):
+        return self.stores[item]
 
     async def get(self, token: PipelineToken, sid: str = None):
         '''Get an object from the stores.'''

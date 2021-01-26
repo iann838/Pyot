@@ -1,15 +1,11 @@
 from typing import Any, List
 from logging import getLogger
-from functools import partial
 from collections import defaultdict
 from datetime import datetime, timedelta
-from dateutil.parser import parse
-import asyncio
-import pickle
 import pytz
 import redis
 
-from pyot.utils import RedisLock, RedisDefaultDict, SealLock, pytify, bytify, fast_copy
+from pyot.utils import RedisLock, SealLock, pytify, bytify, fast_copy
 from .core import LimitToken, BaseLimiter
 
 LOGGER = getLogger(__name__)
@@ -20,12 +16,12 @@ class RedisLimiter(BaseLimiter):
     Riot Rate Limiter based on Redis, suitable for multiprocessing.
     '''
 
-    def __init__(self, game: str, api_key: str, limiting_share = 1, host='127.0.0.1', port=6379, db=0, *args, **kwargs):
+    def __init__(self, game: str, api_key: str, limiting_share=1, host='127.0.0.1', port=6379, db=0, **kwargs):
         if limiting_share > 1 or limiting_share < 0: raise AttributeError('Limiting share must be a float between 0 and 1')
         yesterday = datetime.now(pytz.utc) - timedelta(days=1)
         self._game = game
         self._api_key = api_key
-        self._pool = redis.ConnectionPool(host=host, port=port, db=db, *args, **kwargs)
+        self._pool = redis.ConnectionPool(host=host, port=port, db=db, **kwargs)
         self._redis = redis.Redis(connection_pool=self._pool)
         self._lock = lambda name: RedisLock(self._redis, name)
         self._seal = SealLock()

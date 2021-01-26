@@ -129,7 +129,7 @@ For other third party packages (e.g. Solari) that receives raw data returned by 
 - `timelines` returns a list of instantiated `Timeline` objects.
 :::
 
-## `Matches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/>
+## `Matches` <Badge text="Pyot Core" vertical="middle"/> <Badge text="GET" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
 
 >`"match_v4_tournament_matches": ["tournament_code"]` <Badge text="endpoint" type="error" vertical="middle"/>
 
@@ -137,7 +137,7 @@ For other third party packages (e.g. Solari) that receives raw data returned by 
 >
 >`platform: str = None` <Badge text="param" type="warning" vertical="middle"/>
 
->`ids: List[str]`
+>`ids: List[str]` <Badge text="Iterator" type="warning" vertical="middle"/>
 >
 >`tournament_code: str`
 
@@ -148,7 +148,7 @@ For other third party packages (e.g. Solari) that receives raw data returned by 
 >`timelines -> List[Match]` <Badge text="bridge" type="error" vertical="middle"/>
 
 
-## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/> <Badge text="Iterable" type="warning" vertical="middle"/>
+## `MatchFrameMinuteData` <Badge text="Pyot Static" vertical="middle"/>
 >`participant_frames: List[MatchFrameData]`
 >
 >`events: List[MatchEventData]`

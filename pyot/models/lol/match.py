@@ -624,7 +624,7 @@ class MatchHistory(PyotCore):
 
 
 class Matches(PyotCore):
-    ids: List[str]
+    ids: List[int]
     tournament_code: str
 
     class Meta(PyotCore.Meta):
@@ -634,7 +634,10 @@ class Matches(PyotCore):
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)
-        return self.matches[item]
+        return self.ids[item]
+
+    def __iter__(self) -> Iterator[int]:
+        return iter(self.ids)
 
     def __len__(self):
         return len(self.ids)
