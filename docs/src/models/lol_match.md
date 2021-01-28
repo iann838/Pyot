@@ -280,7 +280,7 @@ For other third party packages (e.g. Solari) that receives raw data returned by 
 >
 >`rune_vars: List[List[int]]`
 >
->`rune_style: int`
+>`rune_main_style: int`
 >
 >`rune_sub_style: int`
 >
