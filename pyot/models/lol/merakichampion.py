@@ -1,6 +1,7 @@
-from .__core__ import PyotStatic, PyotCore
-from pyot.utils import champion_key_by_id, champion_key_by_name
 from typing import List
+
+from pyot.utils import champion_key_by_id, champion_key_by_name
+from .__core__ import PyotStatic, PyotCore
 
 
 # PYOT STATIC OBJECTS
@@ -117,6 +118,7 @@ class MerakiChampionStatData(PyotStatic):
 class MerakiChampionPriceData(PyotStatic):
     blue_essence: int
     rp: int
+    sale_rp: int
 
 
 class MerakiChampionChromaDescriptionsData(PyotStatic):
@@ -149,6 +151,7 @@ class MerakiChampionSkinData(PyotStatic):
     format_name: str
     loot_eligible: bool
     cost: int
+    sale: int
     distribution: str
     rarity: str
     chromas: List[MerakiChampionSkinChromaData]

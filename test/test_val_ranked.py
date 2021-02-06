@@ -1,13 +1,19 @@
 from pyot.utils import loop_run
+from pyot.core.exceptions import NotFound
 from pyot.models import val, riot
 
 
 async def async_leaderboard():
+    successed = 0
     content = await val.Content(platform="NA").get()
     for act in content.acts:
         if not act.is_active:
             continue
-        leaderboard = await act.leaderboard.get()
+        try:
+            leaderboard = await act.leaderboard.get()
+            successed += 1
+        except NotFound as e:
+            pass
         assert isinstance(leaderboard.act_id, str)
         assert isinstance(leaderboard.total_players, int)
         assert isinstance(leaderboard.shard, str)
@@ -19,14 +25,20 @@ async def async_leaderboard():
             assert isinstance(player.ranked_rating, int)
             assert isinstance(player.number_of_wins, int)
             assert isinstance(player.account, riot.Account)
+    assert successed > 0
 
 
 async def async_leaderboard_query():
+    successed = 0
     content = await val.Content(platform="NA").get()
     for act in content.acts:
         if not act.is_active:
             continue
-        leaderboard = await act.leaderboard.query(size=20, start_index=10).get()
+        try:
+            leaderboard = await act.leaderboard.query(size=20, start_index=10).get()
+            successed += 1
+        except NotFound as e:
+            pass
         assert isinstance(leaderboard.act_id, str)
         assert isinstance(leaderboard.total_players, int)
         assert isinstance(leaderboard.shard, str)
@@ -38,6 +50,7 @@ async def async_leaderboard_query():
             assert isinstance(player.ranked_rating, int)
             assert isinstance(player.number_of_wins, int)
             assert isinstance(player.account, riot.Account)
+    assert successed > 0
 
 
 def test_leaderboard():

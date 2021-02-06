@@ -64,7 +64,7 @@ class BaseLimiter:
         app_rate2 = r_app_rate[1]
         app_time1 = r_app_time[0]
         app_time2 = r_app_time[1]
-        now = datetime.now(pytz.utc) - timedelta(seconds=0.3)
+        now = datetime.now(pytz.utc) - timedelta(seconds=0.1)
         method_rate1 = r_method_rate[0]
         method_rate2 = r_method_rate[1]
         method_time1 = r_method_time[0]
@@ -191,10 +191,10 @@ class BaseLimiter:
                 r_method_rate[i][0] = method_count[i][0]
         for i in range(2):
             if token.flag_app and r_app_time[i] < now:
-                app_top = date + timedelta(seconds=r_app_rate[i][3] - 0.3)
+                app_top = date + timedelta(seconds=r_app_rate[i][3] - 0.1)
                 r_app_time[i] = app_top
             if token.flag_method and r_method_time[i] < now:
-                method_top = date + timedelta(seconds=r_method_rate[i][3] - 0.3)
+                method_top = date + timedelta(seconds=r_method_rate[i][3] - 0.1)
                 r_method_time[i] = method_top
         await self.set_limits(server, method, [r_app_rate, r_app_time, r_method_rate, r_method_time])
 

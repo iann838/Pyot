@@ -29,13 +29,20 @@ Model: League of Legends
 >
 >`observers_key: str`
 >
->`blue_team: FeaturedGameTeamData`
->
->`red_team: FeaturedGameTeamData`
->
 >`summoner_id: str`
 >
 >`teams: List[CurrentGameTeamData]`
+>
+>`banned_champions: List[CurrentGameBansData]` <Badge text="property" type="error" vertical="middle"/>
+>
+>`participants: List[CurrentGameParticipantData]` <Badge text="property" type="error" vertical="middle"/>
+>
+>`blue_team: CurrentGameTeamData` <Badge text="property" type="error" vertical="middle"/>
+>
+>`red_team: CurrentGameTeamData` <Badge text="property" type="error" vertical="middle"/>
+
+> #### `roleidentification()` <Badge text="extension" type="error" vertical="middle"/>
+> Executes `roleidentification.getroles()` using raw match and the returned champion roles from `roleidentification.pull_data()` (This data is rotated every 3 hours if task is long lived, missing keys from data will be handled aswell), injects the returned position to `teams[].participants[].timeline.position` attribute and return the original response in a dict based on team ids.
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 
@@ -75,9 +82,16 @@ Model: League of Legends
 >
 >`teams: List[FeaturedGameTeamData]`
 >
->`blue_team: FeaturedGameTeamData`
+>`banned_champions: List[CurrentGameBansData]` <Badge text="property" type="error" vertical="middle"/>
 >
->`red_team: FeaturedGameTeamData`
+>`participants: List[FeaturedGameParticipantData]` <Badge text="property" type="error" vertical="middle"/>
+>
+>`blue_team: FeaturedGameTeamData` <Badge text="property" type="error" vertical="middle"/>
+>
+>`red_team: FeaturedGameTeamData` <Badge text="property" type="error" vertical="middle"/>
+
+> #### `roleidentification()` <Badge text="extension" type="error" vertical="middle"/>
+> Executes `roleidentification.getroles()` using raw match and the returned champion roles from `roleidentification.pull_data()` (This data is rotated every 3 hours if task is long lived, missing keys from data will be handled aswell), injects the returned position to `teams[].participants[].timeline.position` attribute and return the original response in a dict based on team ids.
 
 ## `CurrentGameTeamData` <Badge text="Pyot Static" vertical="middle"/>
 >`id: int`
@@ -110,9 +124,11 @@ Model: League of Legends
 >
 >`rune_ids: List[int]`
 >
->`rune_style: int`
+>`rune_main_style: int`
 >
 >`rune_sub_style: int`
+>
+>`game_customization_objects: List[CurrentGameParticipantCustomizationData]`
 
 >`summoner -> "Summoner"` <Badge text="bridge" type="error" vertical="middle"/>
 >
@@ -125,6 +141,11 @@ Model: League of Legends
 >`runes -> List["Rune"]` <Badge text="bridge" type="error" vertical="middle"/>
 >
 >`spells -> List["Spell"]` <Badge text="bridge" type="error" vertical="middle"/>
+
+## `CurrentGameParticipantCustomizationData` <Badge text="Pyot Static" vertical="middle"/>
+>`category: str`
+>
+>`content: str`
 
 ## `FeaturedGameParticipantData` <Badge text="Pyot Static" vertical="middle"/>
 >`team_id: int`
@@ -153,6 +174,8 @@ Model: League of Legends
 >`pick_turn: int`
 >
 >`champion_id: int`
+>
+>`team_id: int`
 
 >`champion -> "Champion"` <Badge text="bridge" type="error" vertical="middle"/>
 >

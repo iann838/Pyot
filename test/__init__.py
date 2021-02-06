@@ -1,7 +1,15 @@
-from pathlib import Path
+import platform
 import os
 
 from pyot.core import Settings
+
+# Fix: Windows `asyncio.run()` will throw `RuntimeError: Event loop is closed`.
+# Refer: https://github.com/aio-libs/aiohttp/issues/4324
+
+if platform.system() == 'Windows':
+    from pyot.utils.internal import silence_proactor_pipe_deallocation
+    silence_proactor_pipe_deallocation()
+
 
 Settings(
     MODEL="LOL",

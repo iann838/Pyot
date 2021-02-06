@@ -16,7 +16,7 @@ async def async_match():
     info = match.info
     assert isinstance(info.creation, datetime)
     assert isinstance(info.duration, timedelta)
-    assert isinstance(info.variation, str)
+    # assert isinstance(info.variation, str)
     assert isinstance(info.version, str)
     assert isinstance(info.queue_id, int)
     assert isinstance(info.tft_set_number, int)

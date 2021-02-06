@@ -1,22 +1,11 @@
 from datetime import datetime, timedelta
-from collections import defaultdict
 from typing import List, Iterator, Dict
 import asyncio
 
-from pyot.utils import AutoData, dict_key_value_swap
+from pyot.utils import dict_key_value_swap
 from pyot.core.functional import turbo_copy, handle_import_error
 from .__core__ import PyotCore, PyotStatic
-
-try:
-    import roleml
-except (ImportError, ValueError):
-    pass
-
-try:
-    import roleidentification
-    champion_roles = AutoData(lambda: defaultdict(lambda: {}, roleidentification.pull_data()))
-except ImportError:
-    pass
+from .__cache__ import roleml, roleidentification, champion_roles
 
 
 # PYOT STATIC OBJECTS
@@ -488,7 +477,7 @@ class Match(PyotCore):
                 if found: break
         return data
 
-    @handle_import_error("roleml")
+    @handle_import_error(roleml)
     def roleml(self):
         try:
             roles = roleml.predict(self._meta.raw_data, self._meta.raw_timeline)
@@ -500,7 +489,7 @@ class Match(PyotCore):
                 participant.timeline._meta.data['position'] = roles[participant.id]
         return roles
 
-    @handle_import_error("roleidentification")
+    @handle_import_error(roleidentification)
     def roleidentification(self):
         resp = {}
         for team in self.teams:

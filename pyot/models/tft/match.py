@@ -42,6 +42,7 @@ class MatchInfoTraitData(PyotStatic):
 class MatchInfoUnitData(PyotStatic):
     item_ids: List[int]
     champion_key: str
+    chosen: str
     name: str
     rarity: int
     tier: int

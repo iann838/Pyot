@@ -127,15 +127,14 @@ def laziable(obj):
     return False
 
 
-def handle_import_error(module: str):
+def handle_import_error(module: ImportError):
+    if isinstance(module, (ImportError, ValueError)):
+        def raise_when_called(func):
+            @wraps(func)
+            def wrapper(self, *args, **kwargs):
+                raise module
+            return wrapper
+        return raise_when_called
     def decorate(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            try:
-                return func(self, *args, **kwargs)
-            except NameError as e:
-                varerr = str(e).split("'")[1]
-                if varerr == module:
-                    raise ImportError(f"Failed to import '{module}'")
-        return wrapper
+        return func
     return decorate

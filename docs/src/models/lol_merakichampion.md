@@ -226,6 +226,8 @@ Model: League of Legends
 >`blue_essence: int`
 >
 >`rp: int`
+>
+>`sale_rp: int`
 
 ## `MerakiChampionSkinData` <Badge text="Pyot Static" vertical="middle"/>
 > `name: str`
@@ -241,6 +243,8 @@ Model: League of Legends
 > `loot_eligible: bool`
 >
 > `cost: int`
+>
+> `sale: int`
 >
 > `distribution: str`
 >

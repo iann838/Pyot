@@ -1,6 +1,10 @@
 from typing import List, Iterator
 from datetime import datetime, timedelta
+
+from pyot.core.functional import handle_import_error
+from pyot.utils.common import dict_key_value_swap
 from .__core__ import PyotCore, PyotStatic
+from .__cache__ import roleidentification, champion_roles
 
 
 # PYOT STATIC OBJECTS
@@ -8,6 +12,7 @@ from .__core__ import PyotCore, PyotStatic
 class CurrentGameBansData(PyotStatic):
     pick_turn: int
     champion_id: int
+    team_id: int
 
     @property
     def champion(self) -> "Champion":
@@ -20,6 +25,11 @@ class CurrentGameBansData(PyotStatic):
         return MerakiChampion(id=self.champion_id)
 
 
+class CurrentGameParticipantCustomizationData(PyotStatic):
+    category: str
+    content: str
+
+
 class CurrentGameParticipantData(PyotStatic):
     team_id: int
     champion_id: int
@@ -29,11 +39,13 @@ class CurrentGameParticipantData(PyotStatic):
     summoner_id: str
     spell_ids: List[int]
     rune_ids: List[int]
-    rune_style: int
+    rune_main_style: int
     rune_sub_style: int
+    game_customization_objects: List[CurrentGameParticipantCustomizationData]
+    position: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"bot": "is_bot", "perk_ids": "rune_ids", "perk_style": "rune_style", "perk_sub_style": "rune_sub_style"}
+        renamed = {"bot": "is_bot", "perk_ids": "rune_ids", "perk_style": "rune_main_style", "perk_sub_style": "rune_sub_style"}
         raws = ["spell_ids", "rune_ids"]
 
     @property
@@ -80,6 +92,7 @@ class FeaturedGameParticipantData(PyotStatic):
     is_bot: bool
     summoner_name: str
     spell_ids: List[int]
+    position: str
 
     class Meta(PyotStatic.Meta):
         renamed = {"bot": "is_bot"}
@@ -139,8 +152,6 @@ class FeaturedGameData(PyotStatic):
     queue_id: int
     observers_key: str
     teams: List[FeaturedGameTeamData]
-    blue_team: FeaturedGameTeamData
-    red_team: FeaturedGameTeamData
 
     class Meta(PyotStatic.Meta):
         renamed = {"game_id": "id", "game_type": "type", "game_start_time": "start_millis", "game_mode": "mode",
@@ -154,6 +165,41 @@ class FeaturedGameData(PyotStatic):
     def duration(self) -> datetime:
         return timedelta(seconds=self.length_secs)
 
+    @handle_import_error(roleidentification)
+    def roleidentification(self):
+        resp = {}
+        for team in self.teams:
+            roles = dict_key_value_swap(roleidentification.get_roles(
+                champion_roles.get(),
+                [participant.champion_id for participant in team.participants]
+            ))
+            resp[team.id] = roles
+            for participant in team.participants:
+                participant.position = roles[participant.champion_id]
+                participant._meta.data['position'] = roles[participant.champion_id]
+        return resp
+
+    @property
+    def banned_champions(self) -> List[CurrentGameBansData]:
+        bans = []
+        for team in self.teams:
+            bans += team.bans
+        return bans
+
+    @property
+    def participants(self) -> List[FeaturedGameParticipantData]:
+        participants = []
+        for team in self.teams:
+            participants += team.participants
+        return participants
+
+    @property
+    def blue_team(self) -> FeaturedGameTeamData:
+        return self.teams[0]
+
+    @property
+    def red_team(self) -> FeaturedGameTeamData:
+        return self.teams[1]
 
 # PYOT CORE OBJECTS
 
@@ -168,42 +214,45 @@ class CurrentGame(FeaturedGameData, PyotCore):
         self._lazy_set(locals())
 
     def _transform(self, data):
+        data = data.copy()
         data["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
-        data["observersKey"] = None
-        for attr, val in data.items():
-            if attr == "bannedChampions":
-                for ban in val:
-                    if ban["teamId"] == 100:
-                        ban.pop("teamId")
-                        data["teams"][0]["bans"].append(ban)
-                    elif ban["teamId"] == 200:
-                        ban.pop("teamId")
-                        data["teams"][1]["bans"].append(ban)
-                    else:
-                        raise RuntimeError
-            elif attr == "participants":
-                for p in val:
-                    p.pop("gameCustomizationObjects")
-                    p["spellIds"] = [p.pop("spell1Id"), p.pop("spell2Id")]
-                    p.update(p.pop("perks"))
-                    if p["teamId"] == 100:
-                        data["teams"][0]["participants"].append(p)
-                    elif p["teamId"] == 200:
-                        data["teams"][1]["participants"].append(p)
-                    else:
-                        raise RuntimeError
-            elif attr == "observers":
-                data["observersKey"] = val["encryptionKey"]
-            elif attr == "teams":
-                pass
+        data["observersKey"] = data.pop("observers", None)["encryptionKey"]
+        for ban in data.pop("bannedChampions", []):
+            if ban["teamId"] == 100:
+                data["teams"][0]["bans"].append(ban)
             else:
-                data[attr] = val
-        data.pop("bannedChampions", None)
-        data.pop("participants", None)
-        data.pop("observers", None)
-        data["blueTeam"] = data["teams"][0]
-        data["redTeam"] = data["teams"][1]
+                data["teams"][1]["bans"].append(ban)
+        for p in data.pop("participants", []).copy():
+            p = p.copy()
+            p["spellIds"] = [p.pop("spell1Id", None), p.pop("spell2Id", None)]
+            p.update(p.pop("perks", {}))
+            if p["teamId"] == 100:
+                data["teams"][0]["participants"].append(p)
+            else:
+                data["teams"][1]["participants"].append(p)
         return data
+
+    @property
+    def banned_champions(self) -> List[CurrentGameBansData]:
+        bans = []
+        for team in self.teams:
+            bans += team.bans
+        return bans
+
+    @property
+    def participants(self) -> List[CurrentGameParticipantData]:
+        participants = []
+        for team in self.teams:
+            participants += team.participants
+        return participants
+
+    @property
+    def blue_team(self) -> CurrentGameTeamData:
+        return self.teams[0]
+
+    @property
+    def red_team(self) -> CurrentGameTeamData:
+        return self.teams[1]
 
     @property
     def summoner(self) -> "Summoner":
@@ -235,40 +284,10 @@ class FeaturedGames(PyotCore):
         self._lazy_set(locals())
 
     def _transform(self, data):
-        for i in range(len(data["gameList"])):
-            data["gameList"][i]["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
-            data["gameList"][i]["observersKey"] = None
-            for attr, val in data["gameList"][i].items():
-                if attr == "bannedChampions":
-                    for ban in val:
-                        if ban["teamId"] == 100:
-                            ban.pop("teamId")
-                            data["gameList"][i]["teams"][0]["bans"].append(ban)
-                        elif ban["teamId"] == 200:
-                            ban.pop("teamId")
-                            data["gameList"][i]["teams"][1]["bans"].append(ban)
-                        else:
-                            raise RuntimeError
-                elif attr == "participants":
-                    for p in val:
-                        p["spellIds"] = [p.pop("spell1Id"), p.pop("spell2Id")]
-                        if p["teamId"] == 100:
-                            data["gameList"][i]["teams"][0]["participants"].append(p)
-                        elif p["teamId"] == 200:
-                            data["gameList"][i]["teams"][1]["participants"].append(p)
-                        else:
-                            raise RuntimeError
-                elif attr == "observers":
-                    data["gameList"][i]["observersKey"] = val["encryptionKey"]
-                elif attr == "teams":
-                    pass
-                else:
-                    data["gameList"][i][attr] = val
-            data["gameList"][i].pop("bannedChampions", None)
-            data["gameList"][i].pop("participants", None)
-            data["gameList"][i].pop("observers", None)
-            data["gameList"][i]["blueTeam"] = data["gameList"][i]["teams"][0]
-            data["gameList"][i]["redTeam"] = data["gameList"][i]["teams"][1]
+        data = data.copy()
+        data["gameList"] = data["gameList"].copy()
+        for ind, game in enumerate(data["gameList"]):
+            data["gameList"][ind] = CurrentGame._transform(self, game)
         return data
 
     @property

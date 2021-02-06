@@ -98,6 +98,8 @@ Model: Teamfight Tactics
 >
 >`name: str`
 >
+>`chosen: str`
+>
 >`rarity: int`
 >
 >`tier: int`

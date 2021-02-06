@@ -30,10 +30,7 @@ class MongoDB(StoreObject):
         self._db_name = db
         self._alias = f"{host}:{port}:{db}"
         self._manager = ExpirationManager(game, expirations)
-        serialization = serialization.lower()
-        if serialization not in {'pickle', 'bson'}:
-            raise ValueError("MongoDB serialization type should be one of: 'pickle', 'bson'")
-        self._serialization = serialization
+        self._serializer = MongoDBSerializer(serialization)
         self._log_level = log_level
 
     async def connect(self):
@@ -60,10 +57,14 @@ class MongoDB(StoreObject):
         timeout = self._manager.get_timeout(token.method)
         if timeout != 0:
             await self.connect()
-            if self._serialization == "pickle":
-                await self._cache[token.method].insert_one({'token': token.stringify, 'data': bytify(value), 'dataType': "pickle", 'setAt': datetime.datetime.now(pytz.utc)})
-            else: # bson
-                await self._cache[token.method].insert_one({'token': token.stringify, 'data': value, 'dataType': "bson", 'setAt': datetime.datetime.now(pytz.utc)})
+            await self._cache[token.method].insert_one(
+                {
+                    'token': token.stringify,
+                    'data': self._serializer.serialize(value),
+                    'dataType': self._serializer.serialization,
+                    'setAt': datetime.datetime.now(pytz.utc)
+                }
+            )
             LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > MongoDB > {self._alias}] SET: {self._log_template(token)}")
 
     async def get(self, token: PipelineToken, session=None) -> Any:
@@ -74,14 +75,8 @@ class MongoDB(StoreObject):
         item = await self._cache[token.method].find_one({'token': token.stringify})
         if item is None:
             raise NotFound
-        datatype = item.get("dataType", "pickle")
-        if self._serialization == datatype:
-            LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > MongoDB > {self._alias}] GET: {self._log_template(token)}")
-            if datatype == "pickle":
-                return pytify(item["data"])
-            return item["data"] # bson
-        await self._cache[token.method].delete_many({'token': token.stringify})
-        raise NotFound
+        LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > MongoDB > {self._alias}] GET: {self._log_template(token)}")
+        return self._serializer.deserialize(item['data'], item.get("dataType", "pickle")) # Use the correct deserializer
 
     async def delete(self, token: PipelineToken) -> None:
         await self.connect()
@@ -101,3 +96,61 @@ class MongoDB(StoreObject):
             await self.connect()
             await self._cache.drop_collection(name)
         LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > MongoDB > {self._alias}] CLEAR: Store has been cleared successfully")
+
+
+class MongoDBSerializer:
+
+    _enums = {
+        "pickle": 0,
+        "bson": 1,
+    }
+
+    _serializers = {
+        "pickle": bytify,
+        "bson": lambda x: x,
+    }
+
+    _deserializers = {
+        "pickle": pytify,
+        "bson": lambda x: x,
+    }
+
+    def __init__(self, serialization: str):
+        serialization = serialization.lower()
+        try:
+            self.serialization = serialization
+            self.type_enum = self._enums[serialization]
+            self.serializer = self._serializers[serialization]
+            self.deserializer = self._deserializers[serialization]
+        except KeyError as e:
+            raise ValueError(f"MongoDB invalid serialization type '{e}'")
+
+    def same_type(self, type_):
+        if self._enums.get(type_, -1) == self.type_enum:
+            return True
+        return False
+
+    def serialize(self, data, type_=None):
+        if type_ is None:
+            return self.serializer(data)
+        return self._serializers[type_](data)
+
+    def deserialize(self, data, type_=None):
+        if type_ is None:
+            return self.deserializer(data)
+        return self._deserializers[type_](data)
+
+    def transerialize(self, data, from_, to_=None):
+        deserialized = self._deserializers[from_](data)
+        if to_ is None:
+            return self.serialize(deserialized)
+        return self._serializers[to_](deserialized)
+
+    def valid_type(self, type_, throw=False):
+        try:
+            _ = self._enums[type_]
+            return True
+        except KeyError as e:
+            if throw:
+                raise ValueError(f"MongoDB invalid serialization type '{e}'")
+            return False

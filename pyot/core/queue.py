@@ -1,5 +1,6 @@
 import uuid
 import asyncio
+import traceback
 from logging import getLogger
 from typing import List, Coroutine
 
@@ -45,6 +46,8 @@ class Queue:
                     self.responses.append(res)
             except PyotException as e:
                 LOGGER.warning(f"[Trace: Pyot Queue] WARNING: Unhandled PyotException '{e.__class__.__name__}: {e}' was raised and ignored")
+            except Exception as e:
+                LOGGER.warning(traceback.format_exc())
             finally:
                 queue.task_done()
 

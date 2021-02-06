@@ -56,7 +56,7 @@ async def async_current_game():
             assert isinstance(p.is_bot, bool)
             assert isinstance(p.summoner_name, str)
             assert isinstance(p.summoner_id, str)
-            assert isinstance(p.rune_style, int)
+            assert isinstance(p.rune_main_style, int)
             assert isinstance(p.rune_sub_style, int)
             for i in p.spell_ids:
                 assert isinstance(i, int)
