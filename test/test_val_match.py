@@ -3,7 +3,7 @@ from pyot.utils import loop_run
 from pyot.models import val, riot
 
 async def async_match_history():
-    account = await riot.Account(name="Lamb", tag="7926", region="AMERICAS").get(pipeline="val")
+    account = await riot.Account(name="Tuxedo", tag="AYAYA", region="AMERICAS").get(pipeline="val")
     history = await val.MatchHistory(puuid=account.puuid, platform="NA").get()
     for match in history:
         assert isinstance(match, val.Match)
@@ -13,7 +13,7 @@ async def async_match_history():
 
 
 async def async_match():
-    account = await riot.Account(name="Lamb", tag="7926", region="AMERICAS").get(pipeline="val")
+    account = await riot.Account(name="Tuxedo", tag="AYAYA", region="AMERICAS").get(pipeline="val")
     history = await val.MatchHistory(puuid=account.puuid, platform="NA").get()
     match = await history[0].get()
     info = match.info

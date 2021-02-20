@@ -52,6 +52,7 @@ class CDragonEndpoints:
     _endpoints = {
         "lol": {
             "cdragon_champion_by_id": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/champions/{id}.json",
+            "cdragon_champion_summary": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/champion-summary.json",
             "cdragon_item_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/items.json",
             "cdragon_rune_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/perks.json",
             "cdragon_spells_full": "/plugins/rcp-be-lol-game-data/global/{locale}/v1/summoner-spells.json",

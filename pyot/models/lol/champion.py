@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Iterator
 
 from pyot.utils.champion import champion_id_by_key, champion_id_by_name
 from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
@@ -232,3 +232,31 @@ class Champion(PyotCore):
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.id)
+
+
+class Champions(PyotCore):
+    champions: List[Champion]
+
+    class Meta(PyotCore.Meta):
+        rules = {"cdragon_champion_summary": []}
+
+    def __init__(self, locale: str = None):
+        self._lazy_set(locals())
+
+    def __getitem__(self, item):
+        if not isinstance(item, int):
+            return super().__getitem__(item)
+        return self.champions[item]
+
+    def __iter__(self) -> Iterator[Champion]:
+        return iter(self.champions)
+
+    def __len__(self):
+        return len(self.champions)
+
+    def _clean(self):
+        if self.locale.lower() == "en_us":
+            self._meta.server = "default"
+
+    def _transform(self, data):
+        return {"champions": data}

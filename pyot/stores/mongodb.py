@@ -18,7 +18,7 @@ class MongoDB(StoreObject):
     unique = False
     store_type = "CACHE"
 
-    def __init__(self, game: str, db: str, expirations: Any = None, log_level: int = 10, serialization: str = "bson", host='127.0.0.1', port=27017, **kwargs) -> None:
+    def __init__(self, game: str, db: str, expirations: Any = None, log_level: int = 10, host='127.0.0.1', port=27017, **kwargs) -> None:
         self._game = game
         kwargs = {key.lower():val for (key, val) in kwargs.items()}
         if 'connect' not in kwargs:
@@ -30,7 +30,6 @@ class MongoDB(StoreObject):
         self._db_name = db
         self._alias = f"{host}:{port}:{db}"
         self._manager = ExpirationManager(game, expirations)
-        self._serializer = MongoDBSerializer(serialization)
         self._log_level = log_level
 
     async def connect(self):
@@ -60,8 +59,8 @@ class MongoDB(StoreObject):
             await self._cache[token.method].insert_one(
                 {
                     'token': token.stringify,
-                    'data': self._serializer.serialize(value),
-                    'dataType': self._serializer.serialization,
+                    'data': value,
+                    'dataType': "bson",
                     'setAt': datetime.datetime.now(pytz.utc)
                 }
             )
@@ -76,7 +75,10 @@ class MongoDB(StoreObject):
         if item is None:
             raise NotFound
         LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > MongoDB > {self._alias}] GET: {self._log_template(token)}")
-        return self._serializer.deserialize(item['data'], item.get("dataType", "pickle")) # Use the correct deserializer
+        if item.get("dataType", None) is None:
+            await self._cache[token.method].delete_many({'token': token.stringify})
+            raise NotFound
+        return item["data"]
 
     async def delete(self, token: PipelineToken) -> None:
         await self.connect()

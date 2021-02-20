@@ -93,6 +93,8 @@ def import_class(path: str) -> Any:
     store_path = '.'.join(path.split('.')[:-1])
     module = import_module(store_path)
     store_cls = getattr(module, store_cls_name)
+    if isinstance(store_cls, Exception):
+        raise store_cls
     return store_cls
 
 

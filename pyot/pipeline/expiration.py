@@ -47,6 +47,7 @@ class ExpirationManager:
             "tournament_stub_v4_lobby_events": 0,
 
             "cdragon_champion_by_id": td(hours=3),
+            "cdragon_champion_summary": td(hours=3),
             "cdragon_item_full": td(hours=3),
             "cdragon_rune_full": td(hours=3),
             "cdragon_profile_icon_full": td(hours=3),

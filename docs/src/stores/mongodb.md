@@ -3,6 +3,10 @@
 - Type: <Badge text="Pyot Cache" vertical="middle" /> <Badge text="Sharding" type="error" vertical="middle" />
 - Description: Store that uses Mongo NoSQL DBs as Caches. This cache provides high speed read/write in disk persistent storage, objects expirations are handled by Mongo's TTL indexes.
 
+:::danger DEPRECATION
+Since v3.1.0 this store will start migrating to use the bson format, which allows queries into the cached objects (or potentially stored forever objects) and bulk requesting without the need of readding them in another database. Old cached objects won't be returned and deleted afterwards. Flushing your mongo db or calling `clear()` is recommended.
+:::
+
 :::tip INFO ABOUT THIS STORE
 This store is best for production environment due to its high speed, TTL indexes and mainly disk based storage. Built on top of Python Async Driver of MongoDB [Motor](https://motor.readthedocs.io/en/stable/).
 
