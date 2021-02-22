@@ -4,7 +4,11 @@
 - Description: Store that uses Mongo NoSQL DBs as Caches. This cache provides high speed read/write in disk persistent storage, objects expirations are handled by Mongo's TTL indexes.
 
 :::danger DEPRECATION
-Since v3.1.0 this store will start migrating to use the bson format, which allows queries into the cached objects (or potentially stored forever objects) and bulk requesting without the need of readding them in another database. Old cached objects won't be returned and deleted afterwards. Flushing your mongo db or calling `clear()` is recommended.
+Since v3.1.0 this store will start migrating to use the bson format, which allows queries into the cached objects (or potentially stored forever objects) and bulk requesting without the need of readding them in another database. Old items are automatically deleted progressively when accessed. To maintain old cached items, run the following in python shell with settings activated:
+```python
+from pyot.migrate.mongodb import migrate_all_to_bson
+migrate_all_to_bson()
+```
 :::
 
 :::tip INFO ABOUT THIS STORE

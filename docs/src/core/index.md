@@ -11,6 +11,14 @@ Pyot is an asyncIO based high-level Python Riot Games API framework that encoura
 
 Migration Guide: [Version 2 → 3](v2tov3.html)
 
+### Pyot 3.1
+
+- MongoDB is NOT compatible of v3.0, it now uses bson format for caching, after updating to v3.1, old items are automatically deleted progressively when accessed. To maintain old cached items, run the migration function detailed in the migration guide.
+- Reworked LoL Spectator objects, added support for Roleidentification.
+- Generic typing on most utils functions and classes.
+
+Migration Guide: [Version 3.0 → 3.1](v3tov31.html)
+
 ## Features
 
 Features that Pyot has and can provide to your development.

@@ -14,8 +14,11 @@ Migration Guide: [Version 2 → 3](https://paaksing.github.io/Pyot/core/v2tov3.h
 
 ### Pyot 3.1
 
-- MongoDB is NOT compatible of v3.0, it now uses bson format for caching, before updating to v3.1, please clear cache (or let it automatically delete items progressively for you).
+- MongoDB is NOT compatible of v3.0, it now uses bson format for caching, after updating to v3.1, old items are automatically deleted progressively when accessed. To maintain old cached items, run the migration function detailed in the migration guide.
+- Reworked LoL Spectator objects, added support for Roleidentification.
 - Generic typing on most utils functions and classes.
+
+Migration Guide: [Version 3.0 → 3.1](https://paaksing.github.io/Pyot/core/v3tov31.html)
 
 ## Features
 

@@ -112,7 +112,8 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 2,
           children: [
-            'v2tov3'
+            'v2tov3',
+            'v3tov31'
           ]
         },
       ],
