@@ -15,6 +15,7 @@ Migration Guide: [Version 2 → 3](https://paaksing.github.io/Pyot/core/v2tov3.h
 ### Pyot 3.1
 
 - MongoDB is NOT compatible of v3.0, it now uses bson format for caching, before updating to v3.1, please clear cache (or let it automatically delete items progressively for you).
+- Generic typing on most utils functions and classes.
 
 ## Features
 
