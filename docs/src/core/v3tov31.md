@@ -26,5 +26,5 @@ This guide **covers only backward imcompatible changes** and the necessary steps
 ### `lol.CurrentGame` has been reworked.
 > Full list of new / changed attributes are in the docs.
 
-### `lol.Featured` has been reworked.
+### `lol.FeaturedGames` has been reworked.
 > Full list of new / changed attributes are in the docs.
