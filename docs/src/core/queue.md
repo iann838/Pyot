@@ -34,8 +34,9 @@ async with Queue() as quque:
 > - `coro` <Badge text="param" type="warning" vertical="middle"/> -> `Coroutine`: The coroutine to put on the queue.
 > - `delay` <Badge text="param" type="warning" vertical="middle"/> -> `float`: The amount of delay in seconds before putting the coroutine into the queue. Defaults to 0.
 
-> ### `join()` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>:
+> ### `join(class_of_t: Optional[Type[T]] = None)` <Badge text="function" type="error" vertical="middle"/> <Badge text="awaitable" type="error" vertical="middle"/>:
 >Block until all items in the queue have been gotten and processed. Empty the collected responses and returns them. NoneType and Exceptions are not collected, thus order of the responses may not correspond the put order.
+> - `class_of_t` <Badge text="param" type="warning" vertical="middle"/> -> `Optional[Type[T]]`: Optional, for typing and code autocompletion pass a class (`Type[T]`) to this param so that the returned list will be treated as `List[T]`.
 
 > ### `sid` <Badge text="property" type="error" vertical="middle"/>
 > Property where the session id is stored, can be used to pass down to the Core objects `get()` to reuse a session.

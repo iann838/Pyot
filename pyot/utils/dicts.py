@@ -2,8 +2,8 @@ from typing import Callable, Any, List, Mapping
 from collections import defaultdict
 from functools import partial
 import asyncio
-import redis
 import pickle
+import redis
 
 
 class MultiDefaultDict:
@@ -79,7 +79,7 @@ class RedisDefaultDict:
     This dict can be subcripted or assign key values using regular dict syntax.\n
     Methods: `__getitem__`, `__setitem__`, `get`, `set`, `aget`, `aset`, `mget`, `mset`, `fget`, `fset`.
     '''
-    
+
     def __init__(self, redi: redis.Redis, default: Callable = None, prefix: str = ""):
         self._redis = redi
         self._prefix = prefix

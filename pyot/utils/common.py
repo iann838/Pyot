@@ -1,6 +1,6 @@
 from functools import partial
 from inspect import getmembers, isfunction
-from typing import List, Any, Set, Dict
+from typing import List, Any, Set, Dict, TypeVar, Callable, Awaitable, ByteString, Optional, Type
 from importlib import import_module
 import itertools
 import asyncio
@@ -8,12 +8,16 @@ import pickle
 import re
 
 
-def loop_run(coro):
+T = TypeVar("T")
+R = TypeVar("T")
+
+
+def loop_run(coro: Awaitable[R]) -> R:
     '''Run the coroutine in the current event loop or a new one if `set_event_loop()` has not yet been called.'''
     return asyncio.get_event_loop().run_until_complete(coro)
 
 
-async def thread_run(func, *args, **kwargs):
+async def thread_run(func: Callable[..., R], *args, **kwargs) -> R:
     '''Run a blocking function in a thread.'''
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, partial(func, *args, **kwargs))
@@ -47,7 +51,7 @@ def snakecase(attr: str) -> str:
     return snake_case
 
 
-def camelcase(snake_str):
+def camelcase(snake_str: str) -> str:
     '''Convert string to json camelcase.'''
     components = snake_str.split('_')
     if len(components) == 1:
@@ -55,7 +59,7 @@ def camelcase(snake_str):
     return components[0] + ''.join(x.title() for x in components[1:])
 
 
-def shuffle_list(li: List[Any], param: str, size: int = 10):
+def shuffle_list(li: List[T], param: str, size: int = 10) -> List[T]:
     '''
     Shuffle a list by a specified param and chunk size.\n
     `param`: param to shuffle based on, either the an attribute or key.\n
@@ -98,17 +102,17 @@ def import_class(path: str) -> Any:
     return store_cls
 
 
-def fast_copy(obj):
+def fast_copy(obj: T) -> T:
     '''30x faster copy than `copy.deepcopy`, not all objects can be copied.'''
     return pickle.loads(pickle.dumps(obj, protocol=-1))
 
 
-def bytify(obj):
+def bytify(obj) -> ByteString:
     '''Convert a python object to byte string.'''
     return pickle.dumps(obj)
 
 
-def pytify(obj):
+def pytify(obj, class_of_t: Optional[Type[T]] = None) -> T:
     '''Convert a byte string to python object.'''
     return pickle.loads(obj)
 

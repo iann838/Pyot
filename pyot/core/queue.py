@@ -2,13 +2,15 @@ import uuid
 import asyncio
 import traceback
 from logging import getLogger
-from typing import List, Coroutine
+from typing import List, Coroutine, TypeVar, Optional, Type
 
 import aiohttp
 from pyot.pipeline import pipelines
 from .exceptions import PyotException
 
 LOGGER = getLogger(__name__)
+
+T = TypeVar('T')
 
 
 class Queue:
@@ -26,7 +28,7 @@ class Queue:
     is_joined: bool
     responses: List
     workers: List
-    sid: str
+    sid: uuid.UUID
 
     def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 10):
         if workers < 1: raise RuntimeError('Number of workers must be an integer greater than 0')
@@ -90,7 +92,7 @@ class Queue:
             raise RuntimeError(f"[Trace: Pyot Queue] {str(coro)} is not a coroutine")
         await self.queue.put(coro)
 
-    async def join(self) -> List:
+    async def join(self, class_of_t: Optional[Type[T]] = None) -> List[T]:
         '''
         Block until all items in the queue have been gotten and processed.
         Empty the collected responses and returns them.
