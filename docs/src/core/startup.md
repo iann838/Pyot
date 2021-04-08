@@ -42,13 +42,22 @@ These files are:
 
 There is a default task added by `startproject` command
 
-First, please that your API key is set, Pyot will default to get your environment variable called `RIOT_API_KEY`, you can change the name of the variable to match yours if needed, ***hardcoding your API key is not recommended*** because it will risk API key leakage.
+First, please verify that your API key is set, Pyot will default to get your environment variable called `RIOT_API_KEY`, you can change the name of the variable to match yours if needed, ***hardcoding your API key is not recommended*** because it will risk API key leakage.
 
 ```python
 # settings.py
     # ...
         'API_KEY': os.environ['RIOT_API_KEY'] 
 ```
+
+:::
+If you are hardcoding your API key, follow this format:
+> ```python
+# settings.py
+    # ...
+        'API_KEY': 'RIOT_API_KEY'
+> ```
+:::
 
 Now that everything is set up, run the following command:
 
