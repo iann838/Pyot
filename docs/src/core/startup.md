@@ -50,13 +50,6 @@ First, please verify that your API key is set, Pyot will default to get your env
         'API_KEY': os.environ['RIOT_API_KEY'] 
 ```
 
-::: warning If you are hardcoding your API key, follow this format:
-```python
-# settings.py
-    # ...
-        'API_KEY': 'RIOT_API_KEY'
-```
-:::
 
 Now that everything is set up, run the following command:
 
