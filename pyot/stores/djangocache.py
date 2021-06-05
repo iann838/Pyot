@@ -1,63 +1,58 @@
-import datetime
-from typing import Callable, Any, TypeVar, Dict
-from logging import getLogger
+from typing import Any
 
 from django.core.cache import caches
 from asgiref.sync import sync_to_async
 from pyot.core.exceptions import NotFound
 from pyot.pipeline.token import PipelineToken
-from pyot.pipeline.objects import StoreObject
 from pyot.pipeline.expiration import ExpirationManager
+from pyot.utils.logging import Logger
 
-LOGGER = getLogger(__name__)
+from .base import Store, StoreType
 
 
-class DjangoCache(StoreObject):
-    unique = False
-    store_type = "CACHE"
+LOGGER = Logger(__name__)
 
-    def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 10) -> None:
-        if alias is None: raise RuntimeError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' because Pyot will not guess which cache is used")
-        self._game = game
-        self._alias = alias
-        self._cache = caches[alias]
-        self._manager = ExpirationManager(game, expirations)
-        self._log_level = log_level
 
-    async def set(self, token: PipelineToken, value: Any) -> None:
-        timeout = self._manager.get_timeout(token.method)
+class DjangoCache(Store):
+
+    type = StoreType.CACHE
+
+    def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 0) -> None:
+        if alias is None: raise RuntimeError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' to be able to point the correct cache")
+        self.game = game
+        self.alias = alias
+        self.data = caches[alias]
+        self.expirations = ExpirationManager(game, expirations)
+        self.log_level = log_level
+
+    async def set(self, token: PipelineToken, value: Any, **kwargs) -> None:
+        timeout = self.expirations.get_timeout(token.method)
         if timeout != 0:
             if timeout == -1:
                 timeout = None
-            await sync_to_async(self._cache.set)(token.stringify, value, timeout)
-            LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] SET: {self._log_template(token)}")
+            await sync_to_async(self.data.set)(token.value, value, timeout)
+            LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] SET: {token.value}")
 
-    async def get(self, token: PipelineToken, session = None) -> Any:
-        timeout = self._manager.get_timeout(token.method)
+    async def get(self, token: PipelineToken, **kwargs) -> Any:
+        timeout = self.expirations.get_timeout(token.method)
         if timeout == 0:
-            raise NotFound
-        item = await sync_to_async(self._cache.get)(token.stringify)
+            raise NotFound(token.value)
+        item = await sync_to_async(self.data.get)(token.value)
         if item is None:
-            raise NotFound
-        LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] GET: {self._log_template(token)}")
+            raise NotFound(token.value)
+        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] GET: {token.value}")
         return item
 
-    async def delete(self, token: PipelineToken) -> None:
-        await sync_to_async(self._cache.delete)(token.stringify)
-        LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] DELETE: {self._log_template(token)}")
+    async def delete(self, token: PipelineToken, **kwargs) -> None:
+        await sync_to_async(self.data.delete)(token.value)
+        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] DELETE: {token.value}")
 
-    async def contains(self, token: PipelineToken) -> bool:
-        item = await sync_to_async(self._cache.get)(token.stringify)
+    async def contains(self, token: PipelineToken, **kwargs) -> bool:
+        item = await sync_to_async(self.data.get)(token.value)
         if item is None:
             return False
         return True
-    
-    # This function is really not needed.
-    # It is more than a helper func if you're not familiar with django cache.
-    # Django way of clearing:
-    # terminal/cmd: `python manage.py shell`
-    # >>> from django.core.cache import caches
-    # >>> caches[name_of_your_cache].clear()
-    async def clear(self):
-        await sync_to_async(self._cache.clear)()
-        LOGGER.log(self._log_level, f"[Trace: {self._game.upper()} > DjangoCache > {self._alias}] CLEAR: Store has been cleared successfully")
+
+    async def clear(self, **kwargs):
+        await sync_to_async(self.data.clear)()
+        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] CLEAR: Store has been cleared successfully")

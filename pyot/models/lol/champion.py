@@ -1,9 +1,10 @@
 from typing import List, Dict, Iterator
 
-from pyot.utils.champion import champion_id_by_key, champion_id_by_name
-from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
+from pyot.conf.model import models
 from pyot.core.functional import lazy_property
-from .__core__ import PyotCore, PyotStatic
+from pyot.utils.lol.champion import id_by_key, id_by_name
+from pyot.utils.lol.cdragon import abs_url, sanitize
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -41,11 +42,11 @@ class ChampionSkinChromaData(PyotStatic):
     rarities: List[ChampionChromaRaritiesData]
 
     class Meta(PyotStatic.Meta):
-        raws = ["colors"]
+        raws = {"colors"}
 
     @lazy_property
     def chroma_abspath(self) -> str:
-        return cdragon_url(self.chroma_path)
+        return abs_url(self.chroma_path)
 
 
 class ChampionSkinData(PyotStatic):
@@ -71,40 +72,40 @@ class ChampionSkinData(PyotStatic):
     rarity_gem_path: str
 
     class Meta(PyotStatic.Meta):
-        raws = ["emblems"]
+        raws = {"emblems"}
         renamed = {"skin_lines": "skin_line"}
 
     @lazy_property
     def splash_abspath(self) -> str:
-        return cdragon_url(self.splash_path)
+        return abs_url(self.splash_path)
 
     @lazy_property
     def uncentered_splash_abspath(self) -> str:
-        return cdragon_url(self.uncentered_splash_path)
+        return abs_url(self.uncentered_splash_path)
 
     @lazy_property
     def tile_abspath(self) -> str:
-        return cdragon_url(self.tile_path)
+        return abs_url(self.tile_path)
 
     @lazy_property
     def load_screen_abspath(self) -> str:
-        return cdragon_url(self.load_screen_path)
+        return abs_url(self.load_screen_path)
 
     @lazy_property
     def load_screen_vintage_abspath(self) -> str:
-        return cdragon_url(self.load_screen_vintage_path)
+        return abs_url(self.load_screen_vintage_path)
 
     @lazy_property
     def chroma_abspath(self) -> str:
-        return cdragon_url(self.chroma_path)
+        return abs_url(self.chroma_path)
 
     @lazy_property
     def splash_video_abspath(self) -> str:
-        return cdragon_url(self.splash_video_path)
+        return abs_url(self.splash_video_path)
 
     @lazy_property
     def collection_splash_video_abspath(self) -> str:
-        return cdragon_url(self.collection_splash_video_path)
+        return abs_url(self.collection_splash_video_path)
 
 
 class ChampionPassiveData(PyotStatic):
@@ -119,7 +120,7 @@ class ChampionPassiveData(PyotStatic):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return cdragon_url(self.icon_path)
+        return abs_url(self.icon_path)
 
 
 class ChampionSpellData(PyotStatic):
@@ -145,11 +146,11 @@ class ChampionSpellData(PyotStatic):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return cdragon_url(self.icon_path)
+        return abs_url(self.icon_path)
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return cdragon_sanitize(self.long_description)
+        return sanitize(self.long_description)
 
 
 class ChampionAbilityData(PyotStatic):
@@ -177,30 +178,29 @@ class Champion(PyotCore):
     skins: List[ChampionSkinData]
     abilities: ChampionAbilityData
     passive: ChampionPassiveData
+    title: str
     recommended_item_defaults: List[str]
 
     class Meta(PyotCore.Meta):
         rules = {
-            "cdragon_champion_by_id": ["id"],
+            "cdragon_champion_by_id": ["version", "locale", "id"],
         }
-        raws = ["roles", "recommended_item_defaults"]
+        raws = {"roles", "recommended_item_defaults"}
         renamed = {"alias": "key", "short_bio": "lore", "playstyle_info": "play_style", "square_portrait_path": "square_path", "spells": "abilities"}
 
-    def __init__(self, id: int = None, key: str = None, name: str = None, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: int = None, key: str = None, name: str = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
-    async def _setup(self):
+    async def setup(self):
         if not hasattr(self, "id"):
             if hasattr(self, "key"):
-                self.id = await champion_id_by_key(self.key)
+                self.id = await id_by_key(self.key)
             elif hasattr(self, "name"):
-                self.id = await champion_id_by_name(self.name)
+                self.id = await id_by_name(self.name)
 
-    def _clean(self):
-        if self.locale.lower() == "en_us":
-            self._meta.server = "default"
-
-    def _transform(self, data):
+    def transform(self, data):
+        if not data.get("skins", None):
+            return data
         for skin in data["skins"]:
             if skin["skinLines"] is not None:
                 skin["skinLines"] = skin["skinLines"][0]["id"]
@@ -209,27 +209,28 @@ class Champion(PyotCore):
             spell["cost"] = spell.pop("costCoefficients")[:5]
             spell["cooldown"] = spell.pop("cooldownCoefficients")[:5]
             spells[spell["spellKey"]] = spell
+        spells["p"] = data["passive"].copy()
         data["spells"] = spells
         return data
 
     @lazy_property
     def square_abspath(self) -> str:
-        return cdragon_url(self.square_path)
+        return abs_url(self.square_path)
 
     @lazy_property
     def stinger_sfx_abspath(self) -> str:
-        return cdragon_url(self.stinger_sfx_path)
+        return abs_url(self.stinger_sfx_path)
 
     @lazy_property
     def choose_vo_abspath(self) -> str:
-        return cdragon_url(self.choose_vo_path)
+        return abs_url(self.choose_vo_path)
 
     @lazy_property
     def ban_vo_abspath(self) -> str:
-        return cdragon_url(self.ban_vo_path)
+        return abs_url(self.ban_vo_path)
 
     @property
-    def meraki_champion(self) -> "MerakiChampion":
+    def meraki_champion(self):
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.id)
 
@@ -238,10 +239,10 @@ class Champions(PyotCore):
     champions: List[Champion]
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_champion_summary": []}
+        rules = {"cdragon_champion_summary": ["version", "locale"]}
 
-    def __init__(self, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -254,9 +255,5 @@ class Champions(PyotCore):
     def __len__(self):
         return len(self.champions)
 
-    def _clean(self):
-        if self.locale.lower() == "en_us":
-            self._meta.server = "default"
-
-    def _transform(self, data):
+    def transform(self, data):
         return {"champions": data}

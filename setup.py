@@ -15,13 +15,18 @@ install_requires = [
     "python-dateutil",
     "aiohttp",
     "requests",
-    "pytz",
-    "redis",
-    "diskcache",
     "asgiref",
-    "motor",
+    "pytz",
     "lor-deckcodes",
 ]
+
+extras_require = {
+    "diskcache": ["diskcache"],
+    "redis": ["aioredis", "aioredlock"],
+    "mongodb": ["motor"],
+    "lol_roles": ["roleml"],
+}
+
 
 # Require python 3.7
 if sys.version_info.major != 3 and sys.version_info.minor < 7:
@@ -29,7 +34,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="3.1.1",
+    version="5.0.0",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
@@ -45,8 +50,6 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Topic :: Games/Entertainment",
-        "Topic :: Games/Entertainment :: Real Time Strategy",
-        "Topic :: Games/Entertainment :: Role-Playing",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Natural Language :: English",
         "Framework :: Django :: 3.0",
@@ -55,6 +58,7 @@ setup(
     packages=find_packages(exclude=("test")),
     zip_safe=True,
     install_requires=install_requires,
+    extras_require=extras_require,
     include_package_data=True,
     entry_points={
         'console_scripts': [

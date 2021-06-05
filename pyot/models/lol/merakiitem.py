@@ -1,5 +1,5 @@
 from typing import List
-from .__core__ import PyotStatic, PyotCore
+from .base import PyotStatic, PyotCore
 
 
 # PYOT STATIC OBJECTS
@@ -65,7 +65,7 @@ class MerakiItemShopData(PyotStatic):
     tags: List[str]
 
     class Meta(PyotStatic.Meta):
-        raws = ["tags"]
+        raws = {"tags"}
 
 
 # PYOT CORE OBJECTS
@@ -92,35 +92,33 @@ class MerakiItem(PyotCore):
     class Meta(PyotCore.Meta):
         server_type = "locale"
         rules = {"meraki_item_by_id": ["id"]}
-        raws = ["builds_from_ids", "builds_into_ids", "nicknames", "rank"]
+        raws = {"builds_from_ids", "builds_into_ids", "nicknames", "rank"}
         renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids", "required_champion": "required_champion_key"}
 
     def __init__(self, id: int = None):
-        # pylint: disable=possibly-unused-variable
-        locale = "default"
-        self._lazy_set(locals())
+        self.initialize({"locale": "default", **locals()})
 
     @property
-    def item(self) -> "Item":
+    def item(self):
         from .item import Item
         return Item(id=self.id, locale="en_us")
 
     @property
-    def meraki_builds_from(self) -> List["MerakiItem"]:
+    def meraki_builds_from(self):
         mutable = []
         for i in self.builds_from_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def meraki_builds_into(self) -> List["MerakiItem"]:
+    def meraki_builds_into(self):
         mutable = []
         for i in self.builds_into_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def builds_from(self) -> List["Item"]:
+    def builds_from(self):
         from .item import Item
         mutable = []
         for i in self.builds_from_ids:
@@ -128,7 +126,7 @@ class MerakiItem(PyotCore):
         return mutable
 
     @property
-    def builds_into(self) -> List["Item"]:
+    def builds_into(self):
         from .item import Item
         mutable = []
         for i in self.builds_into_ids:
@@ -136,11 +134,11 @@ class MerakiItem(PyotCore):
         return mutable
 
     @property
-    def required_champion(self) -> "Champion":
+    def required_champion(self):
         from .champion import Champion
         return Champion(id=self.required_champion_key, locale="en_us")
 
     @property
-    def meraki_required_champion(self) -> "MerakiChampion":
+    def meraki_required_champion(self):
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.required_champion_key)

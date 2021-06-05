@@ -1,6 +1,8 @@
 from typing import List
 from datetime import datetime
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -12,12 +14,12 @@ class ClashPlayerData(PyotStatic):
     role: str
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
     @property
-    def team(self) -> "ClashTeam":
+    def team(self):
         return ClashTeam(id=self.team_id, platform=self.platform)
 
 
@@ -25,8 +27,6 @@ class ClashTournamentPhaseData(PyotStatic):
     id: int
     registration_timestamp: int
     start_timestamp: int
-    registration_time: datetime
-    start_time: datetime
     cancelled: bool
 
     class Meta(PyotStatic.Meta):
@@ -58,16 +58,16 @@ class ClashPlayers(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"clash_v1_players": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         new_data = {}
         new_data["players"] = data
         return new_data
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
@@ -86,21 +86,21 @@ class ClashTeam(PyotCore):
         renamed = {"captain": "captain_summoner_id"}
         rules = {"clash_v1_teams": ["id"]}
 
-    def __init__(self, id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         for player in data["players"]:
             player["teamId"] = self.id
         return data
 
     @property
-    def captain(self) -> "Summoner":
+    def captain(self):
         from .summoner import Summoner
         return Summoner(id=self.captain_summoner_id, platform=self.platform)
 
     @property
-    def tournament(self) -> "ClashTournament":
+    def tournament(self):
         return ClashTournament(id=self.tournament_id, platform=self.platform)
 
 
@@ -110,8 +110,8 @@ class ClashTournaments(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"clash_v1_tournaments_all": []}
 
-    def __init__(self, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     def __getitem__(self, name):
         if not isinstance(name, int):
@@ -124,7 +124,7 @@ class ClashTournaments(PyotCore):
     def __len__(self):
         return len(self.tournaments)
 
-    def _transform(self, data):
+    def transform(self, data):
         new_data = {}
         new_data["tournaments"] = data
         return new_data
@@ -139,10 +139,10 @@ class ClashTournament(ClashTournamentData, PyotCore):
             "clash_v1_toutnaments_by_tournament_id": ["id"]
         }
 
-    def __init__(self, id: int = None, team_id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: int = None, team_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     @property
-    def team(self) -> "ClashTeam":
+    def team(self):
         return ClashTeam(id=self.team_id, platform=self.platform)
     

@@ -2,18 +2,21 @@ from typing import Dict
 from datetime import timedelta as td
 import copy
 
-from logging import getLogger
-LOGGER = getLogger(__name__)
+from pyot.utils.logging import Logger
+
+
+LOGGER = Logger(__name__)
 
 
 class ExpirationManager:
-    _riot_expirations = {
+
+    shared: Dict[str, int] = {
         "account_v1_by_puuid": 0,
         "account_v1_by_riot_id": 0,
         "account_v1_active_shard": 0,
     }
 
-    _expirations = {
+    all: Dict[str, Dict] = {
         "lol": {
             "champion_v3_rotation": 0,
             "champion_mastery_v4_all_mastery": 0,
@@ -35,6 +38,9 @@ class ExpirationManager:
             "match_v4_matchlist": 0,
             "match_v4_tournament_match": 0,
             "match_v4_tournament_matches": 0,
+            "match_v5_match": 0,
+            "match_v5_timeline": 0,
+            "match_v5_matches": 0,
             "spectator_v4_current_game": 0,
             "spectator_v4_featured_games": 0,
             "summoner_v4_by_name": 0,
@@ -90,33 +96,33 @@ class ExpirationManager:
         }
     }
 
-    def __init__(self, game, custom_expirations: Dict):
-        self.expirations = copy.deepcopy(self._expirations[game])
-        self.expirations.update(copy.deepcopy(self._riot_expirations))
+    def __init__(self, game: str, custom_expirations: Dict):
+        self.expirations = copy.deepcopy(self.all[game])
+        self.expirations.update(copy.deepcopy(self.shared))
         if custom_expirations is not None:
             for key in custom_expirations:
                 if key not in self.expirations:
                     raise RuntimeError(f"'{key}' is not a valid expiration token")
             self.expirations.update(custom_expirations)
-        self.expirations = self._create_expiration(self.expirations)
+        self.expirations = self.create_expiration(self.expirations)
 
-    def _create_expiration(self, expirations):
+    def create_expiration(self, expirations):
         expirations_ = {}
         for key, time in expirations.items():
-            if type(time) is td:
+            if isinstance(time, td):
                 expirations_[key] = int(time.total_seconds())
             else:
                 try:
                     expirations_[key] = int(time)
-                except Exception:
-                    raise AttributeError(f"Expiration value not allowed, {type(expirations_[key])} was given")
+                except Exception as e:
+                    raise AttributeError(f"Expiration value type error, {type(expirations_[key])} was given") from e
         return expirations_
 
     def get_timeout(self, key):
         try:
             return self.expirations[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined expiration token was passed, returned 0 by default")
+            LOGGER.warning("[Trace: Pyot Pipeline] WARN: A non defined expiration token was passed, returned 0 by default")
             return 0
 
     def __iter__(self):

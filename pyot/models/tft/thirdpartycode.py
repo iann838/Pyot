@@ -1,4 +1,5 @@
-from .__core__ import PyotCore
+from pyot.conf.model import models
+from .base import PyotCore
 
 
 class ThirdPartyCode(PyotCore):
@@ -8,15 +9,15 @@ class ThirdPartyCode(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"third_party_code_v4_code": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, summoner_id: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         new_data = {}
         new_data["code"] = data
         return new_data
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)

@@ -1,37 +1,35 @@
-import uuid
 import asyncio
 import traceback
-from logging import getLogger
-from typing import List, Coroutine, TypeVar, Optional, Type
+from typing import List, Dict, Awaitable, TypeVar, Optional, Type
 
-import aiohttp
-from pyot.pipeline import pipelines
+from pyot.utils.logging import Logger
 from .exceptions import PyotException
 
-LOGGER = getLogger(__name__)
+
+LOGGER = Logger(__name__)
 
 T = TypeVar('T')
 
 
-class Queue:
-    '''
-    A managed Queue on top of asyncio.Queue. This Queue is only usable as a context manager.
+class Item:
 
-    Unlike Gatherer, Queue has real workers that acts like consumers.
-    A session is created and accessible on 'sid' attribute, the maxsize will default to workers * 2.
-    Normally the queue object will be passed down to coroutines to give access to session id or queue methods.
-    '''
-    session: aiohttp.ClientSession
+    def __init__(self, id, coro):
+        self.id = id
+        self.coro = coro
+
+
+class Queue:
+    '''A managed Queue on top of asyncio.Queue. This Queue is only usable as a context manager.'''
     queue: asyncio.Queue
     workers_num: int
     maxsize: int
     is_joined: bool
-    responses: List
+    responses: Dict
+    counter: int
     workers: List
-    sid: uuid.UUID
 
-    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 10):
-        if workers < 1: raise RuntimeError('Number of workers must be an integer greater than 0')
+    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 0):
+        if workers < 1: raise ValueError('Number of workers must be an integer greater than 0')
         self.workers_num = workers
         if maxsize is None:
             self.maxsize = workers * 2
@@ -41,13 +39,13 @@ class Queue:
 
     async def worker(self, queue):
         while True:
-            coro = await queue.get()
+            item: Item = await queue.get()
             try:
-                res = await coro
+                res = await item.coro
                 if res is not None:
-                    self.responses.append(res)
+                    self.responses[item.id] = res
             except PyotException as e:
-                LOGGER.warning(f"[Trace: Pyot Queue] WARNING: Unhandled PyotException '{e.__class__.__name__}: {e}' was raised and ignored")
+                LOGGER.warning(f"[Trace: Pyot Queue] WARN: An unhandled pyot exception '{e.__class__.__name__}: {e}' was raised")
             except Exception as e:
                 LOGGER.warning(traceback.format_exc())
             finally:
@@ -55,17 +53,13 @@ class Queue:
 
     async def __aenter__(self) -> "Queue":
         self.queue = asyncio.Queue(maxsize=self.maxsize)
-        self.responses = []
+        self.responses = {}
         self.workers = []
+        self.counter = 0
         for _ in range(self.workers_num):
             worker = asyncio.create_task(self.worker(self.queue))
             self.workers.append(worker)
         LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Spawned {self.workers_num} workers")
-        self.sid = uuid.uuid4()
-        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Created session '{self.sid}'")
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False))
-        for pipeline in pipelines.values():
-            pipeline.sessions[self.sid] = self.session
         return self
 
     async def __aexit__(self, *args):
@@ -75,13 +69,9 @@ class Queue:
         await asyncio.gather(*self.workers, return_exceptions=True)
         self.is_joined = True
         LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Joined {self.workers_num} workers")
-        await self.session.close()
-        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Closed session '{self.sid}'")
-        for pipeline in pipelines.values():
-            pipeline.sessions.pop(self.sid)
         return
 
-    async def put(self, coro: Coroutine, delay: float = 0):
+    async def put(self, coro: Awaitable, delay: float = 0):
         '''
         Put a coroutine object to the queue, if the queue is full, wait for availability.
         A delay may be provided if desired for execution balancing.
@@ -89,8 +79,9 @@ class Queue:
         if delay > 0:
             await asyncio.sleep(delay)
         if not asyncio.iscoroutine(coro):
-            raise RuntimeError(f"[Trace: Pyot Queue] {str(coro)} is not a coroutine")
-        await self.queue.put(coro)
+            raise ValueError(f"[Trace: Pyot Queue] {str(coro)} is not a coroutine")
+        await self.queue.put(Item(self.counter, coro))
+        self.counter += 1
 
     async def join(self, class_of_t: Optional[Type[T]] = None) -> List[T]:
         '''
@@ -100,6 +91,7 @@ class Queue:
         NoneType and Exceptions are not collected, order of the responses might not correspond the put order.
         '''
         await self.queue.join()
-        res = self.responses
-        self.responses = []
-        return res
+        response = [res[1] for res in sorted(self.responses.items())]
+        self.responses = {}
+        self.counter = 0
+        return response

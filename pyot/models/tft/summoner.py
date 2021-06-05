@@ -1,5 +1,7 @@
 from datetime import datetime
-from .__core__ import PyotCore
+
+from pyot.conf.model import models
+from .base import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -12,7 +14,6 @@ class Summoner(PyotCore):
     puuid: str
     profile_icon_id: int
     revision_date_millis: int
-    revision_date: datetime
 
     class Meta(PyotCore.Meta):
         rules = {
@@ -23,34 +24,34 @@ class Summoner(PyotCore):
         }
         renamed = {"summoner_level": "level", "revision_date": "revision_date_millis"}
 
-    def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     @property
     def revision_date(self) -> datetime:
         return datetime.fromtimestamp(self.revision_date_millis//1000)
 
     @property
-    def league_entries(self) -> "SummonerLeague":
+    def league_entries(self):
         from .league import SummonerLeague
         return SummonerLeague(summoner_id=self.id, platform=self.platform)
 
     @property
-    def third_party_code(self) -> "ThirdPartyCode":
+    def third_party_code(self):
         from .thirdpartycode import ThirdPartyCode
         return ThirdPartyCode(summoner_id=self.id, platform=self.platform)
 
     @property
-    def profile_icon(self) -> "ProfileIcon":
+    def profile_icon(self):
         from .profileicon import ProfileIcon
-        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
+        return ProfileIcon(id=self.profile_icon_id)
 
     @property
-    def account(self) -> "Account":
+    def account(self):
         from ..riot.account import Account
-        return Account(puuid=self.puuid, region=self.region).set_pipeline("tft")
+        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def match_history(self) -> "MatchHistory":
+    def match_history(self):
         from .match import MatchHistory
-        return MatchHistory(puuid=self.puuid, region=self.to_region(self.platform))
+        return MatchHistory(puuid=self.puuid, region=self.region)

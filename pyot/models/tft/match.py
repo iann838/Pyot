@@ -1,6 +1,9 @@
 from typing import List, Iterator
 from datetime import datetime, timedelta
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from pyot.core.functional import parse_camelcase
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -11,11 +14,11 @@ class MatchMetadataData(PyotStatic):
     participant_puuids: List[str]
 
     class Meta(PyotStatic.Meta):
-        raws = ["participant_puuids"]
+        raws = {"participant_puuids"}
         renamed = {"match_id": "id", "participants": "participant_puuids"}
 
     @property
-    def participants(self) -> "Summoner":
+    def participants(self):
         from .summoner import Summoner
         return [Summoner(puuid=i, platform=self.id.split('_')[0]) for i in self.participant_puuids]
 
@@ -34,9 +37,9 @@ class MatchInfoTraitData(PyotStatic):
     tier_total: int
 
     @property
-    def trait(self) -> "Trait":
+    def trait(self):
         from .trait import Trait
-        return Trait(key=self.name, locale=self.to_locale(self.region))
+        return Trait(key=self.name)
 
 
 class MatchInfoUnitData(PyotStatic):
@@ -48,18 +51,18 @@ class MatchInfoUnitData(PyotStatic):
     tier: int
 
     class Meta(PyotStatic.Meta):
-        raws = ["item_ids"]
+        raws = {"item_ids"}
         renamed = {"items": "item_ids", "character_id": "champion_key"}
 
     @property
-    def items(self) -> List["Item"]:
+    def items(self):
         from .item import Item
-        return [Item(id=i, locale=self.to_locale(self.region)) for i in self.item_ids]
+        return [Item(id=i) for i in self.item_ids]
 
     @property
-    def champion(self) -> "Champion":
+    def champion(self):
         from .champion import Champion
-        return Champion(key=self.champion_key, locale=self.to_locale(self.region))
+        return Champion(key=self.champion_key)
 
 
 class MatchInfoParticipantData(PyotStatic):
@@ -71,7 +74,6 @@ class MatchInfoParticipantData(PyotStatic):
     players_eliminated: int
     puuid: str
     time_eliminated_secs: int
-    time_eliminated: timedelta
     total_damage_to_players: int
     traits: List[MatchInfoTraitData]
     units: List[MatchInfoUnitData]
@@ -85,7 +87,7 @@ class MatchInfoParticipantData(PyotStatic):
         return timedelta(seconds=self.time_eliminated_secs)
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(puuid=self.puuid, platform=self._pyot_calculated_platform)
 
@@ -93,8 +95,6 @@ class MatchInfoParticipantData(PyotStatic):
 class MatchInfoData(PyotStatic):
     date_millis: int
     length_secs: int
-    creation: datetime
-    duration: timedelta
     variation: str
     version: str
     participants: List[MatchInfoParticipantData]
@@ -123,10 +123,10 @@ class Match(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: str = None, region: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: str = None, region: str = models.tft.DEFAULT_REGION):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         platform = self.id.split("_")[0]
         for i in range(len(data["info"]["participants"])):
             data["info"]["participants"][i]["_pyot_calculated_platform"] = platform
@@ -139,13 +139,12 @@ class MatchHistory(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"match_v1_matchlist": ["puuid"]}
-        raws = ["ids"]
-        allow_query = True
+        raws = {"ids"}
 
     def __getitem__(self, item):
         if not isinstance(item, int):
             return super().__getitem__(item)
-        return self.matches[item]
+        return Match(id=self.ids[item], region=self.region)
 
     def __iter__(self) -> Iterator[Match]:
         return iter(self.matches)
@@ -153,12 +152,12 @@ class MatchHistory(PyotCore):
     def __len__(self):
         return len(self.ids)
 
-    def __init__(self, puuid: str = None, region: str = None):
-        self._lazy_set(locals())
+    def __init__(self, puuid: str = None, region: str = models.tft.DEFAULT_REGION):
+        self.initialize(locals())
 
     def query(self, count: int = 100000):
-        '''Add query parameters to the object.'''
-        self._meta.query = self._parse_camel(locals())
+        '''Query parameters setter.'''
+        self._meta.query = parse_camelcase(locals())
         return self
 
     @property
@@ -166,12 +165,12 @@ class MatchHistory(PyotCore):
         return [Match(id=id_, region=self.region) for id_ in self.ids]
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         try:
             return Summoner(account_id=self.account_id, platform=self.ids[0].split("_")[0])
-        except (AttributeError, IndexError):
-            raise AttributeError("Match history is empty, could not identify platform from list")
+        except (AttributeError, IndexError) as e:
+            raise AttributeError("Match history is empty, could not identify platform from list") from e
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"ids": data}

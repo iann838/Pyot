@@ -1,7 +1,7 @@
 from typing import List
 
-from pyot.utils import champion_key_by_id, champion_key_by_name
-from .__core__ import PyotStatic, PyotCore
+from pyot.utils.lol.champion import key_by_id, key_by_name
+from .base import PyotStatic, PyotCore
 
 
 # PYOT STATIC OBJECTS
@@ -11,7 +11,7 @@ class MerakiChampionSpellModifierData(PyotStatic):
     units: List[str]
 
     class Meta(PyotStatic.Meta):
-        raws = ["values", "units"]
+        raws = {"values", "units"}
 
 
 class MerakiChampionSpellAttrData(PyotStatic):
@@ -140,7 +140,7 @@ class MerakiChampionSkinChromaData(PyotStatic):
     rarities: List[MerakiChampionChromaRaritiesData]
 
     class Meta(PyotStatic.Meta):
-        raws = ["colors"]
+        raws = {"colors"}
 
 
 class MerakiChampionSkinData(PyotStatic):
@@ -172,7 +172,7 @@ class MerakiChampionSkinData(PyotStatic):
     splash_artist: List[str]
 
     class Meta(PyotStatic.Meta):
-        raws = ["set", "voice_actor", "splash_artist"]
+        raws = {"set", "voice_actor", "splash_artist"}
 
 
 # PYOT CORE OBJECTS
@@ -201,27 +201,26 @@ class MerakiChampion(PyotCore):
     class Meta(PyotCore.Meta):
         server_type = "locale"
         rules = {"meraki_champion_by_key": ["key"]}
-        raws = ["roles"]
+        raws = {"roles"}
 
     def __init__(self, id: int = None, key: str = None, name: str = None):
-        locale = "default"
-        self._lazy_set(locals())
+        self.initialize({"locale": "default", **locals()})
 
-    async def _setup(self):
+    async def setup(self):
         if not hasattr(self, "key"):
             if hasattr(self, "id"):
-                self.key = await champion_key_by_id(self.id)
+                self.key = await key_by_id(self.id)
             elif hasattr(self, "name"):
-                self.key = await champion_key_by_name(self.name)
+                self.key = await key_by_name(self.name)
         if self.key == "FiddleSticks":  # MERAKI HAS LOWERCASE S ON FIDDLE
             self.key = "Fiddlesticks"
 
     @property
-    def champion(self) -> "Champion":
+    def champion(self):
         from .champion import Champion
         return Champion(key=self.key, locale="en_us")
 
-    def _transform(self, data):
+    def transform(self, data):
         if data["key"] == "Fiddlesticks":  # MERAKI HAS LOWERCASE S ON FIDDLE, GO BACK
             data["key"] = "FiddleSticks"
         return data

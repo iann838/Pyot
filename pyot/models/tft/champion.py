@@ -1,10 +1,10 @@
 from typing import List, Iterator
 
-from pyot.utils.cdragon import tft_champ_sanitize, tft_url
-from pyot.utils.champion import champion_key_by_id, champion_key_by_name
+from pyot.conf.model import models
 from pyot.core.functional import lazy_property, cache_indexes
 from pyot.core.exceptions import NotFound
-from .__core__ import PyotCore, PyotStatic
+from pyot.utils.tft.cdragon import sanitize_champion, abs_url
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -14,7 +14,7 @@ class ChampionAbilityVariableData(PyotStatic):
     value: List[int]
 
     class Meta(PyotStatic.Meta):
-        raws = ["value"]
+        raws = {"value"}
 
 
 class ChampionAbilityData(PyotStatic):
@@ -28,11 +28,11 @@ class ChampionAbilityData(PyotStatic):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return tft_url(self.icon_path)
+        return abs_url(self.icon_path)
 
     @lazy_property
     def cleaned_description(self, data):
-        return tft_champ_sanitize(self.description, self["variables"])
+        return sanitize_champion(self.description, self["variables"])
 
 
 class ChampionStatData(PyotStatic):
@@ -63,41 +63,34 @@ class Champion(PyotCore):
 
     class Meta(PyotCore.Meta):
         raws = {"trait_keys"}
-        rules = {"cdragon_tft_full": ["key", "set"]}
+        rules = {"cdragon_tft_full": ["?key", "?set", "version", "locale"]}
         renamed = {"api_name": "key", "traits": "trait_keys", "icon": "icon_path"}
 
-    def __init__(self, key: str = None, set: int = None, lol_id: int = None, name: str = None, locale: str = None):
-        a = locals()
-        if key and not set:
-            try:
-                a["set"] = int(key.split("_")[0][-1])
-            except Exception:
-                raise TypeError("Could not parse 'set' value from key")
-        self._lazy_set(a)
+    def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
+        if self.key and self.set is None:
+            self.find_set()
+
+    def find_set(self):
+        try:
+            self.set = int(self.key.split("_")[0][3:])
+        except Exception as e:
+            raise TypeError("Could not parse 'set' value from key") from e
 
     @cache_indexes
-    def _filter(self, indexer, data):
-        return indexer.get(self.key, data["sets"][str(self.set)]["champions"], "apiName")
+    def filter(self, indexer, data):
+        return indexer.get(
+            self.key,
+            data["sets"][str(self.set)]["champions"],
+            "apiName"
+        )
 
-    async def _setup(self):
-        if not hasattr(self, "key"):
-            if hasattr(self, "lol_id"):
-                key = await champion_key_by_id(self.lol_id)
-                self.key = f"TFT{self.set}_{key}"
-            elif hasattr(self, "name"):
-                key = await champion_key_by_name(self.name)
-                self.key = f"TFT{self.set}_{key}"
-
-    def _clean(self):
-        if self.locale.lower() == "default":
-            self._meta.server = "en_us"
-        self._hide_load_value("key")
     @lazy_property
     def icon_abspath(self) -> str:
-        return tft_url(self.icon_path)
+        return abs_url(self.icon_path)
 
     @property
-    def traits(self) -> List["Trait"]:
+    def traits(self):
         from .trait import Trait
         return [Trait(key=i, locale=self.locale) for i in self.trait_keys]
 
@@ -107,10 +100,10 @@ class Champions(PyotCore):
     champions: List[Champion]
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_tft_full": ["set"]}
+        rules = {"cdragon_tft_full": ["?set", "version", "locale"]}
 
-    def __init__(self, set: int = None, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -123,15 +116,11 @@ class Champions(PyotCore):
     def __len__(self):
         return len(self.champions)
 
-    def _clean(self):
-        if self.locale.lower() == "default":
-            self._meta.server = "en_us"
-
-    def _filter(self, data):
+    def filter(self, data):
         try:
-            return data["sets"][str(self.set)]["champions"]
-        except KeyError:
-            raise NotFound("Request was successful but filtering gave no matching item")
+            return data["sets"][max(data["sets"], key=int) if self.set == -1 else str(self.set)]["champions"]
+        except KeyError as e:
+            raise NotFound("Request was successful but filtering gave no matching item") from e
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"champions": data}

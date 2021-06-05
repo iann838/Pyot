@@ -1,5 +1,8 @@
-from .__core__ import PyotCore
 from typing import List
+
+from pyot.conf.model import models
+
+from .base import PyotCore
 
 
 # PYOT CORE OBJECTS
@@ -11,30 +14,30 @@ class ChampionRotation(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"champion_v3_rotation": []}
-        raws = ["free_champion_ids", "free_newie_champion_ids"]
+        raws = {"free_champion_ids", "free_newie_champion_ids"}
         renamed = {"free_champion_ids_for_new_players": "free_newie_champion_ids", "max_new_player_level": "newie_max_level"}
 
-    def __init__(self, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     @property
-    def free_champions(self) -> List["Champion"]:
+    def free_champions(self):
         from .champion import Champion
         mutable = []
         for i in self.free_champion_ids:
-            mutable.append(Champion(id=i, locale=self.to_locale(self.platform)))
+            mutable.append(Champion(id=i))
         return mutable
 
     @property
-    def free_newie_champions(self) -> List["Champion"]:
+    def free_newie_champions(self):
         from .champion import Champion
         mutable = []
         for i in self.free_newie_champion_ids:
-            mutable.append(Champion(id=i, locale=self.to_locale(self.platform)))
+            mutable.append(Champion(id=i))
         return mutable
 
     @property
-    def meraki_free_champions(self) -> List["MerakiChampion"]:
+    def meraki_free_champions(self):
         from .merakichampion import MerakiChampion
         mutable = []
         for i in self.free_champion_ids:
@@ -42,11 +45,9 @@ class ChampionRotation(PyotCore):
         return mutable
 
     @property
-    def meraki_free_newie_champions(self) -> List["MerakiChampion"]:
+    def meraki_free_newie_champions(self):
         from .merakichampion import MerakiChampion
         mutable = []
         for i in self.free_newie_champion_ids:
             mutable.append(MerakiChampion(id=i))
         return mutable
-
-

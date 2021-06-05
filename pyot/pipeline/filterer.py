@@ -1,11 +1,11 @@
 # THIS IS ONLY A CONCEPT, NOT IMPLEMENTED YET
 
 from typing import Dict
-from datetime import timedelta as td
 import copy
 
-from logging import getLogger
-LOGGER = getLogger(__name__)
+from pyot.utils.logging import Logger
+
+LOGGER = Logger(__name__)
 
 
 def pass_all(_):
@@ -13,13 +13,14 @@ def pass_all(_):
 
 
 class Filterer:
-    _riot = {
+
+    shared = {
         "account_v1_by_puuid": pass_all,
         "account_v1_by_riot_id": pass_all,
         "account_v1_active_shard": pass_all,
     }
 
-    _filters = {
+    all = {
         "lol": {
             "champion_v3_rotation": pass_all,
             "champion_mastery_v4_all_mastery": pass_all,
@@ -82,25 +83,25 @@ class Filterer:
     }
 
     def __init__(self, game, custom_filters: Dict):
-        self.filters = copy.deepcopy(self._filters[game])
-        self.filters.update(copy.deepcopy(self._riot))
+        self.filters = copy.deepcopy(self.all[game])
+        self.filters.update(copy.deepcopy(self.shared))
         if custom_filters is not None:
             for key in custom_filters:
                 if key not in self.filters:
                     raise RuntimeError(f"'{key}' is not a valid expiration token")
             self.filters.update(custom_filters)
-        self.filters = self._create_filters(self.filters)
+        self.filters = self.create_filters(self.filters)
 
-    def _create_filters(self, filters):
+    def create_filters(self, filters):
         filters_ = {}
         for key, func in filters.items():
             if not callable(func):
                 raise RuntimeError(f"Value for '{key}' is not callable")
         return filters_
-        
+
     def get_filter(self, key):
         try:
             return self.filters[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARNING: A non defined key was passed, returned True by default")
+            LOGGER.warning("[Trace: Pyot Pipeline] WARN: A non defined key was passed, returned True by default")
             return pass_all

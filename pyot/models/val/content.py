@@ -1,5 +1,8 @@
 from typing import List
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from pyot.core.functional import parse_camelcase
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -63,7 +66,7 @@ class ContentActData(PyotStatic):
     is_active: bool
 
     @property
-    def leaderboard(self) -> "Leaderboard":
+    def leaderboard(self):
         from .ranked import Leaderboard
         return Leaderboard(act_id=self.id, platform=self.platform)
 
@@ -90,12 +93,10 @@ class Content(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"content_v1_contents": []}
 
-    def __init__(self, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, platform: str = models.val.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     def query(self, locale: str = None):
-        '''Add query parameters to the object.'''
-        if locale.lower() not in self._meta.locale_list:
-            raise RuntimeError(f"Query 'locale' is not valid, '{locale}' was passed")
-        self._meta.query = self._parse_camel(locals())
+        '''Query parameters setter.'''
+        self._meta.query = parse_camelcase(locals())
         return self

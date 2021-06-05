@@ -1,47 +1,121 @@
-from typing import Dict, List, Mapping, Any, get_type_hints
+from typing import Dict, List, Mapping, Any, Set, get_type_hints
 import inspect
 import re
 
+from pyot.conf.pipeline import pipelines
 from pyot.pipeline.core import Pipeline
 from pyot.pipeline.token import PipelineToken
-from pyot.utils import camelcase, fast_copy
-from pyot.pipeline import pipelines
+from pyot.utils.copy import fast_copy
 
-from .functional import lazy_property, laziable
+from .functional import lazy_property, laziable, parse_camelcase
 
 
-class PyotLazyObject:
+class PyotLazy:
     obj: Any
     clas: Any
 
-    def __init__(self, clas, obj, server_type, server):
+    def __init__(self, clas, obj, root):
         self.clas = clas
-        self.server_map = [server_type, server]
+        self.root = root
         self.obj = obj
 
     def __call__(self):
         try:
-            if issubclass(self.clas, PyotCoreObject):
+            if issubclass(self.clas, PyotCoreBase):
                 if isinstance(self.obj, list):
-                    return [self._load_core(obj) for obj in self.obj]
-                return self._load_core(self.obj)
+                    return [self.load_core(obj) for obj in self.obj]
+                return self.load_core(self.obj)
             if isinstance(self.obj, list):
-                return [self._load_static(obj) for obj in self.obj]
-            return self._load_static(self.obj)
+                return [self.load_static(obj) for obj in self.obj]
+            return self.load_static(self.obj)
         except Exception as e:
-            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object") from e
+            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object due to: {e}") from e
 
-    def _load_static(self, obj):
-        instance = self.clas(obj)
-        instance._meta.server_map = self.server_map
-        return instance._fill()
+    def load_static(self, obj):
+        instance: "PyotStaticBase" = self.clas(obj)
+        instance._meta.root = self.root
+        return instance.fill()
 
-    def _load_core(self, obj):
-        instance = self.clas()
-        # SERVER MAP WILL GO FIRST THAN OBJECT
-        instance._meta.server_map = self.server_map
-        instance._meta.data = instance._transform(obj)
-        return instance._fill()
+    def load_core(self, obj):
+        instance: "PyotCoreBase" = self.clas()
+        instance._meta.root = self.root
+        instance._meta.data = instance.transform(obj)
+        return instance.fill()
+
+
+class PyotRoutingBase:
+
+    class Meta:
+        root: "PyotCoreBase"
+        pipeline: Pipeline
+
+    _meta: Meta
+    _region: str = None
+    _platform: str = None
+    _locale: str = None
+    _version: str = None
+    _regions: Set[str] = set()
+    _platforms: Set[str] = set()
+    _platform2regions: Dict[str, str] = {None: None}
+
+    @property
+    def region(self):
+        val = self._region or self._meta.root._region or \
+            self._platform2regions.get(self._platform or self._meta.root._platform, None)
+        if val is None:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'region'")
+        return val
+
+    @region.setter
+    def region(self, val: str):
+        val = val.lower()
+        if val not in self._regions:
+            raise ValueError(f"'{val}' is not a valid region")
+        self._region = val
+
+    @property
+    def platform(self):
+        val = self._platform or self._meta.root._platform
+        if val is None:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'platform'")
+        return val
+
+    @platform.setter
+    def platform(self, val: str):
+        val = val.lower()
+        if val not in self._platforms:
+            raise ValueError(f"'{val}' is not a valid platform")
+        self._platform = val
+
+    @property
+    def locale(self):
+        val = self._locale or self._meta.root._locale
+        if val is None:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'locale'")
+        return val
+
+    @locale.setter
+    def locale(self, val: str):
+        self._locale = val
+
+    @property
+    def version(self):
+        val = self._version or self._meta.root._version
+        if val is None:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'version'")
+        return val
+
+    @version.setter
+    def version(self, val: str):
+        self._version = val
+
+    @property
+    def metaroot(self):
+        return self._meta.root
+
+    @property
+    def metapipeline(self):
+        return self._meta.pipeline
 
 
 class PyotMetaClass(type):
@@ -49,11 +123,11 @@ class PyotMetaClass(type):
     def __new__(cls, name, bases, attrs):
         if 'Meta' not in attrs and cls.is_static_core(bases):
             attrs['Meta'] = type('Meta', (cls.get_static_core(bases).Meta,), {'__module__': attrs['__module__'] + f".{name}"})
-        clas = super().__new__(cls, name, bases, attrs)
+        clas: "PyotStaticBase" = super().__new__(cls, name, bases, attrs)
         clas.Meta.types = cls.get_types(clas)
         clas.Meta.nomcltrs = {}
         if cls.is_static_core(bases):
-            if issubclass(clas, PyotCoreObject):
+            if issubclass(clas, PyotCoreBase):
                 try:
                     cls.set_server_type(clas, inspect.getfullargspec(clas.__init__).args)
                 except TypeError:
@@ -79,7 +153,7 @@ class PyotMetaClass(type):
             return next(base for base in deep_bases if base.__name__ == 'PyotStatic')
 
     @staticmethod
-    def get_types(clas):
+    def get_types(clas: "PyotStaticBase"):
         types = get_type_hints(clas)
         for typ, clas in types.items():
             try:
@@ -90,38 +164,34 @@ class PyotMetaClass(type):
         return types
 
     @staticmethod
-    def get_lazy_props(clas, props, prefix=""):
+    def get_lazy_props(clas: "PyotStaticBase", props, prefix=""):
         props += [prefix + p for p in dir(clas) if isinstance(getattr(clas, p), lazy_property)]
-        types = {attr:cl for attr, cl in clas.Meta.types.items() if inspect.isclass(cl) and issubclass(cl, PyotStaticObject)}
+        types = {attr:cl for attr, cl in clas.Meta.types.items() if inspect.isclass(cl) and issubclass(cl, PyotStaticBase)}
         for typ, cl in types.items():
             PyotMetaClass.get_lazy_props(cl, props, prefix + typ + ".")
         return props
 
     @staticmethod
-    def set_server_type(clas, args):
+    def set_server_type(clas: "PyotCoreBase", args):
         for server in clas.Meta.server_type_names:
             if server in args:
                 clas.Meta.server_type = server
                 return
-        raise TypeError("Invalid or missing server type was passed as subclass")
 
 
-class PyotStaticObject(metaclass=PyotMetaClass):
+class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
 
-    class Meta:
+    class Meta(PyotRoutingBase.Meta):
         # Mutable objects should be overriden on inheritance
-        server_type: str
-        server_map: List[str]
+        server_type: str = None
         lazy_props: List[str]
         nomcltrs: Dict[str, Any]
         types: Dict[str, Any]
         data: Dict[str, Any]
-        raws: List[str] = []
+        raws: Set[str] = set()
         renamed: Dict[str, str] = {}
 
-    region: str = ""
-    platform: str = ""
-    locale: str = ""
+    _meta: Meta
 
     def __init__(self, data):
         # Instantiate Meta class, isolating data dict
@@ -140,41 +210,38 @@ class PyotStaticObject(metaclass=PyotMetaClass):
     def __getitem__(self, item):
         return self._meta.data[item]
 
-    def _rename(self, key):
+    def qualkey(self, key):
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
         newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
         if newkey in self._meta.renamed:
             newkey = self._meta.renamed[newkey]
         return newkey
 
-    def _fill(self):
-        try:
-            server_type = self._meta.server_map
-            self._meta.server_type = server_type[0]
-            setattr(self, server_type[0], server_type[1])
-        except AttributeError: pass
-
+    def fill(self):
         mapping = self._meta.nomcltrs
 
         for key, val in self._meta.data.items():
             try:
                 attr = mapping[key]
             except KeyError:
-                attr = self._rename(key)
+                attr = self.qualkey(key)
                 mapping[key] = attr
 
             if laziable(val):
                 if attr in self._meta.raws:
                     setattr(self, attr, val)
-                else:
-                    server = getattr(self, self._meta.server_type)
-                    setattr(self, '_lazy__' + attr, PyotLazyObject(self._meta.types[attr], val, self._meta.server_type, server))
+                    continue
+                try:
+                    setattr(self, '_lazy__' + attr, PyotLazy(self._meta.types[attr], val, self._meta.root))
+                except AttributeError:
+                    setattr(self, attr, val)
+                    print(attr, "missing from types")
             else:
                 setattr(self, attr, val)
 
         return self
 
-    def _load_lazy_prop(self, instance, prop, ind=0):
+    def load_lazy_properties(self, instance, prop, ind=0):
         if ind == len(prop):
             return
         try:
@@ -183,24 +250,26 @@ class PyotStaticObject(metaclass=PyotMetaClass):
             return
         if isinstance(attr, list):
             for val in attr:
-                self._load_lazy_prop(val, prop, ind + 1)
+                self.load_lazy_properties(val, prop, ind + 1)
         else:
-            self._load_lazy_prop(attr, prop, ind + 1)
+            self.load_lazy_properties(attr, prop, ind + 1)
 
-    def _recursive_dict(self):
+    def rdict(self):
         dic = {}
         for key, val in self._meta.types.items():
+            if key.startswith("_"):
+                continue
             try:
                 obj = getattr(self, key)
             except AttributeError:
                 continue
             try:
-                if issubclass(val, PyotStaticObject):
+                if issubclass(val, PyotStaticBase):
                     try:
                         if isinstance(obj, list):
-                            dic[key] = [ob._recursive_dict() for ob in obj]
+                            dic[key] = [ob.rdict() for ob in obj]
                         else:
-                            dic[key] = obj._recursive_dict()
+                            dic[key] = obj.rdict()
                     except AttributeError:
                         pass
                 else:
@@ -212,80 +281,32 @@ class PyotStaticObject(metaclass=PyotMetaClass):
     def dict(self, deepcopy=False, lazy_props=False, recursive=False):
         if lazy_props:
             for prop in self._meta.lazy_props:
-                self._load_lazy_prop(self, prop)
-        dic = self._recursive_dict() if recursive else self._meta.data
+                self.load_lazy_properties(self, prop)
+        dic = self.rdict() if recursive else self._meta.data
         return fast_copy(dic) if deepcopy else dic.copy()
 
 
-class PyotContainerObject:
+class PyotCoreBase(PyotStaticBase):
 
-    class Meta:
-        # THIS META CLASS IS NOT INHERITED ON CORE, USED ONLY ON CONTAINER
-        server: str
-        server_type: str = "locale"
-        server_type_names = {"platform", "region", "locale"}
-        region_list = []
-        platform_list = []
-        locale_list = []
-
-    region: str = ""
-    platform: str = ""
-    locale: str = ""
-
-    def __init__(self, kwargs):
-        # META CLASS UNIQUE MUTABLE OBJECTS
-        self._meta = self.Meta()
-        self._set_server_type(kwargs)
-        for name, val in kwargs.items():
-            if name in self._meta.server_type_names and val is not None:
-                setattr(self, name, val.lower())
-
-    def _get_server(self):
-        server_type = self._meta.server_type
-        server = getattr(self, server_type)
-        list_ = getattr(self._meta, server_type+"_list")
-        if server.lower() not in list_:
-            raise ValueError(
-                f"Invalid '{server_type}' value, '{server}' was given"
-                f"{'. Did you activate the settings and set a default value ?' if not server else ''}"
-            )
-        self._meta.server = server.lower()
-        return self
-
-    def _set_server_type(self, kwargs):
-        for server in self._meta.server_type_names:
-            if server in kwargs:
-                self._meta.server_type = server
-                return
-        raise TypeError("Invalid or missing server type was passed as subclass")
-
-
-class PyotCoreObject(PyotStaticObject, PyotContainerObject):
-
-    class Meta(PyotStaticObject.Meta):
-        # BE CAREFUL WHEN MANIPULATING MUTABLE OBJECTS
-        # ALL MUTABLE OBJECTS MUST BE OVERRIDDEN ON ITS SUBCLASS !
-        pipeline: Pipeline
+    class Meta(PyotStaticBase.Meta):
+        # Mutable objects should be overriden on inheritance
         key: str
         server: str
-        session_id: str = None
         load: Mapping[str, Any]
         query: Mapping[str, Any]
         body: Mapping[str, Any]
-        server_type: str = "platform"
-        server_type_names = {"platform", "region", "locale"}
+        server_type: str
+        server_type_names = {"platform", "region"}
         allow_query: bool = False
         rules: Mapping[str, List[str]] = {}
-        region_list = []
-        platform_list = []
-        locale_list = []
-        turbo_level: int = 0
         raw_data: Any
-        filtered_load: str = ""
 
-    def _lazy_set(self, kwargs):
-        # META CLASS UNIQUE MUTABLE OBJECTS
+    _meta: Meta
+
+    def initialize(self, kwargs: Dict):
+        # Instantiate meta class and fill kwargs
         self._meta = self.Meta()
+        self._meta.root = self
         self._meta.query = {}
         self._meta.data = {}
         self._meta.body = {}
@@ -297,76 +318,17 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
                 setattr(self, name, val)
         return self
 
-    async def get(self, sid: str = None, pipeline: str = None, deepcopy: bool = False):
-        '''Awaitable. Execute a GET request against the pipeline.'''
-        self.set_pipeline(pipeline)
-        token = await self.create_token()
-        data = await self._meta.pipeline.get(token, sid)
-        data = self._filter(data)
-        self._meta.raw_data = fast_copy(data) if deepcopy else data
-        self._meta.data = self._transform(data)
-        self._fill()
-        return self
-
-    async def post(self, sid: str = None, pipeline: str = None, deepcopy: bool = False):
-        '''Awaitable. Execute a POST request against the pipeline.'''
-        self.set_pipeline(pipeline)
-        token = await self.create_token()
-        data = await self._meta.pipeline.post(token, self._meta.body, sid)
-        data = self._filter(data)
-        self._meta.raw_data = fast_copy(data) if deepcopy else data
-        self._meta.data = self._transform(data)
-        self._fill()
-        return self
-
-    async def put(self, sid: str = None, pipeline: str = None, deepcopy: bool = False):
-        '''Awaitable. Execute a PUT request against the pipeline.'''
-        self.set_pipeline(pipeline)
-        token = await self.create_token()
-        data = await self._meta.pipeline.put(token, self._meta.body, sid)
-        data = self._filter(data)
-        self._meta.raw_data = fast_copy(data) if deepcopy else data
-        self._meta.data = self._transform(data)
-        self._fill()
-        return self
-
-    def query(self, **kwargs):
-        '''Add query parameters to the object.'''
-        self._meta.query = self._parse_camel(locals())
-        return self
-
-    def body(self, **kwargs):
-        '''Add body parameters to the object.'''
-        self._meta.body = self._parse_camel(locals())
-        return self
-
-    def set_pipeline(self, pipeline: str = None):
-        '''Set the pipeline to execute against.'''
-        if pipeline is None: return self
-        try:
-            self._meta.pipeline = pipelines[pipeline]
-        except KeyError as e:
-            raise RuntimeError(f"Pipeline '{pipeline}' does not exist, inactive or dead") from e
-        return self
-
-    async def create_token(self) -> PipelineToken:
-        '''Awaitable. Create a pipeline token that identifies this object (its parameters).'''
-        await self._setup()
-        self._get_rule()
-        self._get_server()
-        self._clean()
-        try:
-            return PipelineToken(self._meta.pipeline.model, self._meta.server, self._meta.key, self._meta.load, self._meta.query)
-        except AttributeError as e:
-            raise RuntimeError("Token creation failed, please make sure pipeline is activated") from e
-
-    def _get_rule(self):
+    def match_rule(self):
         if len(self._meta.rules) == 0:
-            raise RuntimeError("This Pyot object is not getable")
+            raise TypeError("This Pyot object is static")
         for key, attr in self._meta.rules.items():
             load = {}
             for a in attr:
                 try:
+                    checkonly = a.startswith('?')
+                    if checkonly:
+                        getattr(self, a[1:])
+                        continue
                     load[a] = getattr(self, a)
                 except AttributeError:
                     break
@@ -374,27 +336,90 @@ class PyotCoreObject(PyotStaticObject, PyotContainerObject):
                 self._meta.key = key
                 self._meta.load = load
                 return self
-        raise TypeError("Incomplete values to create request token")
+        raise TypeError("Incomplete values for pipeline token creation")
 
-    def _hide_load_value(self, key):
-        self._meta.filtered_load += str(self._meta.load.pop(key))
+    def match_server(self):
+        server_type = self._meta.server_type
+        if server_type:
+            server: str = getattr(self, server_type)
+            self._meta.server = server.lower()
+        else:
+            self._meta.server = None
+        return self
 
-    @staticmethod
-    def _parse_camel(kwargs) -> Dict:
-        return {camelcase(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
+    def pre_request(self, pipeline: str = None):
+        if pipeline:
+            self.pipeline(pipeline)
+
+    def post_request(self, data, deepcopy: bool):
+        data = self.filter(data)
+        self._meta.raw_data = fast_copy(data) if deepcopy else data
+        self._meta.data = self.transform(data)
+        self.fill()
+
+    async def token(self) -> PipelineToken:
+        '''Coroutine. Create a pipeline token that identifies this object (its parameters).'''
+        await self.setup()
+        self.match_rule()
+        self.match_server()
+        self.clean()
+        try:
+            return PipelineToken(self._meta.pipeline.model, self._meta.server, self._meta.key, self._meta.load, self._meta.query)
+        except AttributeError as e:
+            raise ValueError("Token creation failed, please ensure a pipeline is activated or provided") from e
+
+    async def get(self, pipeline: str = None, deepcopy: bool = False):
+        '''Coroutine. Execute a GET request against the pipeline.'''
+        self.pre_request(pipeline)
+        data = await self._meta.pipeline.get(await self.token())
+        self.post_request(data, deepcopy)
+        return self
+
+    async def post(self, pipeline: str = None, deepcopy: bool = False):
+        '''Coroutine. Execute a POST request against the pipeline.'''
+        self.pre_request(pipeline)
+        data = await self._meta.pipeline.post(await self.token(), self._meta.body)
+        self.post_request(data, deepcopy)
+        return self
+
+    async def put(self, pipeline: str = None, deepcopy: bool = False):
+        '''Coroutine. Execute a PUT request against the pipeline.'''
+        self.pre_request(pipeline)
+        data = await self._meta.pipeline.put(await self.token(), self._meta.body)
+        self.post_request(data, deepcopy)
+        return self
+
+    def pipeline(self, name: str = None):
+        try:
+            self._meta.pipeline = pipelines[name]
+        except KeyError as e:
+            raise ValueError(f"Pipeline '{name}' does not exist, inactive or dead") from e
+        return self
+
+    def query(self, **kwargs):
+        '''Query parameters setter.'''
+        self._meta.query = parse_camelcase(locals())
+        return self
+
+    def body(self, **kwargs):
+        '''Body parameters setter.'''
+        self._meta.body = parse_camelcase(locals())
+        return self
 
     def raw(self):
         """Return the raw response of the request, only available for Core objects"""
         return self._meta.raw_data
 
-    async def _setup(self):
-        pass
+    async def setup(self):
+        """Coroutine. Set up the object to make request, this comes before `clean()`."""
 
-    def _clean(self):
-        pass
+    def clean(self):
+        """Clean up the object to make request, this comes right before the request."""
 
-    def _transform(self, data) -> Dict:
+    def filter(self, data):
+        """Filter out the requested data from the response, this comes right after the request and before 'transform()'."""
         return data
 
-    def _filter(self, data):
+    def transform(self, data) -> Dict:
+        """Transform the data into a pyot compatible structure non-destructively, this comes after `filter()`."""
         return data

@@ -1,8 +1,9 @@
 from typing import List, Iterator
 
-from pyot.utils.cdragon import cdragon_url, cdragon_sanitize
+from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
-from .__core__ import PyotCore
+from pyot.utils.lol.cdragon import abs_url, sanitize
+from .base import PyotCore
 
 
 # PYOT CORE OBJECT
@@ -30,25 +31,20 @@ class Item(PyotCore):
     icon_path: str
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_item_full": ["id"]}
-        raws = ["from_ids", "to_ids", "categories", "maps", "modes"]
+        rules = {"cdragon_item_full": ["version", "locale", "?id"]}
+        raws = {"from_ids", "to_ids", "categories", "maps", "modes"}
         renamed = {"from":"from_ids", "to": "to_ids", "map_string_id_inclusions": "maps", "mode_name_inclusions": "modes",
             "required_buff_currency_name": "required_currency", "required_buff_currency_cost": "required_currency_cost",
             "price": "self_cost", "price_total": "total_cost"}
 
-    def __init__(self, id: int = None, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: int = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     @cache_indexes
-    def _filter(self, indexer, data):
+    def filter(self, indexer, data):
         return indexer.get(self.id, data, "id")
 
-    def _clean(self):
-        if self.locale.lower() == "en_us":
-            self._meta.server = "default"
-        self._hide_load_value("id")
-
-    def _transform(self, data):
+    def transform(self, data):
         if data["requiredChampion"] == "":
             data["requiredChampion"] = None
         if data["requiredBuffCurrencyName"] == "":
@@ -58,28 +54,28 @@ class Item(PyotCore):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return cdragon_url(self.icon_path)
+        return abs_url(self.icon_path)
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return cdragon_sanitize(self.description)
+        return sanitize(self.description)
 
     @property
-    def from_items(self) -> List["Item"]:
+    def from_items(self):
         items = []
         for id in self.from_ids:
             items.append(Item(id=id, locale=self.locale))
         return items
 
     @property
-    def to_items(self) -> List["Item"]:
+    def to_items(self):
         items = []
         for id in self.to_ids:
             items.append(Item(id=id, locale=self.locale))
         return items
 
     @property
-    def meraki_item(self) -> "MerakiItem":
+    def meraki_item(self):
         from .merakiitem import MerakiItem
         return MerakiItem(id=self.id)
 
@@ -88,10 +84,10 @@ class Items(PyotCore):
     items: List[Item]
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_item_full": []}
+        rules = {"cdragon_item_full": ["version", "locale"]}
 
-    def __init__(self, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -104,9 +100,5 @@ class Items(PyotCore):
     def __len__(self):
         return len(self.items)
 
-    def _clean(self):
-        if self.locale.lower() == "en_us":
-            self._meta.server = "default"
-
-    def _transform(self, data):
+    def transform(self, data):
         return {"items": data}

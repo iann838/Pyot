@@ -1,9 +1,11 @@
 from typing import List, Iterator, Dict
 
-from pyot.utils import tft_url, cdragon_sanitize
+from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
 from pyot.core.exceptions import NotFound
-from .__core__ import PyotCore, PyotStatic
+from pyot.utils.tft.cdragon import abs_url
+from pyot.utils.lol.cdragon import sanitize
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECT
@@ -15,7 +17,7 @@ class TraitEffectData(PyotStatic):
     variables: Dict[str, int]
 
     class Meta(PyotStatic.Meta):
-        raws = ["variables"]
+        raws = {"variables"}
 
 
 # PYOT CORE OBJECT
@@ -29,34 +31,31 @@ class Trait(PyotCore):
     description: str
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_tft_full": ["set", "key"]}
+        rules = {"cdragon_tft_full": ["?set", "?key", "version", "locale"]}
         renamed = {"api_name": "key", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, key: str = None, set: int = None, locale: str = None):
-        a = locals()
-        if key and not set:
-            try:
-                a["set"] = int(self.key.split("_")[0][-1])
-            except Exception:
-                raise RuntimeError("Could not parse 'set' value from key")
-        self._lazy_set(a)
+    def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
+        if self.key and self.set is None:
+            self.find_set()
+
+    def find_set(self):
+        try:
+            self.set = int(self.key.split("_")[0][3:])
+        except Exception as e:
+            raise TypeError("Could not parse 'set' value from key") from e
 
     @cache_indexes
-    def _filter(self, indexer, data):
+    def filter(self, indexer, data):
         return indexer.get(self.key, data["sets"][str(self.set)]["traits"], "apiName")
-
-    def _clean(self):
-        if self.locale.lower() == "default":
-            self._meta.server = "en_us"
-        self._hide_load_value("key")
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return tft_url(self.icon_path)
+        return abs_url(self.icon_path)
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return cdragon_sanitize(self.description)
+        return sanitize(self.description)
 
 
 class Traits(PyotCore):
@@ -64,10 +63,10 @@ class Traits(PyotCore):
     traits: List[Trait]
 
     class Meta(PyotCore.Meta):
-        rules = {"cdragon_tft_full": ["set"]}
+        rules = {"cdragon_tft_full": ["?set", "version", "locale"]}
 
-    def __init__(self, set: int = None, locale: str = None):
-        self._lazy_set(locals())
+    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -80,15 +79,11 @@ class Traits(PyotCore):
     def __len__(self):
         return len(self.traits)
 
-    def _clean(self):
-        if self.locale.lower() == "default":
-            self._meta.server = "en_us"
-
-    def _filter(self, data):
+    def filter(self, data):
         try:
-            return data["sets"][str(self.set)]["traits"]
-        except KeyError:
-            raise NotFound("Request was successful but filtering gave no matching item")
+            return data["sets"][max(data["sets"], key=int) if self.set == -1 else str(self.set)]["traits"]
+        except KeyError as e:
+            raise NotFound("Request was successful but filtering gave no matching item") from e
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"traits": data}

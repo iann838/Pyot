@@ -1,5 +1,8 @@
 from typing import List, Iterator
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from pyot.core.functional import parse_camelcase
+from .base import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
@@ -12,9 +15,9 @@ class LeaderboardPlayerData(PyotStatic):
     number_of_wins: int
 
     @property
-    def account(self) -> "Account":
+    def account(self):
         from ..riot.account import Account
-        return Account(puuid=self.puuid, region=self.region).set_pipeline("val")
+        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
 
 # PYOT CORE OBJECTS
@@ -28,8 +31,8 @@ class Leaderboard(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"ranked_v1_leaderboards": ["act_id"]}
 
-    def __init__(self, act_id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, act_id: str = None, platform: str = models.val.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -43,6 +46,6 @@ class Leaderboard(PyotCore):
         return len(self.players)
 
     def query(self, size: int = None, start_index: int = None):
-        '''Add query parameters to the object.'''
-        self._meta.query = self._parse_camel(locals())
+        '''Query parameters setter.'''
+        self._meta.query = parse_camelcase(locals())
         return self

@@ -1,5 +1,7 @@
 from typing import List, Iterator
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from .base import PyotCore, PyotStatic
 
 ## PYOT STATIC OBJECTS
 
@@ -17,8 +19,8 @@ class Leaderboard(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"ranked_v1_leaderboards": []}
 
-    def __init__(self, region: str = None):
-        self._lazy_set(locals())
+    def __init__(self, region: str = models.lor.DEFAULT_REGION):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):

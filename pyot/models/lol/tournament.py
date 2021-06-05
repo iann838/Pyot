@@ -1,5 +1,7 @@
 from typing import List, Iterator
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.core.functional import parse_camelcase
+from .base import PyotCore, PyotStatic
 
 # PYOT STATIC
 
@@ -19,22 +21,22 @@ class TournamentProvider(PyotCore):
         rules = {"tournament_v4_providers": []}
 
     def __init__(self, region: str = None):
-        self._lazy_set(locals())
+        self.initialize(locals())
 
     def body(self, region: str, url: str):
-        '''Add body parameters to the object.'''
+        '''Body parameters setter.'''
         if not url.startswith("https://") and not url.startswith("http://"):
             raise TypeError("url should be well-formed, starting with an http protocol")
         if region not in ["BR", "EUNE", "EUW", "JP", "LAN", "LAS", "NA", "OCE", "PBE", "RU", "TR"]:
             raise TypeError(f"Invalid region '{region}' parameter, region in tournament-v4 uses client keys (NA, EUW, BR, LAN, ...)")
-        self._meta.body = self._parse_camel(locals())
+        self._meta.body = parse_camelcase(locals())
         return self
 
-    def _clean(self):
+    def clean(self):
         if not hasattr(self._meta, "body"):
             raise TypeError("This object's body parameters is required")
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"id": data}
 
 
@@ -52,20 +54,20 @@ class Tournament(PyotCore):
         rules = {"tournament_v4_tournaments": []}
 
     def __init__(self, region: str = None):
-        self._lazy_set(locals())
+        self.initialize(locals())
 
     def body(self, name: str, provider_id: int):
-        '''Add body parameters to the object.'''
+        '''Body parameters setter.'''
         if not isinstance(provider_id, int):
             raise TypeError("provider_id must be int type")
-        self._meta.body = self._parse_camel(locals())
+        self._meta.body = parse_camelcase(locals())
         return self
 
-    def _clean(self):
+    def clean(self):
         if not hasattr(self._meta, "body"):
             raise TypeError("This object's body parameters is required")
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"id": data}
 
 
@@ -83,9 +85,9 @@ class TournamentLobbyEvents(PyotCore):
         rules = {"tournament_v4_lobby_events": ["code"]}
 
     def __init__(self, code: int = None, region: str = None):
-        self._lazy_set(locals())
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"events": data}
 
     def __getitem__(self, item):
@@ -122,22 +124,22 @@ class TournamentCode(PyotCore):
     summoner_ids: List[str]
 
     class Meta(PyotCore.Meta):
-        raws = ["summoner_ids"]
+        raws = {"summoner_ids"}
         renamed = {"region": "hosted_region", "participants": "summoner_ids"}
         rules = {"tournament_v4_codes_by_code": ["code"]}
 
     def __init__(self, code: str = None, region: str = None):
-        self._lazy_set(locals())
+        self.initialize(locals())
 
     def body(self, map_type: str, pick_type: str, spectator_type: str, allowed_summoner_ids: List[str] = None):
-        '''Add body parameters to the object.'''
+        '''Body parameters setter.'''
         if pick_type not in ["BLIND_PICK", "DRAFT_MODE", "ALL_RANDOM", "TOURNAMENT_DRAFT"]:
             raise TypeError(f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT")
         if map_type not in ["SUMMONERS_RIFT", "TWISTED_TREELINE", "HOWLING_ABYSS"]:
             raise TypeError(f"Invalid map type '{map_type}' parameter, must be one of SUMMONERS_RIFT, TWISTED_TREELINE, HOWLING_ABYSS")
         if spectator_type not in ["NONE", "LOBBYONLY", "ALL"]:
             raise TypeError(f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL")
-        self._meta.body = self._parse_camel(locals())
+        self._meta.body = parse_camelcase(locals())
         return self
 
     @property
@@ -151,20 +153,20 @@ class TournamentCodes(PyotCore):
     region: str
 
     class Meta(PyotCore.Meta):
-        raws = ["codes"]
+        raws = {"codes"}
         rules = {"tournament_v4_codes": []}
 
     def __init__(self, region: str = None):
-        self._lazy_set(locals())
+        self.initialize(locals())
 
     def query(self, tournament_id: int, count: int = None):
         if not isinstance(count, int) or count > 1000 or count < 1:
             raise TypeError(f"Invalid count '{count}' parameter, must be between 1-5")
-        self._meta.query = self._parse_camel(locals())
+        self._meta.query = parse_camelcase(locals())
         return self
 
     def body(self, map_type: str, pick_type: str, team_size: int, spectator_type: str, allowed_summoner_ids: List[str] = None, metadata: str = None):
-        '''Add body parameters to the object.'''
+        '''Body parameters setter.'''
         if pick_type not in ["BLIND_PICK", "DRAFT_MODE", "ALL_RANDOM", "TOURNAMENT_DRAFT"]:
             raise TypeError(f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT")
         if map_type not in ["SUMMONERS_RIFT", "TWISTED_TREELINE", "HOWLING_ABYSS"]:
@@ -173,16 +175,16 @@ class TournamentCodes(PyotCore):
             raise TypeError(f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL")
         if not isinstance(team_size, int) or team_size > 5 or team_size < 1:
             raise TypeError(f"Invalid team size '{team_size}' parameter, must be between 1-5")
-        self._meta.body = self._parse_camel(locals())
+        self._meta.body = parse_camelcase(locals())
         return self
 
-    def _clean(self):
+    def clean(self):
         if not hasattr(self._meta, "body"):
             raise TypeError("This object's body parameters is required")
         if not hasattr(self._meta, "query"):
             raise TypeError("This object is missing query parameters")
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"codes": data}
 
     @property

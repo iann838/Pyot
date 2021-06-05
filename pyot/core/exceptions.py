@@ -2,36 +2,54 @@ from typing import Mapping
 
 
 class PyotException(Exception):
-    pass
+    code: int
 
 
 class NotFindable(PyotException):
+
+    code = 600
+
     def __init__(self):
         PyotException.__init__(self, "[Trace: Pyot Pipeline] 600: Pipeline token matching pair not found")
 
 
 class SessionNotFound(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 601
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 601: Session Not Found. Origin: {origin}")
 
 
 class DecodeError(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 602
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 602: AioHttp took too long to decode the response. Origin: {origin}")
 
 
 class NoContent(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 204
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 204: No Content. Origin: {origin}")
 
 
 class NotFound(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 404
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 404: Data Not Found. Origin: {origin}")
 
 
 class MethodNotAllowed(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 405
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 405: Method Not Allowed. Origin: {origin}")
 
 
@@ -43,35 +61,53 @@ class ServerError(PyotException):
         504: "Gateway Timeout",
 
     }
-    def __init__(self, code, origin="Non Service Origin"):
+    def __init__(self, code, origin="Unknown"):
+        self.code = code
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] {code}: {self.messages[code]}. Origin: {origin}")
 
 
 class RateLimited(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 429
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 429: Rate limit Exceeded. Origin: {origin}")
 
 
 class Forbidden(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 403
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 403: Access Forbidden. Origin: {origin}")
 
 
 class Unauthorized(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 401
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 401: Access Unauthorized. Origin: {origin}")
 
 
 class BadRequest(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 400
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 400: Bad Request. Origin: {origin}")
 
 
 class Timeout(PyotException):
-    def __init__(self, origin="Non Service Origin"):
+
+    code = 408
+
+    def __init__(self, origin="Unknown"):
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] 408: Timeout Connection. Origin: {origin}")
 
 
 class UnidentifiedResponse(PyotException):
-    def __init__(self, code, origin="Non Service Origin"):
+
+    def __init__(self, code, origin="Unknown"):
+        self.code = code
         PyotException.__init__(self, f"[Trace: Pyot Pipeline] {code}: Unidentified Response {code}. Origin: {origin}")

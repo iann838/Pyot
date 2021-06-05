@@ -1,124 +1,130 @@
 from typing import List, Any, Iterator
 import aiohttp
 
-from pyot.core.exceptions import NotFound, NotFindable
+from pyot.core.exceptions import NotFound, NotFindable, PyotException
+from pyot.utils.eventloop import LoopSensitiveManager
+from pyot.stores.base import Store
+
 from .token import PipelineToken
-from .objects import StoreObject
 
 
 class Pipeline:
-    '''Pyot Pipeline object, backbone of the entire framework.'''
+    '''Pipeline containing a sequence of stores for request execution.'''
 
-    def __init__(self, model: str, stores: List[StoreObject]):
+    def __init__(self, model: str, name: str, stores: List[Store]):
         self.model = model
+        self.name = name
         self.stores = stores
-        self.sessions = {}
+        self.sessions = LoopSensitiveManager(
+            factory=lambda: aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)),
+            callback=lambda session: session.close()
+        )
 
-    def __iter__(self) -> Iterator[StoreObject]:
+    def __iter__(self) -> Iterator[Store]:
         return iter(self.stores)
 
     def __getitem__(self, item):
         return self.stores[item]
 
-    async def get(self, token: PipelineToken, sid: str = None):
+    async def get(self, token: PipelineToken):
         '''Get an object from the stores.'''
-        async with PipelineSession(self, sid) as session:
-            found_in = None
-            for store in self.stores:
-                try:
-                    response = await store.get(token, session=session)
-                    found_in = store
-                except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
-                        raise
-                    continue
-                break
+        session = await self.sessions.get()
+        found_in = None
+        last_exc = NotFindable
+        for store in self.stores:
+            try:
+                response = await store.get(token, session=session)
+                found_in = store
+            except (NotImplementedError, NotFindable):
+                continue
+            except PyotException as e:
+                last_exc = e
+                continue
+            break
+        else:
+            raise last_exc
         await self.set(token, response, found_in)
         return response
 
     async def set(self, token: PipelineToken, value: Any, stop=None):
         '''Set an object to stores of type Cache.'''
+        session = await self.sessions.get()
         for store in self.stores:
             if store is stop: break
             try:
-                await store.set(token, value)
+                await store.set(token, value, session=session)
             except NotImplementedError:
                 continue
 
-    async def post(self, token: PipelineToken, body: Any, sid: str = None):
+    async def post(self, token: PipelineToken, body: Any):
         '''Post an object to stores of type Service.'''
-        async with PipelineSession(self, sid) as session:
-            for store in self.stores:
-                try:
-                    response = await store.post(token, body, session=session)
-                except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
-                        raise
-                    continue
-                break
+        session = await self.sessions.get()
+        last_exc = NotFindable
+        for store in self.stores:
+            try:
+                response = await store.post(token, body, session=session)
+            except (NotImplementedError, NotFindable):
+                continue
+            except PyotException as e:
+                last_exc = e
+                continue
+            break
+        else:
+            raise last_exc
         return response
 
-    async def put(self, token: PipelineToken, body: Any, sid: str = None):
+    async def put(self, token: PipelineToken, body: Any):
         '''Put an object to stores of type Service.'''
-        async with PipelineSession(self, sid) as session:
-            for store in self.stores:
-                try:
-                    response = await store.put(token, body, session=session)
-                except (NotImplementedError, NotFound, NotFindable) as e:
-                    if self.stores[-1] == store or store.store_type == "SERVICE" and isinstance(e, NotFound):
-                        raise
-                    continue
-                break
+        session = await self.sessions.get()
+        last_exc = NotFindable
+        for store in self.stores:
+            try:
+                response = await store.put(token, body, session=session)
+            except (NotImplementedError, NotFindable):
+                continue
+            except PyotException as e:
+                last_exc = e
+                continue
+            break
+        else:
+            raise last_exc
         return response
 
     async def clear(self):
         '''Clear stores of type Cache.'''
+        session = await self.sessions.get()
         for store in self.stores:
             try:
-                await store.clear()
+                await store.clear(session=session)
             except NotImplementedError:
                 continue
 
     async def expire(self):
         '''Expire stores of type Cache that cannot dynamically expire.'''
+        session = await self.sessions.get()
         for store in self.stores:
             try:
-                await store.expire()
+                await store.expire(session=session)
             except NotImplementedError:
                 continue
 
     async def delete(self, token: PipelineToken):
         '''Delete an object from the stores.'''
+        session = await self.sessions.get()
         for store in self.stores:
             try:
-                await store.delete(token)
+                await store.delete(token, session=session)
             except (NotImplementedError, NotFound):
                 continue
 
     async def contains(self, token: PipelineToken):
         '''Check if an object exist in stores of type Cache.'''
+        session = await self.sessions.get()
         contains = False
         for store in self.stores:
             try:
-                contains = await store.contains(token)
+                contains = await store.contains(token, session=session)
             except NotImplementedError:
                 continue
             if contains: break
         return contains
-
-
-class PipelineSession:
-    '''Manages a Pipeline Session'''
-    session: aiohttp.ClientSession
-
-    def __init__(self, pipeline: Pipeline, sid: str):
-        self.pipeline = pipeline
-        self.sid = sid
-
-    async def __aenter__(self) -> "PipelineSessionManager":
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)) if self.sid is None else self.pipeline.sessions[self.sid]
-        return self.session
-
-    async def __aexit__(self, *args):
-        if self.sid is None:
-            await self.session.close()

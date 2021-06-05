@@ -1,10 +1,8 @@
 from typing import List, Iterator
 from datetime import datetime, timedelta
 
-from pyot.core.functional import handle_import_error
-from pyot.utils.common import dict_key_value_swap
-from .__core__ import PyotCore, PyotStatic
-from .__cache__ import roleidentification, champion_roles
+from pyot.conf.model import models
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -15,12 +13,12 @@ class CurrentGameBansData(PyotStatic):
     team_id: int
 
     @property
-    def champion(self) -> "Champion":
+    def champion(self):
         from .champion import Champion
-        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+        return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self) -> "MerakiChampion":
+    def meraki_champion(self):
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
@@ -46,42 +44,42 @@ class CurrentGameParticipantData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         renamed = {"bot": "is_bot", "perk_ids": "rune_ids", "perk_style": "rune_main_style", "perk_sub_style": "rune_sub_style"}
-        raws = ["spell_ids", "rune_ids"]
+        raws = {"spell_ids", "rune_ids"}
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
 
     @property
-    def champion(self) -> "Champion":
+    def champion(self):
         from .champion import Champion
-        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+        return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self) -> "MerakiChampion":
+    def meraki_champion(self):
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
     @property
-    def profile_icon(self) -> "ProfileIcon":
+    def profile_icon(self):
         from .profileicon import ProfileIcon
-        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
+        return ProfileIcon(id=self.profile_icon_id)
 
     @property
-    def runes(self) -> List["Rune"]:
+    def runes(self):
         from .rune import Rune
         mutable = []
         for i in self.rune_ids:
-            mutable.append(Rune(id=i, locale=self.to_locale(self.platform)))
+            mutable.append(Rune(id=i))
         return mutable
 
     @property
-    def spells(self) -> List["Spell"]:
+    def spells(self):
         from .spell import Spell
         mutable = []
         for i in self.spell_ids:
-            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
+            mutable.append(Spell(id=i))
         return mutable
 
 
@@ -96,34 +94,34 @@ class FeaturedGameParticipantData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         renamed = {"bot": "is_bot"}
-        raws = ["spell_ids"]
+        raws = {"spell_ids"}
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(name=self.summoner_name, platform=self.platform)
 
     @property
-    def champion(self) -> "Champion":
+    def champion(self):
         from .champion import Champion
-        return Champion(id=self.champion_id, locale=self.to_locale(self.platform))
+        return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self) -> "MerakiChampion":
+    def meraki_champion(self):
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
     @property
-    def profile_icon(self) -> "ProfileIcon":
+    def profile_icon(self):
         from .profileicon import ProfileIcon
-        return ProfileIcon(id=self.profile_icon_id, locale=self.to_locale(self.platform))
+        return ProfileIcon(id=self.profile_icon_id)
 
     @property
-    def spells(self) -> List["Spell"]:
+    def spells(self):
         from .spell import Spell
         mutable = []
         for i in self.spell_ids:
-            mutable.append(Spell(id=i, locale=self.to_locale(self.platform)))
+            mutable.append(Spell(id=i))
         return mutable
 
 
@@ -145,8 +143,6 @@ class FeaturedGameData(PyotStatic):
     mode: str
     start_millis: int
     length_secs: int #not milliseconds
-    creation: datetime
-    duration: timedelta
     map_id: int
     platform: str
     queue_id: int
@@ -164,20 +160,6 @@ class FeaturedGameData(PyotStatic):
     @property
     def duration(self) -> datetime:
         return timedelta(seconds=self.length_secs)
-
-    @handle_import_error(roleidentification)
-    def roleidentification(self):
-        resp = {}
-        for team in self.teams:
-            roles = dict_key_value_swap(roleidentification.get_roles(
-                champion_roles.get(),
-                [participant.champion_id for participant in team.participants]
-            ))
-            resp[team.id] = roles
-            for participant in team.participants:
-                participant.position = roles[participant.champion_id]
-                participant._meta.data['position'] = roles[participant.champion_id]
-        return resp
 
     @property
     def banned_champions(self) -> List[CurrentGameBansData]:
@@ -210,10 +192,10 @@ class CurrentGame(FeaturedGameData, PyotCore):
     class Meta(FeaturedGameData.Meta, PyotCore.Meta):
         rules = {"spectator_v4_current_game": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         data = data.copy()
         data["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
         data["observersKey"] = data.pop("observers", None)["encryptionKey"]
@@ -255,7 +237,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
         return self.teams[1]
 
     @property
-    def summoner(self) -> "Summoner":
+    def summoner(self):
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
@@ -263,7 +245,6 @@ class CurrentGame(FeaturedGameData, PyotCore):
 class FeaturedGames(PyotCore):
     games: List[FeaturedGameData]
     refresh_interval_secs: int
-    refresh_interval: timedelta
 
     class Meta(PyotCore.Meta):
         rules = {"spectator_v4_featured_games": []}
@@ -280,14 +261,14 @@ class FeaturedGames(PyotCore):
     def __len__(self):
         return len(self.games)
 
-    def __init__(self, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, platform: str = models.lol.DEFAULT_PLATFORM):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         data = data.copy()
         data["gameList"] = data["gameList"].copy()
         for ind, game in enumerate(data["gameList"]):
-            data["gameList"][ind] = CurrentGame._transform(self, game)
+            data["gameList"][ind] = CurrentGame.transform(self, game)
         return data
 
     @property

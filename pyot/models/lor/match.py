@@ -1,7 +1,10 @@
 from datetime import datetime
 from typing import List, Iterator
+
 from dateutil.parser import parse
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from .base import PyotCore, PyotStatic
 
 ## PYOT STATIC OBJECTS
 
@@ -11,13 +14,13 @@ class MatchMetaData(PyotStatic):
     participant_puuids: List[str]
 
     class Meta(PyotStatic.Meta):
-        raws = ["participant_puuids"]
+        raws = {"participant_puuids"}
         renamed = {"participants": "participant_puuids"}
 
     @property
-    def participants(self) -> List["Account"]:
+    def participants(self):
         from pyot.models.riot import Account
-        return [Account(puuid=puuid, region=self.region).set_pipeline("lor") for puuid in self.participant_puuids]
+        return [Account(puuid=puuid, region=self.region).pipeline(self.metapipeline.name) for puuid in self.participant_puuids]
 
 
 class MatchPlayerData(PyotStatic):
@@ -30,24 +33,23 @@ class MatchPlayerData(PyotStatic):
     win: bool
 
     class Meta(PyotStatic.Meta):
-        raws = ["factions"]
+        raws = {"factions"}
 
     @property
-    def account(self) -> "Account":
+    def account(self):
         from pyot.models.riot import Account
-        return Account(puuid=self.puuid, region=self.region).set_pipeline("lor")
+        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def deck(self) -> "Deck":
+    def deck(self):
         from .card import Deck
-        return Deck(code=self.deck_code, locale=self.to_locale(self.region))
+        return Deck(code=self.deck_code)
 
 
 class MatchInfoData(PyotStatic):
     mode: str # (Legal values: Constructed, Expeditions, Tutorial)
     type: str # (Legal values: Ranked, Normal, AI, Tutorial, VanillaTrial, Singleton, StandardGauntlet)
     start_strftime: str
-    creation: datetime
     version: str
     players: List[MatchPlayerData]
     total_turn_count: int
@@ -56,7 +58,7 @@ class MatchInfoData(PyotStatic):
         renamed = {"game_mode": "mode", "game_type": "type", "game_start_time_utc": "start_strftime", "game_version": "version"}
 
     @property
-    def creation(self):
+    def creation(self) -> datetime:
         return parse(self.start_strftime)
 
 
@@ -70,10 +72,10 @@ class Match(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: int = None, region: str = None):
-        self._lazy_set(locals())
+    def __init__(self, id: int = None, region: str = models.lor.DEFAULT_REGION):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         for player in data["info"]["players"]:
             if player["game_outcome"] == "win":
                 player["win"] = True
@@ -89,13 +91,13 @@ class MatchHistory(PyotCore):
     puuid: str
 
     class Meta(PyotCore.Meta):
-        raws = ["ids"]
+        raws = {"ids"}
         rules = {"match_v1_matchlist": ["puuid"]}
 
-    def __init__(self, puuid: str = None, region: str = None):
-        self._lazy_set(locals())
+    def __init__(self, puuid: str = None, region: str = models.lor.DEFAULT_REGION):
+        self.initialize(locals())
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"ids": data}
 
     def __getitem__(self, item):
@@ -114,6 +116,6 @@ class MatchHistory(PyotCore):
         return [Match(id=id_, region=self.region) for id_ in self.ids]
 
     @property
-    def account(self) -> "Account":
+    def account(self):
         from pyot.models.riot import Account
-        return Account(puuid=self.puuid, region=self.region).set_pipeline("lor")
+        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)

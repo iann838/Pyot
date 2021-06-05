@@ -2,7 +2,9 @@ from datetime import datetime
 from typing import List
 
 from dateutil.parser import parse
-from .__core__ import PyotCore, PyotStatic
+
+from pyot.conf.model import models
+from .base import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
@@ -19,11 +21,9 @@ class StatusUpdateData(PyotStatic):
     translations: List[StatusContentData]
     created_at_strftime: str
     updated_at_strftime: str
-    created_at: datetime
-    updated_at: datetime
 
     class Meta(PyotCore.Meta):
-        raws = ["publish_locations"]
+        raws = {"publish_locations"}
         renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime"}
 
     @property
@@ -46,13 +46,10 @@ class StatusDetailData(PyotStatic):
     created_at_strftime: str
     archive_at_strftime: str
     updated_at_strftime: str
-    created_at: datetime
-    archive_at: datetime
-    updated_at: datetime
     platforms: List[str]
 
     class Meta(PyotCore.Meta):
-        raws = ["platforms"]
+        raws = {"platforms"}
         renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime", "archive_at": "archive_at_strftime"}
 
     @property
@@ -82,7 +79,7 @@ class Status(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"status_v1_platform_data": []}
-        raws = ["locales"]
+        raws = {"locales"}
 
-    def __init__(self, platform: str = None):
-        self._lazy_set(locals())
+    def __init__(self, platform: str = models.val.DEFAULT_PLATFORM):
+        self.initialize(locals())

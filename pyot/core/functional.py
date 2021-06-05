@@ -1,7 +1,7 @@
 from typing import Dict, Union
 from functools import partial, wraps
 
-from pyot.utils.common import camelcase
+from pyot.utils.text import camelcase
 from .exceptions import NotFound
 
 
@@ -17,7 +17,7 @@ class lazy_property:
     @staticmethod
     def func(instance): # pylint: disable=method-hidden
         raise TypeError(
-            'Cannot use cached_property instance without calling '
+            'Cannot use lazy_property instance without calling '
             '__set_name__() on it.'
         )
 
@@ -32,7 +32,7 @@ class lazy_property:
             self.func = self.real_func
         elif name != self.name:
             raise TypeError(
-                "Cannot assign the same cached_property to two different names "
+                "Cannot assign the same lazy_property to two different names "
                 "(%r and %r)." % (self.name, name)
             )
 
@@ -60,8 +60,8 @@ class cache_indexes:
     def __call__(self, instance, data):
         try:
             return self.func(instance, self, data)
-        except KeyError:
-            raise NotFound("Request was successful but filtering gave no matching item")
+        except KeyError as e:
+            raise NotFound("Request was successful but filtering gave no matching item") from e
 
     @staticmethod
     def _get_index(name, data, key):
@@ -125,6 +125,9 @@ def laziable(obj):
     if isinstance(obj, dict) or isinstance(obj, list):
         return True
     return False
+
+def parse_camelcase(kwargs: Dict) -> Dict:
+    return {camelcase(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
 
 
 def handle_import_error(module: ImportError):

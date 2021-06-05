@@ -1,10 +1,11 @@
-from typing import List, Iterator, Union
+from typing import Dict, List, Iterator, Union
 
 from lor_deckcodes.encode import encode_deck
 from lor_deckcodes.decode import decode_deck
+from pyot.conf.model import models
 from pyot.core.functional import cache_indexes
-from pyot.utils import batch_to_ccac
-from .__core__ import PyotCore, PyotStatic, PyotContainer
+from pyot.utils.lor.cards import batch_to_ccac
+from .base import PyotCore, PyotStatic
 
 
 # PYOT STATIC OBJECTS
@@ -48,25 +49,22 @@ class Card(PyotCore):
     number: int
 
     class Meta(PyotCore.Meta):
-        raws = ["keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards"]
+        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards"}
         renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes", "associated_cards": "_deleted__associated_cards"}
-        rules = {"ddragon_lor_set_data": ["set", "code", "locale"]}
+        rules = {"ddragon_lor_set_data": ["set", "?code", "version", "locale"]}
 
-    def __init__(self, code: str = None, locale: str = None):
+    def __init__(self, code: str = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+        self.initialize(locals())
         if code:
             self.set = int(code[:2])
             self.faction = code[2:4]
             self.number = int(code[4:])
-        self._lazy_set(locals())
-
-    def _clean(self):
-        self._hide_load_value("code")
 
     @cache_indexes
-    def _filter(self, indexer, data):
+    def filter(self, indexer, data):
         return indexer.get(self.code, data, "cardCode")
 
-    def _transform(self, data):
+    def transform(self, data):
         data["set"] = int(data["set"][3:])
         data["faction"] = data["cardCode"][2:4]
         data["number"] = int(data["cardCode"][4:7])
@@ -77,7 +75,7 @@ class Card(PyotCore):
         return self.code
 
     @property
-    def associated_cards(self) -> List["Card"]:
+    def associated_cards(self):
         return [Card(code=code, locale=self.locale) for code in self.associated_card_codes]
 
 
@@ -85,12 +83,10 @@ class Cards(PyotCore):
     cards: List[Card]
 
     class Meta(PyotCore.Meta):
-        rules = {"ddragon_lor_set_data": ["set", "locale"]}
+        rules = {"ddragon_lor_set_data": ["set", "version", "locale"]}
 
-    def __init__(self, set: int = None, locale: str = None):
-        if not locale: # SPECIAL CASE, RULE LOOKUP IS __dict__ instead of getattr()
-            self.locale = self.locale
-        self._lazy_set(locals())
+    def __init__(self, set: int = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+        self.initialize(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -103,21 +99,20 @@ class Cards(PyotCore):
     def __len__(self):
         return len(self.cards)
 
-    def _transform(self, data):
+    def transform(self, data):
         return {"cards": data}
 
 
 ## PYOT CONTAINERS
 
-class Batch(PyotContainer):
+class Batch:
     code: str
     count: int
-    locale: str
     faction: str
     set: int
     number: int
 
-    def __init__(self, code: str = None, count: int = 1, raw: str = None, locale: str = None):
+    def __init__(self, code: str = None, count: int = 1, raw: str = None):
         if code:
             self.code = code
             self.count = int(count)
@@ -149,24 +144,31 @@ class Batch(PyotContainer):
         else:
             raise RuntimeError("The batch needs to have at least 1 copy, delete it instead")
 
+    def dict(self):
+        return {
+            "code": self.code,
+            "count": self.count,
+            "faction": self.faction,
+            "set": self.set,
+            "number": self.number,
+        }
+
     @property
     def card(self) -> Card:
-        return Card(code=self.code, locale=self.locale)
+        return Card(code=self.code)
 
 
-class Deck(PyotContainer):
+class Deck:
     batches: List[Batch]
-    locale: str
     code: str
 
-    def __init__(self, batches: Union[List[str], List[Batch]] = None, code: str = None, locale: str = None):
+    def __init__(self, batches: Union[List[str], List[Batch]] = None, code: str = None):
         self.batches = []
         if batches:
             for batch in batches:
                 self.append(batch)
         if code:
             self.code = code
-        super().__init__(locals())
 
     def __getitem__(self, item):
         if not isinstance(item, int):
@@ -185,7 +187,7 @@ class Deck(PyotContainer):
             self.batches.append(batch)
             return
         card_code_and_count = batch.split(":")
-        self.batches.append(Batch(code=card_code_and_count[1], count=card_code_and_count[0], locale=self.locale))
+        self.batches.append(Batch(code=card_code_and_count[1], count=card_code_and_count[0]))
 
     def pop(self, ind: int = -1) -> Batch:
         '''Remove and return a Batch object by index.'''
@@ -202,13 +204,16 @@ class Deck(PyotContainer):
         self.code = encode_deck([batch_to_ccac(batch) for batch in self.batches])
         return self.code
 
-    def decode(self) -> "Deck":
+    def decode(self):
         '''Decode the string in `self.code`, rebuild the batches and return self.'''
         lor_deck = decode_deck(self.code)
         self.batches = []
         for lor_card in lor_deck:
             self.append(lor_card)
         return self
+
+    def dict(self) -> List[Dict]:
+        return [batch.dict() for batch in self.batches]
 
     @property
     def raw(self) -> List[str]:

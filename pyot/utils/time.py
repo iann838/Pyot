@@ -1,7 +1,7 @@
 from datetime import datetime
 import asyncio
 
-from .common import loop_run
+from .runners import loop_run
 
 
 def timeit(func_or_coro, iters: int = 1, concurrent: bool = True):
@@ -24,7 +24,8 @@ def timeit(func_or_coro, iters: int = 1, concurrent: bool = True):
 
 async def atimeit(coro, iters: int = 1, concurrent: bool = True):
     '''
-    Awaitable, measures the running time of a coroutine.
+    Coroutine. measures the running time of a coroutine.
+
     Coroutines with arguments should be passed using `functools.partial`.
     `iters` may be passed to specify the amount of repeat executions.
     `concurrent` to signify concurrent running of coroutines.
