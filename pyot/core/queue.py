@@ -23,7 +23,6 @@ class Queue:
     queue: asyncio.Queue
     workers_num: int
     maxsize: int
-    is_joined: bool
     responses: Dict
     counter: int
     workers: List
@@ -67,7 +66,6 @@ class Queue:
         for worker in self.workers:
             worker.cancel()
         await asyncio.gather(*self.workers, return_exceptions=True)
-        self.is_joined = True
         LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Joined {self.workers_num} workers")
         return
 

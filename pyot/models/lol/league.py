@@ -137,7 +137,6 @@ class DivisionLeague(SummonerLeague):
 
     def query(self, page: int = None):
         '''Query parameters setter.'''
-        if page <= 0: raise AttributeError("Invalid 'page' attribute, it should be greater than 0")
         self._meta.query = parse_camelcase(locals())
         return self
 

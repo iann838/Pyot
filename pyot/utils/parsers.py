@@ -16,7 +16,7 @@ def from_bytes(obj, class_of_t: Optional[Type[T]] = None) -> T:
     return pickle.loads(obj)
 
 
-def json_safe(content):
+def safejson(content):
     try:
         return json.loads(content)
     except json.decoder.JSONDecodeError:

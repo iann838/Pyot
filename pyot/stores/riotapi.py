@@ -8,8 +8,8 @@ from pyot.pipeline.handler import ErrorHandler
 from pyot.endpoints.riotapi import RiotAPIEndpoint
 from pyot.limiters.base import BaseLimiter
 from pyot.utils.importlib import import_class
-from pyot.utils.nullsafe import null_safe
-from pyot.utils.parsers import json_safe
+from pyot.utils.nullsafe import nullsafe
+from pyot.utils.parsers import safejson
 from pyot.utils.runners import thread_run
 from pyot.utils.logging import Logger
 
@@ -54,9 +54,9 @@ class RiotAPI(Store):
                 response = None
 
             await self.rate_limiter.sync_rates(limit_token, response)
-            status = null_safe(response).status or 408
+            status = nullsafe(response).status or 408
             if status == 200:
-                return await response.json(encoding="utf-8", content_type=None, loads=json_safe)
+                return await response.json(encoding="utf-8", content_type=None, loads=safejson)
             if status == 429:
                 headers = await self.rate_limiter.freeze_rates(limit_token, response)
                 if headers["type"] != "service" and not self.silence_429:

@@ -29,7 +29,7 @@ class PyotLazy:
                 return [self.load_static(obj) for obj in self.obj]
             return self.load_static(self.obj)
         except Exception as e:
-            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object due to: {e}") from e
+            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object due to: ({type(e)}) {e}") from e
 
     def load_static(self, obj):
         instance: "PyotStaticBase" = self.clas(obj)

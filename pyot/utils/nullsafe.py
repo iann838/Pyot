@@ -45,5 +45,5 @@ class NullSafe:
         return 0
 
 
-def null_safe(o: T) -> T:
+def nullsafe(o: T) -> T:
     return o or NullSafe()

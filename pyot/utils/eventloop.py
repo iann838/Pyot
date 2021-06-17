@@ -1,12 +1,14 @@
 import asyncio
-from typing import Generic, TypeVar, Type, Callable, Awaitable
-
-T = TypeVar("T")
+from typing import Generic, TypeVar, Type, Callable, Awaitable, Union
 
 
-class LoopSensitiveManager(Generic[T]):
+R1 = TypeVar("R1")
+R2 = TypeVar("R2")
 
-    def __init__(self, factory: Callable[..., Awaitable[T]], callback=None, max_loops: int = 128, t: Type[T] = None):
+
+class LoopSensitiveManager(Generic[R1, R2]):
+
+    def __init__(self, factory: Callable[..., Union[R1, Awaitable[R2]]], callback=None, max_loops: int = 128, t: Type[R1] = None):
         from .locks import SealLock # Ahh avoid circular imports oops
         self.loops = {}
         self.lock = SealLock()
@@ -14,23 +16,23 @@ class LoopSensitiveManager(Generic[T]):
         self.max_loops = max_loops
         self.callback = callback or (lambda x: x)
 
-    async def get(self, *args, **kwargs) -> T:
+    async def get(self, *args, **kwargs) -> Union[R1, R2]:
         loop = asyncio.get_event_loop()
-        try:
+        if loop in self.loops:
             return self.loops[loop]
-        except KeyError:
+        async with self.lock:
+            if loop in self.loops:
+                return self.loops[loop]
             instance = self.factory(*args, **kwargs)
             if asyncio.iscoroutine(instance):
                 self.loops[loop] = await instance
             else:
                 self.loops[loop] = instance
             if len(self.loops) >= self.max_loops:
-                async with self.lock:
-                    if len(self.loops) >= self.max_loops:
-                        await self.cull()
+                await self.cull()
             return self.loops[loop]
 
-    async def cull(self):
+    async def cull(self) -> None:
         closed = []
         for loop in self.loops:
             if loop.is_closed():
@@ -41,5 +43,5 @@ class LoopSensitiveManager(Generic[T]):
             if asyncio.iscoroutine(called):
                 await called
 
-    def __del__(self):
+    def __del__(self) -> None:
         asyncio.run(self.cull())

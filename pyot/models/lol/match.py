@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Iterator, Dict
+from typing import List, Iterator, Dict, Tuple
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase, lazy_property
@@ -44,6 +44,11 @@ class MatchTeamData(PyotStatic):
     class Meta(PyotStatic.Meta):
         renamed = {"team_id": "id"}
 
+    @property
+    def participants(self) -> List["MatchParticipantData"]:
+        self.metaroot: Match
+        return [p for p in self.metaroot.info.participants if p.team_id == self.id]
+
 
 class MatchPerkSelectionData(PyotStatic):
     perk: int
@@ -67,227 +72,6 @@ class MatchStatPerkData(PyotStatic):
 class MatchPerkData(PyotStatic):
     stat_perks: MatchStatPerkData
     styles: List[MatchPerkStyleData]
-
-
-class MatchParticipantData(PyotStatic):
-    id: int
-    assists: int
-    baron_kills: int
-    bounty_level: int
-    champ_experience: int
-    champ_level: int
-    champion_id: int
-    champion_name: str
-    champion_transform: int
-    consumables_purchased: int
-    damage_dealt_to_buildings: int
-    damage_dealt_to_objectives: int
-    damage_dealt_to_turrets: int
-    damage_self_mitigated: int
-    deaths: int
-    detector_wards_placed: int
-    double_kills: int
-    dragon_kills: int
-    first_blood_assist: bool
-    first_blood_kill: bool
-    first_tower_assist: bool
-    first_tower_kill: bool
-    game_ended_in_early_surrender: bool
-    game_ended_in_surrender: bool
-    gold_earned: int
-    gold_spent: int
-    individual_position: str
-    inhibitor_kills: int
-    inhibitors_lost: int
-    item0: int
-    item1: int
-    item2: int
-    item3: int
-    item4: int
-    item5: int
-    item6: int
-    items_purchased: int
-    killing_sprees: int
-    kills: int
-    lane: str
-    largest_critical_strike: int
-    largest_killing_spree: int
-    largest_multi_kill: int
-    longest_time_spent_living_secs: int
-    magic_damage_dealt: int
-    magic_damage_dealt_to_champions: int
-    magic_damage_taken: int
-    neutral_minions_killed: int
-    nexus_kills: int
-    nexus_lost: int
-    objectives_stolen: int
-    objectives_stolen_assists: int
-    penta_kills: int
-    perks: MatchPerkData
-    physical_damage_dealt: int
-    physical_damage_dealt_to_champions: int
-    physical_damage_taken: int
-    profile_icon_id: int
-    puuid: str
-    quadra_kills: int
-    riot_id_name: str
-    riot_id_tagline: str
-    role: str
-    sight_wards_bought_in_game: int
-    spell1_casts: int
-    spell2_casts: int
-    spell3_casts: int
-    spell4_casts: int
-    summoner1_casts: int
-    summoner1_id: int
-    summoner2_casts: int
-    summoner2_id: int
-    summoner_id: str
-    summoner_level: int
-    summoner_name: str
-    team_early_surrendered: bool
-    team_id: int
-    team_position: str
-    time_ccing_others_secs: int
-    time_played_secs: int
-    total_damage_dealt: int
-    total_damage_dealt_to_champions: int
-    total_damage_shielded_on_teammates: int
-    total_damage_taken: int
-    total_heal: int
-    total_heals_on_teammates: int
-    total_minions_killed: int
-    total_time_cc_dealt_secs: int
-    total_time_spent_dead_secs: int
-    total_units_healed: int
-    triple_kills: int
-    true_damage_dealt: int
-    true_damage_dealt_to_champions: int
-    true_damage_taken: int
-    turret_kills: int
-    turrets_lost: int
-    unreal_kills: int
-    vision_score: int
-    vision_wards_bought_in_game: int
-    wards_killed: int
-    wards_placed: int
-    win: bool
-
-    class Meta(PyotStatic.Meta):
-        renamed = {
-            "participant_id": "id", "profile_icon": "profile_icon_id", "time_c_cing_others": "time_ccing_others_secs",
-            "total_time_cc_dealt": "total_time_cc_dealt_secs", "total_time_spent_dead": "total_time_spent_dead_secs",
-            "time_played": "time_played_secs", "longest_time_spent_living": "longest_time_spent_living_secs",
-        }
-
-    @property
-    def total_time_cc_dealt(self) -> timedelta:
-        return timedelta(seconds=self.total_time_cc_dealt_secs)
-
-    @property
-    def total_time_spent_dead(self) -> timedelta:
-        return timedelta(seconds=self.total_time_spent_dead_secs)
-
-    @property
-    def time_ccing_others(self) -> timedelta:
-        return timedelta(seconds=self.time_ccing_others_secs)
-
-    @property
-    def time_played(self) -> timedelta:
-        return timedelta(seconds=self.time_played_secs)
-
-    @property
-    def longest_time_spent_living(self) -> timedelta:
-        return timedelta(seconds=self.longest_time_spent_living_secs)
-
-    @lazy_property
-    def rune_ids(self) -> List[int]:
-        ids = []
-        for style in self.perks.styles:
-            for selection in style.selections:
-                ids.append(selection.perk)
-        return ids
-
-    @lazy_property
-    def stat_rune_ids(self) -> List[int]:
-        o = self.perks.stat_perks
-        return [o.offense, o.flex, o.defense]
-
-    @lazy_property
-    def rune_primary_style(self) -> int:
-        return next(style.style for style in self.perks.styles if style.description == "primaryStyle")
-
-    @lazy_property
-    def rune_sub_style(self) -> int:
-        return next(style.style for style in self.perks.styles if style.description == "subStyle")
-
-    @property
-    def runes(self):
-        from .rune import Rune
-        return [Rune(id=id_) for id_ in self.rune_ids]
-
-    @lazy_property
-    def spell_ids(self) -> List[int]:
-        return [self.summoner1_id, self.summoner2_id]
-
-    @property
-    def spells(self):
-        from .spell import Spell
-        return [Spell(id=id_) for id_ in self.spell_ids]
-
-    @property
-    def summoner(self):
-        from .summoner import Summoner
-        return Summoner(puuid=self.puuid, platform=self.metaroot.platform)
-
-
-class MatchMetaData(PyotStatic):
-    match_id: str
-    data_version: int
-    participant_puuids: List[str]
-
-    class Meta(PyotStatic.Meta):
-        raws = {"participant_puuids"}
-        renamed = {"participants": "participant_puuids"}
-
-    @property
-    def participants(self):
-        from .summoner import Summoner
-        return [Summoner(puuid=puuid, platform=self.metaroot.platform) for puuid in self.participant_puuids]
-
-
-class MatchInfoData(PyotStatic):
-    game_id: int
-    creation_millis: int
-    duration_millis: int
-    start_millis: int
-    mode: str
-    name: str
-    type: str
-    version: str
-    platform: str
-    map_id: int
-    queue_id: int
-    participants: List[MatchParticipantData]
-    teams: List[MatchTeamData]
-
-    class Meta(PyotStatic.Meta):
-        renamed = {
-            "game_creation": "creation_millis", "game_duration": "duration_millis", "game_mode": "mode", "game_name": "name",
-            "game_start_timestamp": "start_millis", "game_type": "type", "game_version": "version", "platform_id": "platform",
-        }
-
-    @property
-    def creation(self) -> datetime:
-        return datetime.fromtimestamp(self.creation_millis // 1000)
-
-    @property
-    def duration(self) -> datetime:
-        return timedelta(milliseconds=self.duration_millis)
-
-    @property
-    def start(self) -> datetime:
-        return datetime.fromtimestamp(self.start_millis // 1000)
 
 
 class TimelineChampionStatData(PyotStatic):
@@ -443,14 +227,266 @@ class TimelineEventData(PyotStatic):
         return MerakiItem(id=self.before_id)
 
 
+class MatchParticipantData(PyotStatic):
+    id: int
+    assists: int
+    baron_kills: int
+    bounty_level: int
+    champ_experience: int
+    champ_level: int
+    champion_id: int
+    champion_name: str
+    champion_transform: int
+    consumables_purchased: int
+    damage_dealt_to_buildings: int
+    damage_dealt_to_objectives: int
+    damage_dealt_to_turrets: int
+    damage_self_mitigated: int
+    deaths: int
+    detector_wards_placed: int
+    double_kills: int
+    dragon_kills: int
+    first_blood_assist: bool
+    first_blood_kill: bool
+    first_tower_assist: bool
+    first_tower_kill: bool
+    game_ended_in_early_surrender: bool
+    game_ended_in_surrender: bool
+    gold_earned: int
+    gold_spent: int
+    individual_position: str
+    inhibitor_kills: int
+    inhibitors_lost: int
+    item0: int
+    item1: int
+    item2: int
+    item3: int
+    item4: int
+    item5: int
+    item6: int
+    items_purchased: int
+    killing_sprees: int
+    kills: int
+    lane: str
+    largest_critical_strike: int
+    largest_killing_spree: int
+    largest_multi_kill: int
+    longest_time_spent_living_secs: int
+    magic_damage_dealt: int
+    magic_damage_dealt_to_champions: int
+    magic_damage_taken: int
+    neutral_minions_killed: int
+    nexus_kills: int
+    nexus_lost: int
+    objectives_stolen: int
+    objectives_stolen_assists: int
+    penta_kills: int
+    perks: MatchPerkData
+    physical_damage_dealt: int
+    physical_damage_dealt_to_champions: int
+    physical_damage_taken: int
+    profile_icon_id: int
+    puuid: str
+    quadra_kills: int
+    riot_id_name: str
+    riot_id_tagline: str
+    role: str
+    sight_wards_bought_in_game: int
+    spell1_casts: int
+    spell2_casts: int
+    spell3_casts: int
+    spell4_casts: int
+    summoner1_casts: int
+    summoner1_id: int
+    summoner2_casts: int
+    summoner2_id: int
+    summoner_id: str
+    summoner_level: int
+    summoner_name: str
+    team_early_surrendered: bool
+    team_id: int
+    team_position: str
+    time_ccing_others_secs: int
+    time_played_secs: int
+    total_damage_dealt: int
+    total_damage_dealt_to_champions: int
+    total_damage_shielded_on_teammates: int
+    total_damage_taken: int
+    total_heal: int
+    total_heals_on_teammates: int
+    total_minions_killed: int
+    total_time_cc_dealt_secs: int
+    total_time_spent_dead_secs: int
+    total_units_healed: int
+    triple_kills: int
+    true_damage_dealt: int
+    true_damage_dealt_to_champions: int
+    true_damage_taken: int
+    turret_kills: int
+    turrets_lost: int
+    unreal_kills: int
+    vision_score: int
+    vision_wards_bought_in_game: int
+    wards_killed: int
+    wards_placed: int
+    frames: List[TimelineParticipantFrameData]
+    events: List[TimelineEventData]
+    win: bool
+
+    class Meta(PyotStatic.Meta):
+        renamed = {
+            "participant_id": "id", "profile_icon": "profile_icon_id", "time_c_cing_others": "time_ccing_others_secs",
+            "total_time_cc_dealt": "total_time_cc_dealt_secs", "total_time_spent_dead": "total_time_spent_dead_secs",
+            "time_played": "time_played_secs", "longest_time_spent_living": "longest_time_spent_living_secs",
+        }
+
+    @property
+    def total_time_cc_dealt(self) -> timedelta:
+        return timedelta(seconds=self.total_time_cc_dealt_secs)
+
+    @property
+    def total_time_spent_dead(self) -> timedelta:
+        return timedelta(seconds=self.total_time_spent_dead_secs)
+
+    @property
+    def time_ccing_others(self) -> timedelta:
+        return timedelta(seconds=self.time_ccing_others_secs)
+
+    @property
+    def time_played(self) -> timedelta:
+        return timedelta(seconds=self.time_played_secs)
+
+    @property
+    def longest_time_spent_living(self) -> timedelta:
+        return timedelta(seconds=self.longest_time_spent_living_secs)
+
+    @lazy_property
+    def rune_ids(self) -> List[int]:
+        ids = []
+        for style in self.perks.styles:
+            for selection in style.selections:
+                ids.append(selection.perk)
+        return ids
+
+    @lazy_property
+    def item_ids(self) -> List[int]:
+        return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
+
+    @property
+    def items(self) -> List[int]:
+        from .item import Item
+        return [Item(id=id_) for id_ in self.item_ids]
+
+    @property
+    def meraki_items(self) -> List[int]:
+        from .merakiitem import MerakiItem
+        return [MerakiItem(id=id_) for id_ in self.item_ids]
+
+    @lazy_property
+    def stat_rune_ids(self) -> List[int]:
+        o = self.perks.stat_perks
+        return [o.offense, o.flex, o.defense]
+
+    @lazy_property
+    def rune_primary_style(self) -> int:
+        return next(style.style for style in self.perks.styles if style.description == "primaryStyle")
+
+    @lazy_property
+    def rune_sub_style(self) -> int:
+        return next(style.style for style in self.perks.styles if style.description == "subStyle")
+
+    @property
+    def runes(self):
+        from .rune import Rune
+        return [Rune(id=id_) for id_ in self.rune_ids]
+
+    @lazy_property
+    def spell_ids(self) -> List[int]:
+        return [self.summoner1_id, self.summoner2_id]
+
+    @property
+    def spells(self):
+        from .spell import Spell
+        return [Spell(id=id_) for id_ in self.spell_ids]
+
+    @property
+    def summoner(self):
+        from .summoner import Summoner
+        return Summoner(puuid=self.puuid, platform=self.metaroot.platform)
+
+
+class MatchMetaData(PyotStatic):
+    match_id: str
+    data_version: int
+    participant_puuids: List[str]
+
+    class Meta(PyotStatic.Meta):
+        raws = {"participant_puuids"}
+        renamed = {"participants": "participant_puuids"}
+
+    @property
+    def participants(self):
+        from .summoner import Summoner
+        return [Summoner(puuid=puuid, platform=self.metaroot.platform) for puuid in self.participant_puuids]
+
+
+class MatchInfoData(PyotStatic):
+    game_id: int
+    creation_millis: int
+    duration_millis: int
+    start_millis: int
+    mode: str
+    name: str
+    type: str
+    version: str
+    platform: str
+    map_id: int
+    queue_id: int
+    participants: List[MatchParticipantData]
+    teams: List[MatchTeamData]
+
+    class Meta(PyotStatic.Meta):
+        renamed = {
+            "game_creation": "creation_millis", "game_duration": "duration_millis", "game_mode": "mode", "game_name": "name",
+            "game_start_timestamp": "start_millis", "game_type": "type", "game_version": "version", "platform_id": "platform",
+        }
+
+    @property
+    def creation(self) -> datetime:
+        return datetime.fromtimestamp(self.creation_millis // 1000)
+
+    @property
+    def duration(self) -> datetime:
+        return timedelta(milliseconds=self.duration_millis)
+
+    @property
+    def start(self) -> datetime:
+        return datetime.fromtimestamp(self.start_millis // 1000)
+
+
 class TimelineFrameData(PyotStatic):
     events: List[TimelineEventData]
     participant_frames: List[TimelineParticipantFrameData]
 
 
+class TimelineParticipantData(PyotStatic):
+    id: int
+    puuid: str
+
+    class Meta(PyotStatic.Meta):
+        renamed = {"participant_id": "id"}
+
+    @property
+    def summoner(self):
+        from .summoner import Summoner
+        return Summoner(puuid=self.puuid, platform=self.metaroot.platform)
+
+
 class TimelineInfoData(PyotStatic):
     frame_interval_millis: int
-    frames: TimelineFrameData
+    frames: List[TimelineFrameData]
+    game_id: int
+    participants: List[TimelineParticipantData]
 
     class Meta(PyotStatic.Meta):
         renamed = {"frame_interval": "frame_interval_millis"}
@@ -478,6 +514,32 @@ class Match(PyotCore):
         except AttributeError:
             return super().platform
 
+    def feed_timeline(self, timeline: "Timeline", include_assisted=False, include_victim=False):
+        participants: Dict[int, MatchParticipantData] = {}
+        for participant in self.info["participants"]:
+            participants[participant["participantId"]] = participant
+            participant["frames"] = []
+            participant["events"] = []
+        # print(participants)
+        idkeys = ["participantId", "creatorId", "killerId"]
+        for frame in timeline.info.frames:
+            for participant_frame in frame["participantFrames"]:
+                participants[participant_frame["participantId"]]["frames"].append(participant_frame)
+            for event in frame["events"]:
+                pid = None
+                for idkey in idkeys:
+                    pid = event.get(idkey, None)
+                    if pid is not None:
+                        break
+                if not pid:
+                    continue
+                participants[pid]["events"].append(event)
+                if include_assisted and "assistingParticipantIds" in event:
+                    for apid in event["type"]["assistingParticipantIds"]:
+                        participants[apid]["events"].append(event)
+                if include_assisted and "victimId" in event:
+                    participants[event["victimId"]]["events"].append(event)
+
 
 class Timeline(PyotCore):
     metadata: MatchMetaData
@@ -496,8 +558,15 @@ class Timeline(PyotCore):
         data["info"]["frames"] = data["info"]["frames"].copy()
         for i, f in enumerate(data["info"]["frames"]):
             data["info"]["frames"][i] = f.copy()
-            data["info"]["frames"][i]["participantFrames"] = list(f["participantFrames"].values())
+            data["info"]["frames"][i]["participantFrames"] = list(sorted(f["participantFrames"].values(), key=lambda p: p["participantId"]))
         return data
+
+    @property
+    def platform(self):
+        try:
+            return self.metadata.match_id.split("_")[0]
+        except AttributeError:
+            return super().platform
 
 
 class MatchHistory(PyotCore):
@@ -530,7 +599,11 @@ class MatchHistory(PyotCore):
     def timelines(self) -> List[Timeline]:
         return [Timeline(id=id_, region=self.region) for id_ in self.ids]
 
-    def query(self, start: int = 0, count: int = 100):
+    @property
+    def match_timelines(self) -> List[Tuple[Match, Timeline]]:
+        return [(Match(id=id_, region=self.region), Timeline(id=id_, region=self.region)) for id_ in self.ids]
+
+    def query(self, start: int = 0, count: int = 20):
         '''Query parameters setter.'''
         self._meta.query = parse_camelcase(locals())
         return self

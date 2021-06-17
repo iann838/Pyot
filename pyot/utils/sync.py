@@ -1,4 +1,4 @@
-from typing import Awaitable, TypeVar
+from typing import Awaitable, Callable, TypeVar
 from functools import wraps
 import asyncio
 
@@ -6,7 +6,7 @@ import asyncio
 R = TypeVar("R")
 
 
-def async_to_sync(func: Awaitable[R]) -> R:
+def async_to_sync(func: Callable[..., Awaitable[R]]) -> Callable[..., R]:
     '''Wraps `asyncio.run` on an async function making it sync callable.'''
     if not asyncio.iscoroutinefunction(func):
         raise TypeError(f"{func} is not a coroutine function")

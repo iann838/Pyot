@@ -4,21 +4,15 @@
 
 Pyot is an asyncIO based high-level Python Riot Games API framework that encourages rapid development and clean, pragmatic design. Built by experienced Riot Games Third Party Developers, it takes care of much of the hassle of the Riot Games API, so you can focus on writing your app without needing to reinvent the wheel. It’s free and open source.
 
-### Pyot 3
+## Pyot 5 (On master branch but no docs and no pypi at all, minimal sample on testv5 dir)
 
-- Code will run 3 ~ 5 times faster compared to Pyot 2.
-- Support for RoleML and Roleidentification.
-- Refactored objects to use non-destructive design.
-
-Migration Guide: [Version 2 → 3](https://paaksing.github.io/Pyot/core/v2tov3.html)
-
-### Pyot 3.1
-
-- MongoDB is NOT compatible of v3.0, it now uses bson format for caching, after updating to v3.1, old items are automatically deleted progressively when accessed. To maintain old cached items, run the migration function detailed in the migration guide.
-- Reworked LoL Spectator objects, added support for Roleidentification.
-- Generic typing on most utils functions and classes.
-
-Migration Guide: [Version 3.0 → 3.1](https://paaksing.github.io/Pyot/core/v3tov31.html)
+- Reworked pipeline.
+- Reworked model and pipeline conf.
+- No more `sid`, sessions are managed internally.
+- Match-v5 initial support.
+- Dropping syot forever.
+- Change of behavior of multiple core models.
+- Completely reworked and secure rate limiter 99% accurate.
 
 ## Features
 

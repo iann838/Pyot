@@ -4,8 +4,8 @@ import aiohttp
 from pyot.pipeline.handler import ErrorHandler
 from pyot.pipeline.token import PipelineToken
 from pyot.endpoints.merakicdn import MerakiCDNEndpoint
-from pyot.utils.nullsafe import null_safe
-from pyot.utils.parsers import json_safe
+from pyot.utils.nullsafe import nullsafe
+from pyot.utils.parsers import safejson
 from pyot.utils.logging import Logger
 
 from .base import Store, StoreType
@@ -34,7 +34,7 @@ class MerakiCDN(Store):
             except Exception:
                 response = None
 
-            status = null_safe(response).status or 408
+            status = nullsafe(response).status or 408
             if status == 200:
-                return await response.json(encoding="utf-8", content_type=None, loads=json_safe)
+                return await response.json(encoding="utf-8", content_type=None, loads=safejson)
             await error_token.consume(status, token.value)

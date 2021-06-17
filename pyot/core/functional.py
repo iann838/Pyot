@@ -5,7 +5,7 @@ from pyot.utils.text import camelcase
 from .exceptions import NotFound
 
 
-class lazy_property:
+class lazy_property(property):
     """
     Decorator that converts a method with a single self argument into a
     property cached on the instance and inserted into the meta data dict using camelcase key.
@@ -21,7 +21,7 @@ class lazy_property:
             '__set_name__() on it.'
         )
 
-    def __init__(self, func, name=None):
+    def __init__(self, func, name=None): # pylint: disable=super-init-not-called
         self.real_func = func
         self.key = camelcase(func.__name__)
         self.__doc__ = getattr(func, '__doc__')
@@ -46,6 +46,9 @@ class lazy_property:
             return self
         res = instance._meta.data[self.key] = instance.__dict__[self.name] = self.func(instance)
         return res
+
+    def __set__(self, obj, value):
+        raise AttributeError("can't set attribute")
 
 
 class cache_indexes:

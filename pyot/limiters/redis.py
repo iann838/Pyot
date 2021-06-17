@@ -20,8 +20,7 @@ class RedisLimiter(BaseLimiter):
         self.lock = SealLock()
         self.redis = LoopSensitiveManager(
             factory=lambda: aioredis.create_redis_pool(f"redis://{host}:{port}/{db}", **kwargs),
-            callback=lambda x: x.close(),
-            t=aioredis.Redis
+            callback=lambda pool: pool.close(),
         )
         self.shas: Dict[str, str] = None
         self.latency = 0.002
