@@ -20,7 +20,7 @@ class CardAssetData(PyotStatic):
 class Card(PyotCore):
     associated_card_codes: List[str]
     assets: List[CardAssetData]
-    region: str
+    region: str = None
     region_ref: str
     attack: int
     cost: int
@@ -125,7 +125,6 @@ class Batch:
         self.set = int(self.code[:2])
         self.faction = self.code[2:4]
         self.number = int(self.code[4:])
-        super().__init__(locals())
 
     def __str__(self):
         return f"{self.count}:{self.code}"

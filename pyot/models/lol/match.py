@@ -535,9 +535,9 @@ class Match(PyotCore):
                     continue
                 participants[pid]["events"].append(event)
                 if include_assisted and "assistingParticipantIds" in event:
-                    for apid in event["type"]["assistingParticipantIds"]:
+                    for apid in event["assistingParticipantIds"]:
                         participants[apid]["events"].append(event)
-                if include_assisted and "victimId" in event:
+                if include_victim and "victimId" in event:
                     participants[event["victimId"]]["events"].append(event)
 
 
@@ -570,7 +570,7 @@ class Timeline(PyotCore):
 
 
 class MatchHistory(PyotCore):
-    ids: List[int]
+    ids: List[str]
     puuid: str
 
     class Meta(PyotCore.Meta):
@@ -603,7 +603,7 @@ class MatchHistory(PyotCore):
     def match_timelines(self) -> List[Tuple[Match, Timeline]]:
         return [(Match(id=id_, region=self.region), Timeline(id=id_, region=self.region)) for id_ in self.ids]
 
-    def query(self, start: int = 0, count: int = 20):
+    def query(self, start: int = 0, count: int = 20, queue: int = None, type: str = None):
         '''Query parameters setter.'''
         self._meta.query = parse_camelcase(locals())
         return self

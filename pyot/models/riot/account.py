@@ -10,7 +10,7 @@ class Account(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {
             "account_v1_by_puuid": ["puuid"],
-            "account_v1_by_riot_id": ["name", "tag"],
+            "account_v1_by_riot_id": ["game_name", "tag_line"],
         }
 
     def __init__(self, puuid: str = None, game_name: str = None, tag_line: str = None, region: str = models.riot.DEFAULT_REGION):

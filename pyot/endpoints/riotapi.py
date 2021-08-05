@@ -10,7 +10,7 @@ class RiotAPIEndpoint(BaseEndpoint):
 
     shared = {
         "account_v1_by_puuid": "/riot/account/v1/accounts/by-puuid/{puuid}",
-        "account_v1_by_riot_id": "/riot/account/v1/accounts/by-riot-id/{name}/{tag}",
+        "account_v1_by_riot_id": "/riot/account/v1/accounts/by-riot-id/{game_name}/{tag_line}",
         "account_v1_active_shard": "/riot/account/v1/active-shards/by-game/{game}/by-puuid/{puuid}",
     }
 

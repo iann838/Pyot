@@ -4,9 +4,9 @@ import aiohttp
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.handler import ErrorHandler
 from pyot.endpoints.ddragon import DDragonEndpoint
-from pyot.utils.nullsafe import nullsafe
 from pyot.utils.parsers import safejson
 from pyot.utils.logging import Logger
+from pyot.utils.nullsafe import _
 
 from .base import Store, StoreType
 
@@ -34,34 +34,7 @@ class DDragon(Store):
             except Exception:
                 response = None
 
-            status = nullsafe(response).status or 408
+            status = _(response).status or 408
             if status == 200:
                 return await response.json(encoding="utf-8", content_type=None, loads=safejson)
             await error_token.consume(status, token.value)
-
-
-# class DDragonEndpoints:
-#     all_endpoints = {
-#         "lor": {
-#             "ddragon_lor_set_data": "/set{set}/{locale}/data/set{set}-{locale}.json"
-#         }
-#     }
-
-#     _base_url = "https://dd.b.pvp.net/{version}"
-
-#     def __init__(self, game, version):
-#         try:
-#             self.endpoints = self.all_endpoints[game]
-#             self._base_url = self._base_url.format(version=version)
-#         except KeyError as e:
-#             raise NotImplementedError(f"DDragon does not support '{e}' model") from e
-
-#     async def resolve(self, token: PipelineToken) -> str:
-#         try:
-#             base = self._base_url
-#             new_params = {"locale": token.server}
-#             new_params.update(token.params)
-#             url = self.endpoints[token.method].format(**new_params)
-#             return base + url
-#         except KeyError as e:
-#             raise exc.NotFindable from e

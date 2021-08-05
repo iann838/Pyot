@@ -1,4 +1,4 @@
-from typing import Dict, List, Mapping, Any, Set, get_type_hints
+from typing import Dict, List, Mapping, Any, Set, Type, Union, get_type_hints
 import inspect
 import re
 
@@ -11,10 +11,8 @@ from .functional import lazy_property, laziable, parse_camelcase
 
 
 class PyotLazy:
-    obj: Any
-    clas: Any
 
-    def __init__(self, clas, obj, root):
+    def __init__(self, clas: Union[Type["PyotStaticBase"], Type["PyotCoreBase"]], obj: Any, root: "PyotCoreBase"):
         self.clas = clas
         self.root = root
         self.obj = obj
@@ -37,7 +35,14 @@ class PyotLazy:
         return instance.fill()
 
     def load_core(self, obj):
-        instance: "PyotCoreBase" = self.clas()
+        kwargs = {}
+        if "version" in self.clas.Meta.arg_names:
+            try: kwargs["version"] = self.root.version
+            except AttributeError: pass
+        if "locale" in self.clas.Meta.arg_names:
+            try: kwargs["locale"] = self.root.locale
+            except AttributeError: pass
+        instance: "PyotCoreBase" = self.clas(**kwargs)
         instance._meta.root = self.root
         instance._meta.data = instance.transform(obj)
         return instance.fill()
@@ -129,7 +134,9 @@ class PyotMetaClass(type):
         if cls.is_static_core(bases):
             if issubclass(clas, PyotCoreBase):
                 try:
-                    cls.set_server_type(clas, inspect.getfullargspec(clas.__init__).args)
+                    arg_names = set(inspect.getfullargspec(clas.__init__).args)
+                    cls.set_server_type(clas, arg_names)
+                    clas.Meta.arg_names = arg_names
                 except TypeError:
                     pass
             clas.Meta.lazy_props = [prop.split(".") for prop in cls.get_lazy_props(clas, [])]
@@ -295,6 +302,7 @@ class PyotCoreBase(PyotStaticBase):
         load: Mapping[str, Any]
         query: Mapping[str, Any]
         body: Mapping[str, Any]
+        arg_names: Set[str]
         server_type: str
         server_type_names = {"platform", "region"}
         allow_query: bool = False

@@ -206,8 +206,8 @@ class Champion(PyotCore):
                 skin["skinLines"] = skin["skinLines"][0]["id"]
         spells = {}
         for spell in data["spells"]:
-            spell["cost"] = spell.pop("costCoefficients")[:5]
-            spell["cooldown"] = spell.pop("cooldownCoefficients")[:5]
+            spell["cost"] = spell.pop("costCoefficients")
+            spell["cooldown"] = spell.pop("cooldownCoefficients")
             spells[spell["spellKey"]] = spell
         spells["p"] = data["passive"].copy()
         data["spells"] = spells

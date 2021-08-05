@@ -1,7 +1,13 @@
 import os
+import platform
 
 from pyot.conf.pipeline import activate_pipeline, PipelineConf
 from pyot.conf.model import activate_model, ModelConf
+
+
+if platform.system() == 'Windows':
+    from pyot.utils.runtime import silence_proactor_pipe_deallocation
+    silence_proactor_pipe_deallocation()
 
 
 @activate_model("lol")
@@ -46,7 +52,7 @@ class LolPipeline(PipelineConf):
             "backend": "pyot.stores.riotapi.RiotAPI",
             "log_level": 30,
             # "api_key": os.environ["RIOT_API_KEY"],
-            "api_key": "RGAPI-2723ad2f-57d2-4a93-bb50-4cdf8e8870c0",
+            "api_key": "RGAPI-c2f3edfe-7148-4483-9125-ac223dc759a4",
             "rate_limiter": {
                 "backend": "pyot.limiters.redis.RedisLimiter",
                 # "limiting_share": 1,

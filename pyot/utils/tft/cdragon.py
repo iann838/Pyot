@@ -1,7 +1,21 @@
+from typing import Dict
 from ..text import snakecase
 
 
 BASE_URL = "https://raw.communitydragon.org/latest/"
+
+
+def join_set_data(data: Dict, set: int, collection_key: str):
+    set = int(max(data["sets"], key=int)) if set == -1 else set
+    collected = {}
+    for set_data in data["setData"]:
+        if set_data["number"] != set:
+            continue
+        for item in set_data[collection_key]:
+            collected[item["apiName"]] = item
+    for item in data["sets"][str(set)][collection_key]:
+        collected[item["apiName"]] = item
+    return list(collected.values())
 
 
 def abs_url(link: str) -> str:

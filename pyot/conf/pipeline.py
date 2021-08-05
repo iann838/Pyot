@@ -2,11 +2,13 @@ from abc import ABC
 from typing import Dict, List, Mapping
 
 from pyot.pipeline.core import Pipeline
+from pyot.utils.logging import Logger
 from pyot.utils.importlib import import_class
 
 from .utils import ConfDict, valid_attribute_key
 from .model import AVAILABLE_MODELS
 
+LOGGER = Logger(__name__)
 
 pipelines: ConfDict[str, Pipeline] = ConfDict(Pipeline, False)
 
@@ -38,9 +40,11 @@ def activate_pipeline(model: str):
         if cls.name in AVAILABLE_MODELS and (not cls.default or not cls.name == model):
             raise ValueError("Pipeline name must be different than model's name or the same as the subscripted model if set to default")
         if model in pipelines:
-            raise ValueError(f"A default pipeline for model '{model}' is already active")
+            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (default pipeline of model already active)")
+            return cls
         if cls.name in pipelines:
-            raise ValueError(f"A pipeline with name '{cls.name}' is already active")
+            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (pipeline already active)")
+            return cls
         if cls.default:
             pipelines[model] = pipeline
         pipelines[cls.name] = pipeline

@@ -16,7 +16,7 @@ class PyotRouting:
         "la2": "americas",
         "na1": "americas",
         "oc1": "americas",
-        "tr": "europe",
+        "tr1": "europe",
         "ru": "europe",
     }
 

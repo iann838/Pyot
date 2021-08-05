@@ -6,7 +6,6 @@ import motor.motor_asyncio as mongo
 from pyot.core.exceptions import NotFound
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.expiration import ExpirationManager
-from pyot.utils.locks import SealLock
 from pyot.utils.eventloop import LoopSensitiveManager
 from pyot.utils.logging import Logger
 
@@ -28,7 +27,6 @@ class MongoDB(Store):
         if 'w' not in kwargs:
             kwargs['w'] = 0
         self.db = db
-        self.seal = SealLock()
         self.initialized = False
         self.client_kwargs = {"host": host, "port": port, **kwargs}
         self.data = LoopSensitiveManager(self.mongo_data)
@@ -38,24 +36,18 @@ class MongoDB(Store):
 
     async def mongo_data(self):
         data = mongo.AsyncIOMotorClient(**self.client_kwargs)[self.db]
-        if self.initialized:
-            return data
-        async with self.seal:
-            if self.initialized:
-                return data
-            for method in self.expirations:
-                indexes = await data[method].index_information()
-                if 'setAt_1' in indexes:
-                    if self.expirations.get_timeout(method) >= 0:
-                        await data.command('collMod', method, index={'keyPattern': {'setAt': 1}, 'expireAfterSeconds': self.expirations.get_timeout(method)})
-                    else:
-                        await data[method].drop_index('setAt')
-                elif self.expirations.get_timeout(method) > 0:
-                    await data[method].create_index('token')
-                    await data[method].create_index('setAt', expireAfterSeconds=self.expirations.get_timeout(method))
+        for method in self.expirations:
+            indexes = await data[method].index_information()
+            if 'setAt_1' in indexes:
+                if self.expirations.get_timeout(method) >= 0:
+                    await data.command('collMod', method, index={'keyPattern': {'setAt': 1}, 'expireAfterSeconds': self.expirations.get_timeout(method)})
                 else:
-                    await data[method].create_index('token')
-            self.initialized = True
+                    await data[method].drop_index('setAt')
+            elif self.expirations.get_timeout(method) > 0:
+                await data[method].create_index('token')
+                await data[method].create_index('setAt', expireAfterSeconds=self.expirations.get_timeout(method))
+            else:
+                await data[method].create_index('token')
         return data
 
     async def set(self, token: PipelineToken, value: Any, **kwargs) -> None:

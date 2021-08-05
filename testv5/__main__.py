@@ -1,3 +1,6 @@
+import asyncio
+from datetime import datetime
+from typing import List, Tuple
 from pyot.models import lol
 from pyot.core.queue import Queue
 from pyot.utils.sync import async_to_sync
@@ -35,4 +38,57 @@ async def pull_matches():
         return (await queue.join(lol.Match))[-1].dict(recursive=True)
 
 
-print(pull_matches())
+@async_to_sync
+async def pull_timelines_timediff():
+    summoner = await lol.Summoner(name="Morimorph", platform="na1").get()
+    async with Queue() as queue:
+        for timeline in (await summoner.match_history.get()).timelines:
+            await queue.put(timeline.get())
+            # break
+        timelines = await queue.join(lol.Timeline)
+    now = datetime.now()
+    counter = 0
+    for timeline in timelines:
+        for frame in timeline.info.frames:
+            for _ in frame["events"]:
+                counter += 1
+    return datetime.now() - now, counter
+
+
+@async_to_sync
+async def pull_league_rate_limiter():
+    async with Queue() as queue:
+        for i in range(300):
+            await queue.put(lol.DivisionLeague(queue="RANKED_SOLO_5x5", division="I", tier="GOLD", platform="na1").query(page=i + 1).get())
+    await asyncio.sleep(1)
+
+
+@async_to_sync
+async def pull_match_timelines_inject():
+    summoner = await lol.Summoner(name="Morimorph", platform="na1").get()
+
+    async def async_tuple(*coros):
+        res = []
+        for coro in coros:
+            res.append(await coro)
+        return tuple(res)
+
+    async with Queue() as queue:
+        for match, timeline in (await summoner.match_history.get()).match_timelines:
+            await queue.put(async_tuple(match.get(), timeline.get()))
+            # break
+        match_timelines: List[Tuple[lol.Match, lol.Timeline]] = await queue.join()
+
+    now = datetime.now()
+    counter = 0
+    for match, timeline in match_timelines:
+        match.feed_timeline(timeline)
+        for team in match.info.teams:
+            for participant in team.participants:
+                for _ in participant.events:
+                    counter += 1
+                print(participant.item_ids)
+    return datetime.now() - now, counter
+
+
+print(pull_match_timelines_inject())

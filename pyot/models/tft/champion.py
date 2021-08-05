@@ -3,7 +3,7 @@ from typing import List, Iterator
 from pyot.conf.model import models
 from pyot.core.functional import lazy_property, cache_indexes
 from pyot.core.exceptions import NotFound
-from pyot.utils.tft.cdragon import sanitize_champion, abs_url
+from pyot.utils.tft.cdragon import join_set_data, sanitize_champion, abs_url
 from .base import PyotCore, PyotStatic
 
 
@@ -68,7 +68,7 @@ class Champion(PyotCore):
 
     def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
-        if self.key and self.set is None:
+        if key and set is None:
             self.find_set()
 
     def find_set(self):
@@ -81,7 +81,7 @@ class Champion(PyotCore):
     def filter(self, indexer, data):
         return indexer.get(
             self.key,
-            data["sets"][str(self.set)]["champions"],
+            join_set_data(data, self.set, "champions"),
             "apiName"
         )
 
@@ -118,7 +118,7 @@ class Champions(PyotCore):
 
     def filter(self, data):
         try:
-            return data["sets"][max(data["sets"], key=int) if self.set == -1 else str(self.set)]["champions"]
+            return join_set_data(data, self.set, "champions")
         except KeyError as e:
             raise NotFound("Request was successful but filtering gave no matching item") from e
 

@@ -27,8 +27,8 @@ class CDragonEndpoint(BaseEndpoint):
         if token.model == "lol" and token.params["locale"].lower() == "en_us":
             token.params["locale"] = "default"
         elif token.model == "tft":
-            if token.method in self.all["lol"] and token.params["locale"].lower() == "default":
-                token.params["locale"] = "en_us"
-            elif token.params["locale"].lower() == "en_us":
+            if token.method in self.all["lol"] and token.params["locale"].lower() == "en_us":
                 token.params["locale"] = "default"
+            elif token.params["locale"].lower() == "default":
+                token.params["locale"] = "en_us"
         return token.params

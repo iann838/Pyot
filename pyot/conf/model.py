@@ -1,7 +1,9 @@
 from abc import ABC
 
+from pyot.utils.logging import Logger
 from .utils import ConfDict, reraise_model_inactive
 
+LOGGER = Logger(__name__)
 
 AVAILABLE_MODELS = {"riot", "lol", "tft", "lor", "val"}
 
@@ -55,22 +57,13 @@ def activate_model(name: str):
         raise ValueError(f"Invalid model, '{name}' was given")
 
     def wrapper(cls: "ModelConf"):
-        # module = import_module(f"pyot.models.{name.lower()}.__core__")
-        # CHECK THAT DEFAULTS MATCHES THE BASE AND SET IT
-        # if cls.default_platform:
-        #     module.ModelMixin.set_platform(cls.default_platform)
-        # if cls.default_region:
-        #     module.ModelMixin.set_region(cls.default_region)
-        # if cls.default_locale:
-        #     module.ModelMixin.set_locale(cls.default_locale)
         for key in keys:
             if hasattr(cls, key):
                 continue
             raise ValueError(f"Missing value for '{key}' in {cls} conf")
-        if name in models:
-            raise ValueError(f"Model '{name}' is already active")
-        if hasattr(models, name):
-            raise ValueError("This model is already activated")
+        if name in models or hasattr(models, name):
+            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate model '{name}' was ignored (model already active)")
+            return cls
         models[name] = Model(cls.default_platform, cls.default_region, cls.default_locale, cls.default_version)
         return cls
 
