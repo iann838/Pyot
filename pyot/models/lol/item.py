@@ -1,9 +1,12 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
 from pyot.utils.lol.cdragon import abs_url, sanitize
 from .base import PyotCore
+
+if TYPE_CHECKING:
+    from .merakiitem import MerakiItem
 
 
 # PYOT CORE OBJECT
@@ -61,21 +64,21 @@ class Item(PyotCore):
         return sanitize(self.description)
 
     @property
-    def from_items(self):
+    def from_items(self) -> List["Item"]:
         items = []
         for id in self.from_ids:
             items.append(Item(id=id, locale=self.locale))
         return items
 
     @property
-    def to_items(self):
+    def to_items(self) -> List["Item"]:
         items = []
         for id in self.to_ids:
             items.append(Item(id=id, locale=self.locale))
         return items
 
     @property
-    def meraki_item(self):
+    def meraki_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
         return MerakiItem(id=self.id)
 

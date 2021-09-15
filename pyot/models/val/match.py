@@ -1,8 +1,11 @@
 from datetime import datetime, timedelta
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from ..riot.account import Account
 
 
 # PYOT STATIC OBJECTS
@@ -73,7 +76,7 @@ class MatchPlayerData(PyotStatic):
     player_title: str
 
     @property
-    def account(self):
+    def account(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
@@ -130,17 +133,17 @@ class MatchPlayerKillData(PyotStatic):
         return timedelta(milliseconds=self.round_time_millis)
 
     @property
-    def killer(self):
+    def killer(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.killer_puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def victim(self):
+    def victim(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.victim_puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def assistants(self):
+    def assistants(self) -> List["Account"]:
         from ..riot.account import Account
         return [Account(puuid=i, region=self.region).pipeline(self.metapipeline.name) for i in self.assistant_puuids]
 
@@ -200,12 +203,12 @@ class MatchRoundResultData(PyotStatic):
         return timedelta(milliseconds=self.defuse_round_millis)
 
     @property
-    def bomb_planter(self):
+    def bomb_planter(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.bomb_planter_puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def bomb_defuser(self):
+    def bomb_defuser(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.bomb_defuser_puuid, region=self.region).pipeline(self.metapipeline.name)
 
@@ -262,7 +265,7 @@ class MatchHistory(PyotCore):
         return len(self.history)
 
     @property
-    def account(self):
+    def account(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
@@ -284,7 +287,7 @@ class RecentMatches(PyotCore):
             return super().__getitem__(item)
         return self.matches[item]
 
-    def __iter__(self) -> Iterator["Match"]:
+    def __iter__(self) -> Iterator[Match]:
         return iter(self.matches)
 
     def __len__(self):
@@ -295,5 +298,5 @@ class RecentMatches(PyotCore):
         return datetime.fromtimestamp(self.current_timestamp)
 
     @property
-    def matches(self):
+    def matches(self)  -> List[Match]:
         return [Match(id=id_, platform=self.platform) for id_ in self.match_ids]

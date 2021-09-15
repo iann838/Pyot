@@ -1,6 +1,11 @@
 
+from typing import TYPE_CHECKING
+
 from pyot.conf.model import models
 from .base import PyotCore
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
 
 
 class ThirdPartyCode(PyotCore):
@@ -19,6 +24,6 @@ class ThirdPartyCode(PyotCore):
         return new_data
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)

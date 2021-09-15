@@ -4,7 +4,7 @@
 
 Pyot is an asyncIO based high-level Python Riot Games API framework that encourages rapid development and clean, pragmatic design. Built by experienced Riot Games Third Party Developers, it takes care of much of the hassle of the Riot Games API, so you can focus on writing your app without needing to reinvent the wheel. It’s free and open source.
 
-## Pyot 5 (On master branch but no docs and no pypi at all, minimal sample on testv5 dir)
+## Pyot 5 (On master branch but no docs and no pypi, sample codes on test dir)
 
 - Reworked pipeline.
 - Reworked model and pipeline conf.
@@ -13,6 +13,8 @@ Pyot is an asyncIO based high-level Python Riot Games API framework that encoura
 - Dropping syot forever.
 - Change of behavior of multiple core models.
 - Completely reworked and secure rate limiter 99% accurate.
+
+> Honestly, I have no timeline on docs, I tried my best to automate docs but it always felt a lot of things missing, so a custom generator was made, hopefully can get it up before match-v4 is dead (September 27th).
 
 ## Features
 

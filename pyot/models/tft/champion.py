@@ -1,10 +1,13 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import lazy_property, cache_indexes
 from pyot.core.exceptions import NotFound
 from pyot.utils.tft.cdragon import join_set_data, sanitize_champion, abs_url
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .trait import Trait
 
 
 # PYOT STATIC OBJECTS
@@ -31,7 +34,7 @@ class ChampionAbilityData(PyotStatic):
         return abs_url(self.icon_path)
 
     @lazy_property
-    def cleaned_description(self, data):
+    def cleaned_description(self) -> str:
         return sanitize_champion(self.description, self["variables"])
 
 
@@ -90,7 +93,7 @@ class Champion(PyotCore):
         return abs_url(self.icon_path)
 
     @property
-    def traits(self):
+    def traits(self) -> List["Trait"]:
         from .trait import Trait
         return [Trait(key=i, locale=self.locale) for i in self.trait_keys]
 

@@ -64,7 +64,7 @@ class PyotRoutingBase:
     _platform2regions: Dict[str, str] = {None: None}
 
     @property
-    def region(self):
+    def region(self) -> str:
         val = self._region or self._meta.root._region or \
             self._platform2regions.get(self._platform or self._meta.root._platform, None)
         if val is None:
@@ -79,7 +79,7 @@ class PyotRoutingBase:
         self._region = val
 
     @property
-    def platform(self):
+    def platform(self) -> str:
         val = self._platform or self._meta.root._platform
         if val is None:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'platform'")
@@ -93,7 +93,7 @@ class PyotRoutingBase:
         self._platform = val
 
     @property
-    def locale(self):
+    def locale(self) -> str:
         val = self._locale or self._meta.root._locale
         if val is None:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'locale'")
@@ -104,7 +104,7 @@ class PyotRoutingBase:
         self._locale = val
 
     @property
-    def version(self):
+    def version(self) -> str:
         val = self._version or self._meta.root._version
         if val is None:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'version'")
@@ -115,11 +115,11 @@ class PyotRoutingBase:
         self._version = val
 
     @property
-    def metaroot(self):
+    def metaroot(self) -> "PyotCoreBase":
         return self._meta.root
 
     @property
-    def metapipeline(self):
+    def metapipeline(self) -> Pipeline:
         return self._meta.pipeline
 
 
@@ -240,9 +240,8 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                     continue
                 try:
                     setattr(self, '_lazy__' + attr, PyotLazy(self._meta.types[attr], val, self._meta.root))
-                except AttributeError:
+                except KeyError:
                     setattr(self, attr, val)
-                    print(attr, "missing from types")
             else:
                 setattr(self, attr, val)
 

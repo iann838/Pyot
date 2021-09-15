@@ -22,6 +22,8 @@ class Card(PyotCore):
     assets: List[CardAssetData]
     region: str = None
     region_ref: str
+    regions: List[str]
+    region_refs: List[str]
     attack: int
     cost: int
     health: int
@@ -75,7 +77,7 @@ class Card(PyotCore):
         return self.code
 
     @property
-    def associated_cards(self):
+    def associated_cards(self) -> List["Card"]:
         return [Card(code=code, locale=self.locale) for code in self.associated_card_codes]
 
 

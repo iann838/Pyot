@@ -1,7 +1,11 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
+
 
 # PYOT STATIC
 
@@ -143,7 +147,7 @@ class TournamentCode(PyotCore):
         return self
 
     @property
-    def summoners(self):
+    def summoners(self) -> "Summoner":
         from .summoner import Summoner
         return [Summoner(id=id_) for id_ in self.summoner_ids]
 

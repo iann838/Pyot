@@ -1,10 +1,15 @@
 from datetime import datetime
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from dateutil.parser import parse
 
 from pyot.conf.model import models
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from ..riot.account import Account
+    from .card import Deck
+
 
 ## PYOT STATIC OBJECTS
 
@@ -18,7 +23,7 @@ class MatchMetaData(PyotStatic):
         renamed = {"participants": "participant_puuids"}
 
     @property
-    def participants(self):
+    def participants(self) -> List["Account"]:
         from pyot.models.riot import Account
         return [Account(puuid=puuid, region=self.region).pipeline(self.metapipeline.name) for puuid in self.participant_puuids]
 
@@ -36,12 +41,12 @@ class MatchPlayerData(PyotStatic):
         raws = {"factions"}
 
     @property
-    def account(self):
+    def account(self) -> "Account":
         from pyot.models.riot import Account
         return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 
     @property
-    def deck(self):
+    def deck(self) -> "Deck":
         from .card import Deck
         return Deck(code=self.deck_code)
 
@@ -116,6 +121,6 @@ class MatchHistory(PyotCore):
         return [Match(id=id_, region=self.region) for id_ in self.ids]
 
     @property
-    def account(self):
+    def account(self) -> "Account":
         from pyot.models.riot import Account
         return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)

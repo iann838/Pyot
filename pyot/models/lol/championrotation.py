@@ -1,8 +1,12 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from pyot.conf.model import models
 
 from .base import PyotCore
+
+if TYPE_CHECKING:
+    from .champion import Champion
+    from .merakichampion import MerakiChampion
 
 
 # PYOT CORE OBJECTS
@@ -21,7 +25,7 @@ class ChampionRotation(PyotCore):
         self.initialize(locals())
 
     @property
-    def free_champions(self):
+    def free_champions(self) -> List["Champion"]:
         from .champion import Champion
         mutable = []
         for i in self.free_champion_ids:
@@ -29,7 +33,7 @@ class ChampionRotation(PyotCore):
         return mutable
 
     @property
-    def free_newie_champions(self):
+    def free_newie_champions(self) -> List["Champion"]:
         from .champion import Champion
         mutable = []
         for i in self.free_newie_champion_ids:
@@ -37,7 +41,7 @@ class ChampionRotation(PyotCore):
         return mutable
 
     @property
-    def meraki_free_champions(self):
+    def meraki_free_champions(self) -> List["MerakiChampion"]:
         from .merakichampion import MerakiChampion
         mutable = []
         for i in self.free_champion_ids:
@@ -45,7 +49,7 @@ class ChampionRotation(PyotCore):
         return mutable
 
     @property
-    def meraki_free_newie_champions(self):
+    def meraki_free_newie_champions(self) -> List["MerakiChampion"]:
         from .merakichampion import MerakiChampion
         mutable = []
         for i in self.free_newie_champion_ids:

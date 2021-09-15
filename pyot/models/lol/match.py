@@ -1,22 +1,33 @@
 from datetime import datetime, timedelta
-from typing import List, Iterator, Dict, Tuple
+from typing import List, Iterator, Dict, TYPE_CHECKING, Tuple, Union
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase, lazy_property
 from .base import PyotCore, PyotStatic
 
+if TYPE_CHECKING:
+    from .item import Item
+    from .champion import Champion
+    from .merakichampion import MerakiChampion
+    from .merakiitem import MerakiItem
+    from .rune import Rune
+    from .spell import Spell
+    from .summoner import Summoner
+
+
+# PYOT STATIC OBJECTS
 
 class MatchBanData(PyotStatic):
     champion_id: int
     pick_turn: int
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
@@ -140,7 +151,7 @@ class TimelineParticipantFrameData(PyotStatic):
         renamed = {"time_enemy_spent_controlled": "time_enemy_spent_controlled_millis"}
 
     @property
-    def time_enemy_spent_controlled(self):
+    def time_enemy_spent_controlled(self) -> timedelta:
         return timedelta(milliseconds=self.time_enemy_spent_controlled_millis)
 
 
@@ -197,32 +208,32 @@ class TimelineEventData(PyotStatic):
         return timedelta(milliseconds=self.timestamp)
 
     @property
-    def after_item(self):
+    def after_item(self) -> "Item":
         from .item import Item
         return Item(id=self.after_id)
 
     @property
-    def item(self):
+    def item(self) -> "Item":
         from .item import Item
         return Item(id=self.item_id)
 
     @property
-    def before_item(self):
+    def before_item(self) -> "Item":
         from .item import Item
         return Item(id=self.before_id)
 
     @property
-    def meraki_after_item(self):
+    def meraki_after_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
         return MerakiItem(id=self.after_id)
 
     @property
-    def meraki_item(self):
+    def meraki_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
         return MerakiItem(id=self.item_id)
 
     @property
-    def meraki_before_item(self):
+    def meraki_before_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
         return MerakiItem(id=self.before_id)
 
@@ -373,12 +384,12 @@ class MatchParticipantData(PyotStatic):
         return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
 
     @property
-    def items(self) -> List[int]:
+    def items(self) -> List["Item"]:
         from .item import Item
         return [Item(id=id_) for id_ in self.item_ids]
 
     @property
-    def meraki_items(self) -> List[int]:
+    def meraki_items(self) -> List["MerakiItem"]:
         from .merakiitem import MerakiItem
         return [MerakiItem(id=id_) for id_ in self.item_ids]
 
@@ -396,7 +407,7 @@ class MatchParticipantData(PyotStatic):
         return next(style.style for style in self.perks.styles if style.description == "subStyle")
 
     @property
-    def runes(self):
+    def runes(self) -> List["Rune"]:
         from .rune import Rune
         return [Rune(id=id_) for id_ in self.rune_ids]
 
@@ -405,19 +416,19 @@ class MatchParticipantData(PyotStatic):
         return [self.summoner1_id, self.summoner2_id]
 
     @property
-    def spells(self):
+    def spells(self) -> List["Spell"]:
         from .spell import Spell
         return [Spell(id=id_) for id_ in self.spell_ids]
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(puuid=self.puuid, platform=self.metaroot.platform)
 
 
 class MatchMetaData(PyotStatic):
     match_id: str
-    data_version: int
+    data_version: str
     participant_puuids: List[str]
 
     class Meta(PyotStatic.Meta):
@@ -425,7 +436,7 @@ class MatchMetaData(PyotStatic):
         renamed = {"participants": "participant_puuids"}
 
     @property
-    def participants(self):
+    def participants(self) -> "Summoner":
         from .summoner import Summoner
         return [Summoner(puuid=puuid, platform=self.metaroot.platform) for puuid in self.participant_puuids]
 
@@ -456,7 +467,7 @@ class MatchInfoData(PyotStatic):
         return datetime.fromtimestamp(self.creation_millis // 1000)
 
     @property
-    def duration(self) -> datetime:
+    def duration(self) -> timedelta:
         return timedelta(milliseconds=self.duration_millis)
 
     @property
@@ -477,7 +488,7 @@ class TimelineParticipantData(PyotStatic):
         renamed = {"participant_id": "id"}
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(puuid=self.puuid, platform=self.metaroot.platform)
 
@@ -492,9 +503,11 @@ class TimelineInfoData(PyotStatic):
         renamed = {"frame_interval": "frame_interval_millis"}
 
     @property
-    def frame_interval(self):
+    def frame_interval(self) -> timedelta:
         return timedelta(milliseconds=self.frame_interval_millis)
 
+
+# PYOT CORE OBJECTS
 
 class Match(PyotCore):
     metadata: MatchMetaData
@@ -508,13 +521,17 @@ class Match(PyotCore):
         self.initialize(locals())
 
     @property
-    def platform(self):
+    def platform(self) -> str:
         try:
             return self.info.platform
         except AttributeError:
             return super().platform
 
     def feed_timeline(self, timeline: "Timeline", include_assisted=False, include_victim=False):
+        '''Parse the given `Timeline` object's frames and events into this match's participants.
+        - `include_assisted`: Include frames and events where the participants are scoring an assist.
+        - `include_victim`: Include frames and events where the participants are victims.
+        '''
         participants: Dict[int, MatchParticipantData] = {}
         for participant in self.info["participants"]:
             participants[participant["participantId"]] = participant
@@ -562,7 +579,7 @@ class Timeline(PyotCore):
         return data
 
     @property
-    def platform(self):
+    def platform(self) -> "str":
         try:
             return self.metadata.match_id.split("_")[0]
         except AttributeError:
@@ -603,8 +620,12 @@ class MatchHistory(PyotCore):
     def match_timelines(self) -> List[Tuple[Match, Timeline]]:
         return [(Match(id=id_, region=self.region), Timeline(id=id_, region=self.region)) for id_ in self.ids]
 
-    def query(self, start: int = 0, count: int = 20, queue: int = None, type: str = None):
+    def query(self, start: int = 0, count: int = 20, queue: int = None, type: str = None, start_time: Union[int, datetime] = None, end_time: Union[int, datetime] = None):
         '''Query parameters setter.'''
+        if isinstance(start_time, datetime):
+            start_time = int(start_time.timestamp())
+        if isinstance(end_time, datetime):
+            end_time = int(end_time.timestamp())
         self._meta.query = parse_camelcase(locals())
         return self
 

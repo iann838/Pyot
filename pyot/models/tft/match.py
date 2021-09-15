@@ -1,9 +1,15 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 from datetime import datetime, timedelta
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
+    from .champion import Champion
+    from .item import Item
+    from .trait import Trait
 
 
 # PYOT STATIC OBJECTS
@@ -18,7 +24,7 @@ class MatchMetadataData(PyotStatic):
         renamed = {"match_id": "id", "participants": "participant_puuids"}
 
     @property
-    def participants(self):
+    def participants(self) -> List["Summoner"]:
         from .summoner import Summoner
         return [Summoner(puuid=i, platform=self.id.split('_')[0]) for i in self.participant_puuids]
 
@@ -37,7 +43,7 @@ class MatchInfoTraitData(PyotStatic):
     tier_total: int
 
     @property
-    def trait(self):
+    def trait(self) -> "Trait":
         from .trait import Trait
         return Trait(key=self.name)
 
@@ -55,12 +61,12 @@ class MatchInfoUnitData(PyotStatic):
         renamed = {"items": "item_ids", "character_id": "champion_key"}
 
     @property
-    def items(self):
+    def items(self) -> List["Item"]:
         from .item import Item
         return [Item(id=i) for i in self.item_ids]
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(key=self.champion_key)
 
@@ -165,7 +171,7 @@ class MatchHistory(PyotCore):
         return [Match(id=id_, region=self.region) for id_ in self.ids]
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         try:
             return Summoner(account_id=self.account_id, platform=self.ids[0].split("_")[0])

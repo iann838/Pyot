@@ -1,8 +1,12 @@
-from typing import List, Iterator
+from typing import List, Iterator, NoReturn, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
+
 
 # PYOT STATIC OBJECTS
 
@@ -27,7 +31,7 @@ class LeagueEntryData(PyotStatic):
     mini_series: MiniSeriesData
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
 
@@ -41,7 +45,7 @@ class SummonerLeagueEntryData(LeagueEntryData):
         renamed = {"queue_type": "queue"}
 
     @property
-    def league(self):
+    def league(self) -> "League":
         return League(id=self.league_id, platform=self.platform)
 
 
@@ -71,7 +75,7 @@ class ApexLeague(League):
         self.initialize(locals())
 
     @property
-    def league(self):
+    def league(self) -> League:
         return League(id=self.id, platform=self.platform)
 
 
@@ -120,7 +124,7 @@ class SummonerLeague(PyotCore):
         return new_data
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
@@ -145,5 +149,5 @@ class DivisionLeague(SummonerLeague):
         return self
 
     @property
-    def summoner(self) -> AttributeError:
+    def summoner(self) -> NoReturn:
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'summoner'")

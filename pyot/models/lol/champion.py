@@ -1,10 +1,13 @@
-from typing import List, Dict, Iterator
+from typing import List, Dict, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import lazy_property
 from pyot.utils.lol.champion import id_by_key, id_by_name
 from pyot.utils.lol.cdragon import abs_url, sanitize
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .merakichampion import MerakiChampion
 
 
 # PYOT STATIC OBJECTS
@@ -24,12 +27,12 @@ class ChampionPlayerStyleData(PyotStatic):
 
 
 class ChampionChromaDescriptionsData(PyotStatic):
-    region: str
+    region: str = None
     description: str
 
 
 class ChampionChromaRaritiesData(PyotStatic):
-    region: str
+    region: str = None
     description: str
 
 
@@ -127,18 +130,18 @@ class ChampionSpellData(PyotStatic):
     key: str
     name: str
     icon_path: str
-    cost: List[int]
-    cooldown: List[int]
-    range: List[int]
+    cost: List[float]
+    cooldown: List[float]
+    range: List[float]
     description: str
     long_description: str
     ability_video_path: str
     ability_video_image_path: str
     max_level: int
     formulas: Dict
-    coefficients: Dict[str, int]
-    effect_amounts: Dict[str, List[int]]
-    ammo: Dict[str, List[int]]
+    coefficients: Dict[str, float]
+    effect_amounts: Dict[str, List[float]]
+    ammo: Dict[str, List[float]]
 
     class Meta(PyotStatic.Meta):
         raws = {"cost", "cooldown", "range", "formulas", "coefficients", "effect_amounts", "ammo"}
@@ -230,7 +233,7 @@ class Champion(PyotCore):
         return abs_url(self.ban_vo_path)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.id)
 

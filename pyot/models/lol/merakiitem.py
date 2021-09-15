@@ -1,16 +1,21 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from .base import PyotStatic, PyotCore
+
+if TYPE_CHECKING:
+    from .item import Item
+    from .champion import Champion
+    from .merakichampion import MerakiChampion
 
 
 # PYOT STATIC OBJECTS
 
 class MerakiItemStatDetailData(PyotStatic):
-    flat: int
-    percent: int
-    per_level: int
-    percent_per_level: int
-    percent_base: int
-    percent_bonus: int
+    flat: float
+    percent: float
+    per_level: float
+    percent_per_level: float
+    percent_base: float
+    percent_bonus: float
 
 
 class MerakiItemStatData(PyotStatic):
@@ -99,26 +104,26 @@ class MerakiItem(PyotCore):
         self.initialize({"locale": "default", **locals()})
 
     @property
-    def item(self):
+    def item(self) -> "Item":
         from .item import Item
         return Item(id=self.id, locale="en_us")
 
     @property
-    def meraki_builds_from(self):
+    def meraki_builds_from(self) -> List["MerakiItem"]:
         mutable = []
         for i in self.builds_from_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def meraki_builds_into(self):
+    def meraki_builds_into(self) -> List["MerakiItem"]:
         mutable = []
         for i in self.builds_into_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def builds_from(self):
+    def builds_from(self) -> List["Item"]:
         from .item import Item
         mutable = []
         for i in self.builds_from_ids:
@@ -126,7 +131,7 @@ class MerakiItem(PyotCore):
         return mutable
 
     @property
-    def builds_into(self):
+    def builds_into(self) -> List["Item"]:
         from .item import Item
         mutable = []
         for i in self.builds_into_ids:
@@ -134,11 +139,11 @@ class MerakiItem(PyotCore):
         return mutable
 
     @property
-    def required_champion(self):
+    def required_champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.required_champion_key, locale="en_us")
 
     @property
-    def meraki_required_champion(self):
+    def meraki_required_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.required_champion_key)

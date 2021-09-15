@@ -1,8 +1,11 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from datetime import datetime
 
 from pyot.conf.model import models
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
 
 
 # PYOT STATIC OBJECTS
@@ -14,12 +17,12 @@ class ClashPlayerData(PyotStatic):
     role: str
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
     @property
-    def team(self):
+    def team(self) -> "ClashTeam":
         return ClashTeam(id=self.team_id, platform=self.platform)
 
 
@@ -67,7 +70,7 @@ class ClashPlayers(PyotCore):
         return new_data
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
@@ -95,12 +98,12 @@ class ClashTeam(PyotCore):
         return data
 
     @property
-    def captain(self):
+    def captain(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.captain_summoner_id, platform=self.platform)
 
     @property
-    def tournament(self):
+    def tournament(self) -> "ClashTournament":
         return ClashTournament(id=self.tournament_id, platform=self.platform)
 
 
@@ -143,6 +146,6 @@ class ClashTournament(ClashTournamentData, PyotCore):
         self.initialize(locals())
 
     @property
-    def team(self):
+    def team(self) -> ClashTeam:
         return ClashTeam(id=self.team_id, platform=self.platform)
     

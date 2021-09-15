@@ -1,13 +1,16 @@
-from typing import List
+from typing import List, TYPE_CHECKING, Union
 
 from pyot.utils.lol.champion import key_by_id, key_by_name
 from .base import PyotStatic, PyotCore
+
+if TYPE_CHECKING:
+    from .champion import Champion
 
 
 # PYOT STATIC OBJECTS
 
 class MerakiChampionSpellModifierData(PyotStatic):
-    values: List[int]
+    values: List[float]
     units: List[str]
 
     class Meta(PyotStatic.Meta):
@@ -78,10 +81,10 @@ class MerakiChampionAttributeRatingData(PyotStatic):
 
 
 class MerakiChampionStatDetailData(PyotStatic):
-    flat: int
-    percent: int
-    per_level: int
-    percent_per_level: int
+    flat: float
+    percent: float
+    per_level: float
+    percent_per_level: float
 
 
 class MerakiChampionStatData(PyotStatic):
@@ -122,12 +125,12 @@ class MerakiChampionPriceData(PyotStatic):
 
 
 class MerakiChampionChromaDescriptionsData(PyotStatic):
-    region: str
+    region: str = None
     description: str
 
 
 class MerakiChampionChromaRaritiesData(PyotStatic):
-    region: str
+    region: str = None
     description: str
 
 
@@ -150,7 +153,7 @@ class MerakiChampionSkinData(PyotStatic):
     availability: str
     format_name: str
     loot_eligible: bool
-    cost: int
+    cost: Union[str, int]
     sale: int
     distribution: str
     rarity: str
@@ -216,7 +219,7 @@ class MerakiChampion(PyotCore):
             self.key = "Fiddlesticks"
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(key=self.key, locale="en_us")
 

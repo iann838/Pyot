@@ -1,8 +1,12 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from ..riot.account import Account
+
 
 # PYOT STATIC OBJECTS
 
@@ -15,7 +19,7 @@ class LeaderboardPlayerData(PyotStatic):
     number_of_wins: int
 
     @property
-    def account(self):
+    def account(self) -> "Account":
         from ..riot.account import Account
         return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
 

@@ -1,8 +1,13 @@
 from datetime import datetime
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from .base import PyotCore
+
+if TYPE_CHECKING:
+    from .summoner import Summoner
+    from .champion import Champion
+    from .merakichampion import MerakiChampion
 
 
 # PYOT CORE OBJECTS
@@ -30,17 +35,17 @@ class ChampionMastery(PyotCore):
         return datetime.fromtimestamp(self.last_play_timestamp//1000)
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
@@ -77,6 +82,6 @@ class ChampionMasteries(PyotCore):
         return new_data
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)

@@ -24,7 +24,7 @@ extras_require = {
     "diskcache": ["diskcache"],
     "redis": ["aioredis", "aioredlock"],
     "mongodb": ["motor"],
-    "lol_roles": ["roleml"],
+    "test": ["typeguard"],
 }
 
 

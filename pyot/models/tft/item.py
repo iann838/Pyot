@@ -33,11 +33,11 @@ class Item(PyotCore):
         return abs_url(self.icon_path)
 
     @lazy_property
-    def cleaned_description(self):
+    def cleaned_description(self) -> str:
         return sanitize_item(self.description, self.effects)
 
     @property
-    def from_items(self):
+    def from_items(self) -> List["Item"]:
         return [Item(id=i, locale=self.locale) for i in self.from_ids]
 
 

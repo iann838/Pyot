@@ -1,8 +1,16 @@
-from typing import List, Iterator
+from typing import List, Iterator, TYPE_CHECKING
 from datetime import datetime, timedelta
 
 from pyot.conf.model import models
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .champion import Champion
+    from .merakichampion import MerakiChampion
+    from .rune import Rune
+    from .spell import Spell
+    from .summoner import Summoner
+    from .profileicon import ProfileIcon
 
 
 # PYOT STATIC OBJECTS
@@ -13,12 +21,12 @@ class CurrentGameBansData(PyotStatic):
     team_id: int
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
@@ -47,27 +55,27 @@ class CurrentGameParticipantData(PyotStatic):
         raws = {"spell_ids", "rune_ids"}
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
     @property
-    def profile_icon(self):
+    def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
         return ProfileIcon(id=self.profile_icon_id)
 
     @property
-    def runes(self):
+    def runes(self) -> List["Rune"]:
         from .rune import Rune
         mutable = []
         for i in self.rune_ids:
@@ -75,7 +83,7 @@ class CurrentGameParticipantData(PyotStatic):
         return mutable
 
     @property
-    def spells(self):
+    def spells(self) -> List["Spell"]:
         from .spell import Spell
         mutable = []
         for i in self.spell_ids:
@@ -97,27 +105,27 @@ class FeaturedGameParticipantData(PyotStatic):
         raws = {"spell_ids"}
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(name=self.summoner_name, platform=self.platform)
 
     @property
-    def champion(self):
+    def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(id=self.champion_id)
 
     @property
-    def meraki_champion(self):
+    def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.champion_id)
 
     @property
-    def profile_icon(self):
+    def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
         return ProfileIcon(id=self.profile_icon_id)
 
     @property
-    def spells(self):
+    def spells(self) -> List["Spell"]:
         from .spell import Spell
         mutable = []
         for i in self.spell_ids:
@@ -158,7 +166,7 @@ class FeaturedGameData(PyotStatic):
         return datetime.fromtimestamp(self.start_millis//1000)
 
     @property
-    def duration(self) -> datetime:
+    def duration(self) -> timedelta:
         return timedelta(seconds=self.length_secs)
 
     @property
@@ -182,6 +190,7 @@ class FeaturedGameData(PyotStatic):
     @property
     def red_team(self) -> FeaturedGameTeamData:
         return self.teams[1]
+
 
 # PYOT CORE OBJECTS
 
@@ -237,7 +246,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
         return self.teams[1]
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(id=self.summoner_id, platform=self.platform)
 
@@ -272,5 +281,5 @@ class FeaturedGames(PyotCore):
         return data
 
     @property
-    def refresh_interval(self) -> datetime:
+    def refresh_interval(self) -> timedelta:
         return timedelta(seconds=self.refresh_interval_secs)

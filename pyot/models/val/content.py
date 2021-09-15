@@ -1,8 +1,11 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
+
+if TYPE_CHECKING:
+    from .ranked import Leaderboard
 
 
 # PYOT STATIC OBJECTS
@@ -66,7 +69,7 @@ class ContentActData(PyotStatic):
     is_active: bool
 
     @property
-    def leaderboard(self):
+    def leaderboard(self) -> "Leaderboard":
         from .ranked import Leaderboard
         return Leaderboard(act_id=self.id, platform=self.platform)
 
