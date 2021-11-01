@@ -46,7 +46,7 @@ class RedisCache(Store):
             if timeout == -1:
                 timeout = None
             cache = await self.data.get()
-            await cache.set(token.value, to_bytes(value), timeout)
+            await cache.set(token.value, to_bytes(value), expire=timeout)
             LOGGER.log(self.log_level, f"[Trace: {self.game} > RedisCache > {self.location}] SET: {token.value}")
 
     async def delete(self, token: PipelineToken, **kwargs) -> None:

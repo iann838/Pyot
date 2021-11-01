@@ -2,7 +2,7 @@ from typing import Dict
 from ..text import snakecase
 
 
-BASE_URL = "https://raw.communitydragon.org/latest/"
+BASE_URL = "https://raw.communitydragon.org/"
 
 
 def join_set_data(data: Dict, set: int, collection_key: str):
@@ -18,13 +18,13 @@ def join_set_data(data: Dict, set: int, collection_key: str):
     return list(collected.values())
 
 
-def abs_url(link: str) -> str:
+def abs_url(link: str, version="latest") -> str:
     '''Return the CDragon url for the given tft asset url'''
     if link is None: return link
     link = link.lower()
     if link[-3:] not in ["png","jpg","jpeg"]:
         link = link[:-3] + "png"
-    return BASE_URL + "game/" + link
+    return BASE_URL + version + "/game/" + link
 
 
 def sanitize_item(string: str, obj: dict) -> str:

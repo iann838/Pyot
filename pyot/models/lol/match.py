@@ -444,7 +444,7 @@ class MatchMetaData(PyotStatic):
 class MatchInfoData(PyotStatic):
     game_id: int
     creation_millis: int
-    duration_millis: int
+    duration_units: int
     start_millis: int
     mode: str
     name: str
@@ -458,7 +458,7 @@ class MatchInfoData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         renamed = {
-            "game_creation": "creation_millis", "game_duration": "duration_millis", "game_mode": "mode", "game_name": "name",
+            "game_creation": "creation_millis", "game_duration": "duration_units", "game_mode": "mode", "game_name": "name",
             "game_start_timestamp": "start_millis", "game_type": "type", "game_version": "version", "platform_id": "platform",
         }
 
@@ -468,7 +468,19 @@ class MatchInfoData(PyotStatic):
 
     @property
     def duration(self) -> timedelta:
-        return timedelta(milliseconds=self.duration_millis)
+        return timedelta(seconds=self.duration_secs)
+
+    @property
+    def duration_millis(self) -> int:
+        if self.duration_units < 25200:
+            return self.duration_units * 1000
+        return self.duration_units
+
+    @property
+    def duration_secs(self) -> int:
+        if self.duration_units > 25200:
+            return self.duration_units / 1000
+        return self.duration_units
 
     @property
     def start(self) -> datetime:

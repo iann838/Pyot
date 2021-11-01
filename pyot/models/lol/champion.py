@@ -49,7 +49,7 @@ class ChampionSkinChromaData(PyotStatic):
 
     @lazy_property
     def chroma_abspath(self) -> str:
-        return abs_url(self.chroma_path)
+        return abs_url(self.chroma_path, self.metaroot.version)
 
 
 class ChampionSkinData(PyotStatic):
@@ -80,35 +80,35 @@ class ChampionSkinData(PyotStatic):
 
     @lazy_property
     def splash_abspath(self) -> str:
-        return abs_url(self.splash_path)
+        return abs_url(self.splash_path, self.metaroot.version)
 
     @lazy_property
     def uncentered_splash_abspath(self) -> str:
-        return abs_url(self.uncentered_splash_path)
+        return abs_url(self.uncentered_splash_path, self.metaroot.version)
 
     @lazy_property
     def tile_abspath(self) -> str:
-        return abs_url(self.tile_path)
+        return abs_url(self.tile_path, self.metaroot.version)
 
     @lazy_property
     def load_screen_abspath(self) -> str:
-        return abs_url(self.load_screen_path)
+        return abs_url(self.load_screen_path, self.metaroot.version)
 
     @lazy_property
     def load_screen_vintage_abspath(self) -> str:
-        return abs_url(self.load_screen_vintage_path)
+        return abs_url(self.load_screen_vintage_path, self.metaroot.version)
 
     @lazy_property
     def chroma_abspath(self) -> str:
-        return abs_url(self.chroma_path)
+        return abs_url(self.chroma_path, self.metaroot.version)
 
     @lazy_property
     def splash_video_abspath(self) -> str:
-        return abs_url(self.splash_video_path)
+        return abs_url(self.splash_video_path, self.metaroot.version)
 
     @lazy_property
     def collection_splash_video_abspath(self) -> str:
-        return abs_url(self.collection_splash_video_path)
+        return abs_url(self.collection_splash_video_path, self.metaroot.version)
 
 
 class ChampionPassiveData(PyotStatic):
@@ -123,7 +123,7 @@ class ChampionPassiveData(PyotStatic):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return abs_url(self.icon_path)
+        return abs_url(self.icon_path, self.metaroot.version)
 
 
 class ChampionSpellData(PyotStatic):
@@ -149,7 +149,7 @@ class ChampionSpellData(PyotStatic):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return abs_url(self.icon_path)
+        return abs_url(self.icon_path, self.metaroot.version)
 
     @lazy_property
     def cleaned_description(self) -> str:
@@ -218,19 +218,19 @@ class Champion(PyotCore):
 
     @lazy_property
     def square_abspath(self) -> str:
-        return abs_url(self.square_path)
+        return abs_url(self.square_path, self.metaroot.version)
 
     @lazy_property
     def stinger_sfx_abspath(self) -> str:
-        return abs_url(self.stinger_sfx_path)
+        return abs_url(self.stinger_sfx_path, self.metaroot.version)
 
     @lazy_property
     def choose_vo_abspath(self) -> str:
-        return abs_url(self.choose_vo_path)
+        return abs_url(self.choose_vo_path, self.metaroot.version)
 
     @lazy_property
     def ban_vo_abspath(self) -> str:
-        return abs_url(self.ban_vo_path)
+        return abs_url(self.ban_vo_path, self.metaroot.version)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":

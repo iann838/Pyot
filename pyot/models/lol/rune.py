@@ -32,7 +32,7 @@ class Rune(PyotCore):
 
     @lazy_property
     def icon_abspath(self) -> str:
-        return abs_url(self.icon_path)
+        return abs_url(self.icon_path, self.metaroot.version)
 
     @lazy_property
     def cleaned_description(self) -> str:

@@ -364,6 +364,11 @@ class PyotCoreBase(PyotStaticBase):
         self._meta.data = self.transform(data)
         self.fill()
 
+    def load(self, raw_data: Any):
+        self._meta.raw_data = raw_data
+        self._meta.data = self.transform(raw_data)
+        self.fill()
+
     async def token(self) -> PipelineToken:
         '''Coroutine. Create a pipeline token that identifies this object (its parameters).'''
         await self.setup()

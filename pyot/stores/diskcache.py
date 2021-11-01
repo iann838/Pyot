@@ -19,9 +19,9 @@ class DiskCache(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, directory: str, expirations: Any = None, log_level: int = 0, **kwargs) -> None:
+    def __init__(self, game: str, directory: str, expirations: Any = None, log_level: int = 0, kwargs=None) -> None:
         self.game = game
-        kwargs = {key.lower():val for (key,val) in kwargs.items()}
+        kwargs = kwargs or {}
         if "timeout" not in kwargs: kwargs["timeout"] = 1
         self._cache = FanoutCache(directory=directory, **kwargs)
         self._alias = str(directory).split("/")[-1] if "/" in str(directory) else str(directory).split("\\")[-1]
