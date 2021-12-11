@@ -57,6 +57,7 @@ class ContentLocalizedNamesData(PyotStatic):
 
 
 class ContentItemData(PyotStatic):
+    id: str
     name: str
     asset_name: str
     localized_names: ContentLocalizedNamesData
@@ -65,6 +66,8 @@ class ContentItemData(PyotStatic):
 class ContentActData(PyotStatic):
     id: str
     name: str
+    type: str
+    parent_id: str
     localized_names: ContentLocalizedNamesData
     is_active: bool
 
@@ -91,6 +94,7 @@ class Content(PyotCore):
     charm_levels: List[ContentItemData]
     player_cards: List[ContentItemData]
     player_titles: List[ContentItemData]
+    ceremonies: List[ContentItemData]
     acts: List[ContentActData]
 
     class Meta(PyotCore.Meta):
