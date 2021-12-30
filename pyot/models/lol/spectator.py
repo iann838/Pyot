@@ -149,7 +149,7 @@ class FeaturedGameData(PyotStatic):
     id: int
     type: str
     mode: str
-    start_millis: int
+    start_time_millis: int
     length_secs: int #not milliseconds
     map_id: int
     platform: str
@@ -158,15 +158,15 @@ class FeaturedGameData(PyotStatic):
     teams: List[FeaturedGameTeamData]
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_id": "id", "game_type": "type", "game_start_time": "start_millis", "game_mode": "mode",
+        renamed = {"game_id": "id", "game_type": "type", "game_start_time": "start_time_millis", "game_mode": "mode",
             "game_length": "length_secs", "platform_id": "platform", "game_queue_config_id": "queue_id"}
 
     @property
-    def creation(self) -> datetime:
-        return datetime.fromtimestamp(self.start_millis//1000)
+    def start_time(self) -> datetime:
+        return datetime.fromtimestamp(self.start_time_millis//1000)
 
     @property
-    def duration(self) -> timedelta:
+    def length(self) -> timedelta:
         return timedelta(seconds=self.length_secs)
 
     @property

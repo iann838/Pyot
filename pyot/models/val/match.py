@@ -27,11 +27,11 @@ class MatchInfoData(PyotStatic):
         renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id"}
 
     @property
-    def creation(self) -> datetime:
+    def start(self) -> datetime:
         return datetime.fromtimestamp(self.start_millis//1000)
 
     @property
-    def duration(self) -> datetime:
+    def length(self) -> datetime:
         return timedelta(seconds=self.length_millis)
 
 
@@ -239,7 +239,7 @@ class Match(PyotCore):
         self.initialize(locals())
 
     @property
-    def creation(self) -> datetime:
+    def start_time(self) -> datetime:
         return datetime.fromtimestamp(self.start_time_millis//1000)
 
 

@@ -471,6 +471,10 @@ class MatchInfoData(PyotStatic):
         return timedelta(seconds=self.duration_secs)
 
     @property
+    def start(self) -> datetime:
+        return datetime.fromtimestamp(self.start_millis // 1000)
+
+    @property
     def duration_millis(self) -> int:
         if self.duration_units < 25200:
             return self.duration_units * 1000

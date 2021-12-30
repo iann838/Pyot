@@ -99,7 +99,7 @@ class MatchInfoParticipantData(PyotStatic):
 
 
 class MatchInfoData(PyotStatic):
-    date_millis: int
+    datetime_millis: int
     length_secs: int
     variation: str
     version: str
@@ -108,14 +108,14 @@ class MatchInfoData(PyotStatic):
     tft_set_number: int
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_datetime": "date_millis", "game_length": "length_secs", "game_variation": "variation", "game_version": "version"}
+        renamed = {"game_datetime": "datetime_millis", "game_length": "length_secs", "game_variation": "variation", "game_version": "version"}
 
     @property
-    def creation(self) -> datetime:
-        return datetime.fromtimestamp(self.date_millis//1000)
+    def datetime(self) -> datetime:
+        return datetime.fromtimestamp(self.datetime_millis//1000)
 
     @property
-    def duration(self) -> datetime:
+    def length(self) -> timedelta:
         return timedelta(seconds=self.length_secs)
 
 

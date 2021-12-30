@@ -43,7 +43,7 @@ class RedisLimiter(BaseLimiter):
                 if exists == "0" then
                     break
                 end
-                local freeze = redis.call("GET", prefix_i..":freeze")
+                local freeze = tonumber(redis.call("GET", prefix_i..":freeze"))
                 if (freeze or 0) > now then
                     sleep = math.max(sleep, freeze - now)
                     break
