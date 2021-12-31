@@ -51,7 +51,7 @@ class Card(PyotCore):
     number: int
 
     class Meta(PyotCore.Meta):
-        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards"}
+        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards", "regions", "region_refs"}
         renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes", "associated_cards": "_deleted__associated_cards"}
         rules = {"ddragon_lor_set_data": ["set", "?code", "version", "locale"]}
 
