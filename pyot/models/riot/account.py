@@ -17,7 +17,7 @@ class Account(PyotCore):
         self.initialize(locals())
 
     def active_shard(self, game: str):
-        return ActiveShard(puuid=self.puuid, game=game, region=self.region).pipeline(self.metapipeline.name)
+        return ActiveShard(puuid=self.puuid, game=game).pipeline(self.metapipeline.name)
 
 
 class ActiveShard(PyotCore):
@@ -40,4 +40,4 @@ class ActiveShard(PyotCore):
 
     @property
     def account(self):
-        return Account(puuid=self.puuid, region=self.region)
+        return Account(puuid=self.puuid)

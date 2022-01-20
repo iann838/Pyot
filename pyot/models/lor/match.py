@@ -25,7 +25,7 @@ class MatchMetaData(PyotStatic):
     @property
     def participants(self) -> List["Account"]:
         from pyot.models.riot import Account
-        return [Account(puuid=puuid, region=self.region).pipeline(self.metapipeline.name) for puuid in self.participant_puuids]
+        return [Account(puuid=puuid).pipeline(self.metapipeline.name) for puuid in self.participant_puuids]
 
 
 class MatchPlayerData(PyotStatic):
@@ -43,7 +43,7 @@ class MatchPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from pyot.models.riot import Account
-        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
     @property
     def deck(self) -> "Deck":
@@ -123,4 +123,4 @@ class MatchHistory(PyotCore):
     @property
     def account(self) -> "Account":
         from pyot.models.riot import Account
-        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)

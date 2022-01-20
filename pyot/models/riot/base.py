@@ -4,7 +4,7 @@ from pyot.conf.pipeline import pipelines
 
 class PyotRouting:
 
-    _regions = {"americas", "europe", "asia", "esports", "sea"}
+    _regions = {"americas", "europe", "asia", "esports", "sea", "apac"}
 
 
 class PyotCore(PyotRouting, PyotCoreBase):

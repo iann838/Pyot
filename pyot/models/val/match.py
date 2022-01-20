@@ -78,7 +78,7 @@ class MatchPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
 
 class MatchTeamData(PyotStatic):
@@ -135,17 +135,17 @@ class MatchPlayerKillData(PyotStatic):
     @property
     def killer(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.killer_puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.killer_puuid).pipeline(self.metapipeline.name)
 
     @property
     def victim(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.victim_puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.victim_puuid).pipeline(self.metapipeline.name)
 
     @property
     def assistants(self) -> List["Account"]:
         from ..riot.account import Account
-        return [Account(puuid=i, region=self.region).pipeline(self.metapipeline.name) for i in self.assistant_puuids]
+        return [Account(puuid=i).pipeline(self.metapipeline.name) for i in self.assistant_puuids]
 
 
 class MatchPlayerDamageData(PyotStatic):
@@ -205,12 +205,12 @@ class MatchRoundResultData(PyotStatic):
     @property
     def bomb_planter(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_planter_puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.bomb_planter_puuid).pipeline(self.metapipeline.name)
 
     @property
     def bomb_defuser(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_defuser_puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.bomb_defuser_puuid).pipeline(self.metapipeline.name)
 
 
 class MatchCoachData(PyotStatic):
@@ -230,6 +230,7 @@ class Match(PyotCore):
     # <~> MatchHistory
     start_time_millis: int
     team_id: str
+    queue_id: str
 
     class Meta(PyotCore.Meta):
         renamed = {"match_info": "info", "game_start_time_millis": "start_time_millis", "match_id": "id"}
@@ -267,7 +268,7 @@ class MatchHistory(PyotCore):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
 
 class RecentMatches(PyotCore):

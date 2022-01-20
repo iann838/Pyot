@@ -57,7 +57,7 @@ class Summoner(PyotCore):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid, region=self.region).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
     @property
     def match_history(self) -> "MatchHistory":

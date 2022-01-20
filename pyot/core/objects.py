@@ -42,6 +42,12 @@ class PyotLazy:
         if "locale" in self.clas.Meta.arg_names:
             try: kwargs["locale"] = self.root.locale
             except AttributeError: pass
+        if "platform" in self.clas.Meta.arg_names and "platform" in self.root.Meta.arg_names:
+            try: kwargs["platform"] = self.root.platform
+            except AttributeError: pass
+        if "region" in self.clas.Meta.arg_names and "region" in self.root.Meta.arg_names:
+            try: kwargs["region"] = self.root.region
+            except AttributeError: pass
         instance: "PyotCoreBase" = self.clas(**kwargs)
         instance._meta.root = self.root
         instance._meta.data = instance.transform(obj)
