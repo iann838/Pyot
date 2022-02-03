@@ -1,6 +1,6 @@
 # Table of contents
 
-* [README](README.md)
+* [Pyot Documentation](README.md)
 * [Cores](cores/README.md)
   * [Installation](cores/installation.md)
   * [Configuration](cores/configuration.md)
