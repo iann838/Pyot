@@ -16,7 +16,7 @@ Definitions:
   * `api_key`: `str`
     > Riot API key.
   * `rate_limiter`: `Mapping[str, str] = None`
-    > Configuration of Rate Limiter for this store. Defaults to `MemoryLimiter`. Details documentations at [Limiters](/limiters).
+    > Configuration of Rate Limiter for this store. Defaults to `MemoryLimiter`. Documentations at **Limiters**.
   * `error_handler`: `Dict[int, Tuple] = None`
   * `log_level`: `int = 0`
 
