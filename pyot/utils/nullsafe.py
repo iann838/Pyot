@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 
 class NullSafe:
-    '''Documentation at: https://github.com/paaksing/nullsafe-python'''
+    '''Documentation at: <https://github.com/paaksing/nullsafe-python>'''
 
     def __getattr__(self, k: str) -> "NullSafe":
         return undefined

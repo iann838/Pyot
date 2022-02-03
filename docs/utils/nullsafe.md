@@ -4,7 +4,7 @@ Module: `pyot.utils.nullsafe`
 
 ### _class_ NullSafe
 
-> Documentation at: https://github.com/paaksing/nullsafe-python
+> Documentation at: <https://github.com/paaksing/nullsafe-python>
 
 Definitions: 
 * `__bool__` -> `None` 

@@ -2,7 +2,7 @@
 
 Pyot requires Python **3.7** or newer.
 
-Get the latest version of Python at https://www.python.org/downloads/ or with your operating system’s package manager.
+Get the latest version of Python at <https://www.python.org/downloads/> or with your operating system’s package manager.
 
 ## Pip
 
