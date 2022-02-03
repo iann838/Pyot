@@ -3,6 +3,7 @@ from typing import Dict, List, Iterator, Union
 from lor_deckcodes.encode import encode_deck
 from lor_deckcodes.decode import decode_deck
 from pyot.conf.model import models
+from pyot.core.objects import PyotUtilBase
 from pyot.core.functional import cache_indexes
 from pyot.utils.lor.cards import batch_to_ccac
 from .base import PyotCore, PyotStatic
@@ -107,7 +108,7 @@ class Cards(PyotCore):
 
 ## PYOT CONTAINERS
 
-class Batch:
+class Batch(PyotUtilBase):
     code: str
     count: int
     faction: str
@@ -159,7 +160,7 @@ class Batch:
         return Card(code=self.code)
 
 
-class Deck:
+class Deck(PyotUtilBase):
     batches: List[Batch]
     code: str
 

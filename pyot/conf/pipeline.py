@@ -6,9 +6,9 @@ from pyot.utils.logging import Logger
 from pyot.utils.importlib import import_class
 
 from .utils import ConfDict, valid_attribute_key
-from .model import AVAILABLE_MODELS
 
 LOGGER = Logger(__name__)
+AVAILABLE_MODELS = {"lol", "tft", "lor", "val"}
 
 pipelines: ConfDict[str, Pipeline] = ConfDict(Pipeline, False)
 

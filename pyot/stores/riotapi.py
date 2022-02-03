@@ -1,7 +1,6 @@
-from typing import Mapping, Dict, Any, Union
+from typing import Mapping, Dict, Any
 import asyncio
 import aiohttp
-import requests
 
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.handler import ErrorHandler
@@ -9,7 +8,6 @@ from pyot.endpoints.riotapi import RiotAPIEndpoint
 from pyot.limiters.base import BaseLimiter
 from pyot.utils.importlib import import_class
 from pyot.utils.parsers import safejson
-from pyot.utils.runners import thread_run
 from pyot.utils.logging import Logger
 from pyot.utils.nullsafe import _
 
@@ -35,19 +33,12 @@ class RiotAPI(Store):
     async def request(self, method: str, token: PipelineToken, body: Dict = None, session: aiohttp.ClientSession = None, **kwargs) -> Dict:
         url = self.endpoints.resolve(token)
         error_token = self.handler.get_token()
-        # Commented since Pyot 5: The issue was only seen on match-v4 timeline, now when it's gone, let's see.
-        # request_manager = RiotAPIRequestManager(method=method, url=self.endpoints.resolve(token), headers={"X-Riot-Token": self.api_key}, json=body)
         while error_token.allow():
             limit_token = await self.rate_limiter.get_token(token.server, token.parent)
             if not limit_token.allow():
                 await asyncio.sleep(limit_token.sleep)
-                # await self.rate_limiter.ping_fail(limit_token) # handled
                 continue
-            # print(limit_token.sleep, url)
             try:
-                # await request_manager.execute(session)
-                # await request_manager.validate()
-                # response = request_manager.response
                 response = await session.request(method=method, url=url, headers={"X-Riot-Token": self.api_key}, json=body)
                 LOGGER.log(self.log_level, f"[Trace: {self.game} > RiotAPI] {method}: {token.value}")
             except Exception:
@@ -72,33 +63,3 @@ class RiotAPI(Store):
         config["game"] = self.game
         config["api_key"] = self.api_key
         return limiter(**config)
-
-
-class RiotAPIRequestManager:
-    """Manages Riot API requests because aiohttp is not able to decrypt / read the response in very rare cases."""
-
-    response: Union[aiohttp.ClientResponse, requests.Response]
-
-    def __init__(self, method: str, url: str, headers: Dict, json: Dict) -> None:
-        self.method = method
-        self.url = url
-        self.headers = headers
-        self.json = json
-        self.decode_error = False
-
-    async def execute(self, session: aiohttp.ClientSession) -> None:
-        if self.decode_error:
-            response = await thread_run(requests.request, method=self.method, url=self.url, headers=self.headers, json=self.json)
-            response.status = response.status_code
-        else:
-            response = await session.request(method=self.method, url=self.url, headers=self.headers, json=self.json)
-        self.response = response
-
-    async def validate(self):
-        try:
-            if self.decode_error:
-                return
-            await asyncio.wait_for(self.response.read(), timeout=5)
-        except asyncio.TimeoutError:
-            self.decode_error = True
-            self.response.status = 602

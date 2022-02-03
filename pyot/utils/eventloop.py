@@ -7,6 +7,7 @@ R2 = TypeVar("R2")
 
 
 class LoopSensitiveManager(Generic[R1, R2]):
+    '''Manager for managing internal streams and creates isolated copies of them based on their event loops.'''
 
     def __init__(self, factory: Callable[..., Union[R1, Awaitable[R2]]], callback=None, max_loops: int = 128, t: Type[R1] = None):
         from .locks import SealLock # Ahh avoid circular imports oops

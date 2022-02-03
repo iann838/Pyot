@@ -12,36 +12,34 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 install_requires = [
     "wheel",
-    "python-dateutil",
-    "aiohttp",
-    "requests",
-    "asgiref",
+    "python-dateutil>=2.8",
+    "aiohttp>=3.7",
     "pytz",
     "lor-deckcodes",
 ]
 
 extras_require = {
-    "diskcache": ["diskcache"],
-    "redis": ["aioredis", "aioredlock"],
-    "mongodb": ["motor"],
-    "test": ["typeguard"],
+    "diskcache": ["diskcache>=5.1", "asgiref>=3.2"],
+    "redis": ["aioredis<2.0"],
+    "mongodb": ["motor>=2.3"],
+    "test": ["typeguard>=2.13"],
 }
 
 
 # Require python 3.7
 if sys.version_info.major != 3 and sys.version_info.minor < 7:
-    sys.exit("'Pyot' requires Python >= 3.7!")
+    sys.exit("'Pyot' requires Python >= 3.7")
 
 setup(
     name="pyot",
-    version="5.0.0",
+    version="5.1.0",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
-    description="AsyncIO based high level Python framework for the Riot Games API that encourages rapid development and clean, pragmatic design.",
+    description="AsyncIO based high level Python framework Riot Games API framework which encourages rapid development and clean, pragmatic design.",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "Django", "asyncio"],
+    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "asyncio"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3.7",
@@ -52,7 +50,6 @@ setup(
         "Topic :: Games/Entertainment",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Natural Language :: English",
-        "Framework :: Django :: 3.0",
     ],
     license="MIT",
     packages=find_packages(exclude=("test")),

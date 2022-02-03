@@ -10,7 +10,6 @@ def batch_to_ccac(batch):
 def ccac_to_batch(ccac: CardCodeAndCount):
     '''
     Converts a CardCodeAndCount object to Batch object.
-    `locale` is set if passed.
     '''
     from pyot.models.lor import Batch
     return Batch(code=ccac.card_code, count=ccac.count)

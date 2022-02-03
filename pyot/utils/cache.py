@@ -12,7 +12,7 @@ class PtrCache(Generic[T]):
     Be aware that this cache is NOT isolated, hence the performance difference from Omnistone.
     This cache will not copy the objects on get/put, modification to objects affects cached objects.
 
-    You can pass a class to instantiation param `class_of_t` for typing and autocompletion if all your objects are the same type.
+    You can pass a class to instantiation param `class_of_t` for typing and autocompletion.
     '''
     objects: dict
     max_entries: int
@@ -89,9 +89,7 @@ class PtrCache(Generic[T]):
         self.objects = dict()
 
 
-def ptr_cache(expiration=60*60*3, max_entries=5000, class_of_t: Optional[Type[T]] = None) -> PtrCache[T]:
-    '''Create an PtrCache and return it.'''
-    return PtrCache(expiration, max_entries)
+ptr_cache = PtrCache
 
 
 class cached_property(Generic[R]):

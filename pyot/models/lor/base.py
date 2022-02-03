@@ -2,6 +2,9 @@ from pyot.core.objects import PyotCoreBase, PyotStaticBase
 from pyot.conf.pipeline import pipelines
 
 
+MODULE_REPR = 'Legends of Runeterra'
+
+
 class PyotRouting:
 
     _regions = {"americas", "europe", "asia", "esports", "sea", "apac"}

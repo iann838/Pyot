@@ -223,7 +223,7 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
     def __getitem__(self, item):
         return self._meta.data[item]
 
-    def qualkey(self, key):
+    def qualkey(self, key: str) -> str:
         name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
         newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
         if newkey in self._meta.renamed:
@@ -370,11 +370,6 @@ class PyotCoreBase(PyotStaticBase):
         self._meta.data = self.transform(data)
         self.fill()
 
-    def load(self, raw_data: Any):
-        self._meta.raw_data = raw_data
-        self._meta.data = self.transform(raw_data)
-        self.fill()
-
     async def token(self) -> PipelineToken:
         '''Coroutine. Create a pipeline token that identifies this object (its parameters).'''
         await self.setup()
@@ -387,21 +382,21 @@ class PyotCoreBase(PyotStaticBase):
             raise ValueError("Token creation failed, please ensure a pipeline is activated or provided") from e
 
     async def get(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Execute a GET request against the pipeline.'''
+        '''Coroutine. Make a GET request to the pipeline.'''
         self.pre_request(pipeline)
         data = await self._meta.pipeline.get(await self.token())
         self.post_request(data, deepcopy)
         return self
 
     async def post(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Execute a POST request against the pipeline.'''
+        '''Coroutine. Make a POST request to the pipeline.'''
         self.pre_request(pipeline)
         data = await self._meta.pipeline.post(await self.token(), self._meta.body)
         self.post_request(data, deepcopy)
         return self
 
     async def put(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Execute a PUT request against the pipeline.'''
+        '''Coroutine. Make a PUT request to the pipeline.'''
         self.pre_request(pipeline)
         data = await self._meta.pipeline.put(await self.token(), self._meta.body)
         self.post_request(data, deepcopy)
@@ -428,6 +423,14 @@ class PyotCoreBase(PyotStaticBase):
         """Return the raw response of the request, only available for Core objects"""
         return self._meta.raw_data
 
+    @classmethod
+    def load(cls, raw_data: Any):
+        o = cls()
+        o._meta.raw_data = raw_data
+        o._meta.data = o.transform(raw_data)
+        o.fill()
+        return o
+
     async def setup(self):
         """Coroutine. Set up the object to make request, this comes before `clean()`."""
 
@@ -441,3 +444,6 @@ class PyotCoreBase(PyotStaticBase):
     def transform(self, data) -> Dict:
         """Transform the data into a pyot compatible structure non-destructively, this comes after `filter()`."""
         return data
+
+
+class PyotUtilBase: pass

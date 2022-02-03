@@ -19,7 +19,7 @@ class Omnistone(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, expirations: Any = None, max_entries: int = 10000, cull_frecuency: int = 2, log_level: int = 0) -> None:
+    def __init__(self, game: str, max_entries: int = 10000, cull_frecuency: int = 2, expirations: Any = None, log_level: int = 0) -> None:
         self.game = game
         self.data = dict()
         self.lock = SealLock()

@@ -16,7 +16,8 @@ def from_bytes(obj, class_of_t: Optional[Type[T]] = None) -> T:
     return pickle.loads(obj)
 
 
-def safejson(content):
+def safejson(content: str):
+    '''Same as json.loads with graceful fallback by returning original string'''
     try:
         return json.loads(content)
     except json.decoder.JSONDecodeError:

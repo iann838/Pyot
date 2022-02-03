@@ -1,6 +1,6 @@
 import asyncio
 import traceback
-from typing import List, Dict, Awaitable, TypeVar, Optional, Type
+from typing import Any, Callable, List, Dict, Awaitable, TypeVar, Optional, Type
 
 from pyot.utils.logging import Logger
 from .exceptions import PyotException
@@ -26,10 +26,12 @@ class Queue:
     responses: Dict
     counter: int
     workers: List
+    exception_handler: Callable[[Exception], Any]
 
-    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 0):
+    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 0, exception_handler: Callable[[Exception], Any] = LOGGER.warning):
         if workers < 1: raise ValueError('Number of workers must be an integer greater than 0')
         self.workers_num = workers
+        self.exception_handler = exception_handler
         if maxsize is None:
             self.maxsize = workers * 2
         else:
@@ -43,10 +45,8 @@ class Queue:
                 res = await item.coro
                 if res is not None:
                     self.responses[item.id] = res
-            except PyotException as e:
-                LOGGER.warning(f"[Trace: Pyot Queue] WARN: An unhandled pyot exception '{e.__class__.__name__}: {e}' was raised")
             except Exception as e:
-                LOGGER.warning(traceback.format_exc())
+                self.exception_handler(traceback.format_exc())
             finally:
                 queue.task_done()
 

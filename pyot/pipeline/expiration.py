@@ -52,21 +52,21 @@ class ExpirationManager:
             "tournament_v4_lobby_events": 0,
             "tournament_stub_v4_lobby_events": 0,
 
-            "cdragon_champion_by_id": td(hours=3),
-            "cdragon_champion_summary": td(hours=3),
-            "cdragon_item_full": td(hours=3),
-            "cdragon_rune_full": td(hours=3),
-            "cdragon_profile_icon_full": td(hours=3),
-            "cdragon_spells_full": td(hours=3),
+            "cdragon_champion_by_id": td(minutes=20),
+            "cdragon_champion_summary": td(minutes=20),
+            "cdragon_item_full": td(minutes=20),
+            "cdragon_rune_full": td(minutes=20),
+            "cdragon_profile_icon_full": td(minutes=20),
+            "cdragon_spells_full": td(minutes=20),
 
-            "meraki_champion_by_key": td(hours=3),
-            "meraki_item_by_id": td(hours=3),
+            "meraki_champion_by_key": td(minutes=20),
+            "meraki_item_by_id": td(minutes=20),
         },
         "lor": {
             "ranked_v1_leaderboards": 0,
             "match_v1_matchlist": 0,
             "match_v1_match": 0,
-            "ddragon_lor_set_data": td(hours=3),
+            "ddragon_lor_set_data": td(minutes=20),
             "status_v1_platform_data": 0,
         },
         "tft": {
@@ -83,8 +83,8 @@ class ExpirationManager:
             "summoner_v1_by_account_id": 0,
             "summoner_v1_by_puuid": 0,
 
-            "cdragon_tft_full": td(hours=3),
-            "cdragon_profile_icon_full": td(hours=3),
+            "cdragon_tft_full": td(minutes=20),
+            "cdragon_profile_icon_full": td(minutes=20),
         },
         "val": {
             "match_v1_match": 0,

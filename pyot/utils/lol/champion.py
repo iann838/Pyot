@@ -5,7 +5,8 @@ from ..cache import PtrCache
 CHAMPION_SUMMARY = PtrCache()
 
 
-async def fill_champion_summary(cache):
+async def fill_champion_summary(cache: PtrCache):
+    '''Fill champion summary data to cache.'''
     url = "https://raw.communitydragon.org/pbe/plugins/rcp-be-lol-game-data/global/en_gb/v1/champion-summary.json"
     async with aiohttp.ClientSession() as session:
         response = await session.request("GET", url)

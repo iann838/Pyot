@@ -117,7 +117,7 @@ class Pipeline:
             except (NotImplementedError, NotFound):
                 continue
 
-    async def contains(self, token: PipelineToken):
+    async def contains(self, token: PipelineToken) -> bool:
         '''Check if an object exist in stores of type Cache.'''
         session = await self.sessions.get()
         contains = False

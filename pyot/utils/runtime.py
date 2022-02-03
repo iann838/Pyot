@@ -1,7 +1,8 @@
 from functools import wraps
+from typing import Callable
 
 
-def silence_event_loop_closed(func):
+def silence_event_loop_closed(func: Callable):
     '''Silences the Exception `RuntimeError: Event loop is closed` in a class method.'''
     @wraps(func)
     def wrapper(self, *args, **kwargs):

@@ -27,16 +27,16 @@ class PipelineToken:
         return self.hashval
 
     @staticmethod
-    def parse_params(dic: Dict):
+    def parse_params(dic: Dict) -> str:
         res = "/".join(str(v) for v in dic.values())
         return "/" + res if res else ""
 
     @staticmethod
-    def parse_queries(dic: Dict):
+    def parse_queries(dic: Dict) -> str:
         res = "&".join(f"{k}={v}" for k, v in dic.items())
         return "?" + res if res else ""
 
-    def dict(self):
+    def dict(self) -> dict:
         return {
             "model": self.model,
             "server": self.server,
@@ -46,5 +46,5 @@ class PipelineToken:
         }
 
     @classmethod
-    def load(cls, dic):
+    def load(cls, dic) -> 'PipelineToken':
         return cls(dic["model"], dic["server"], dic["method"], dic["params"], dic["queries"])

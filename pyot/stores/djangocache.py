@@ -18,7 +18,7 @@ class DjangoCache(Store):
     type = StoreType.CACHE
 
     def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 0) -> None:
-        if alias is None: raise RuntimeError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' to be able to point the correct cache")
+        if alias is None: raise ValueError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' to be able to point the correct cache")
         self.game = game
         self.alias = alias
         self.data = caches[alias]

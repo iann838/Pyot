@@ -12,7 +12,7 @@ from .base import BaseLimiter, LimiterToken
 
 class RedisLimiter(BaseLimiter):
 
-    def __init__(self, game: str, api_key: str, limiting_share=1, host='127.0.0.1', port=6379, db=0, **kwargs):
+    def __init__(self, game: str, api_key: str, host='127.0.0.1', port=6379, db=0, limiting_share=1, **kwargs):
         self.game = game
         self.api_key = api_key
         self.api_hash = api_key[-5:]

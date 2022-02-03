@@ -36,8 +36,8 @@ class LolPipeline(PipelineConf):
             "log_level": 30,
             "expirations": {
                 "summoner_v4_by_name": 100,
-                "match_v4_match": 600,
-                "match_v4_timeline": 600,
+                "match_v5_match": 600,
+                "match_v5_timeline": 600,
             }
         },
         {

@@ -9,8 +9,8 @@ V = TypeVar("V")
 
 class FrozenGenerator(Generic[T]):
     '''
-    Generator that isolates the original list by returning a copy of the object when iterated.
-    Used for preventing memory leaks of self-filled objects with the price of more CPU time.
+    Generator that isolates the original list by returning copies of objects when iterated.
+    Used for preventing memory leaks of self-filled objects at the cost of performance.
     '''
 
     def __init__(self, li: List[T]):
@@ -20,9 +20,7 @@ class FrozenGenerator(Generic[T]):
         return (pickle.loads(pickle.dumps(obj)) for obj in self.objects)
 
 
-def frozen_generator(li: List[T]) -> FrozenGenerator[T]:
-    '''Create a FrozenGenerator and return it.'''
-    return FrozenGenerator(li)
+frozen_generator = FrozenGenerator
 
 
 def swapped_dict(dic: Dict[K, V]) -> Dict[V, K]:

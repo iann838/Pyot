@@ -9,7 +9,7 @@ def timeit(func_or_coro, iters: int = 1, concurrent: bool = True):
     Measures the running time of a function or coroutine.
     Functions/Coroutines with arguments should be passed using `functools.partial`.
     `iters` may be passed to specify the amount of repeat executions.
-    `concurrent` to signify concurrent running of coroutines.
+    `concurrent` to allow concurrent running of coroutines.
     '''
     now = datetime.now()
     if asyncio.iscoroutinefunction(func_or_coro):
@@ -28,7 +28,7 @@ async def atimeit(coro, iters: int = 1, concurrent: bool = True):
 
     Coroutines with arguments should be passed using `functools.partial`.
     `iters` may be passed to specify the amount of repeat executions.
-    `concurrent` to signify concurrent running of coroutines.
+    `concurrent` to allow concurrent running of coroutines.
     '''
     now = datetime.now()
     if concurrent:

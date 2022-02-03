@@ -18,7 +18,7 @@ class RedisCache(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, expirations: Any = None, log_level: int = 0, host='127.0.0.1', port=6379, db=0, kwargs=None) -> None:
+    def __init__(self, game: str, host='127.0.0.1', port=6379, db=0, expirations: Any = None, log_level: int = 0, kwargs=None) -> None:
         self.game = game
         kwargs = kwargs or {}
         self.location = f"{host}:{port}/{db}"

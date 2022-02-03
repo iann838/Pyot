@@ -19,7 +19,7 @@ class MongoDB(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, db: str, expirations: Any = None, log_level: int = 0, host='127.0.0.1', port=27017, kwargs=None) -> None:
+    def __init__(self, game: str, db: str, host='127.0.0.1', port=27017, expirations: Any = None, log_level: int = 0, kwargs=None) -> None:
         self.game = game
         kwargs = kwargs or {}
         if 'connect' not in kwargs:
