@@ -52,6 +52,9 @@ class ModelsDocEngine(DocEngine):
                 "default_version": f"models.{module.name}.DEFAULT_VERSION",
             }))
         shutil.rmtree(self.BASE_PATH, ignore_errors=True)
+        self.BASE_PATH.mkdir(parents=True, exist_ok=True)
+        with open(self.BASE_PATH / 'README.md', 'w+') as f:
+            f.writelines(["# Models"])
 
     def build(self):
         for model in self.MODELS:
@@ -256,6 +259,8 @@ class UtilsDocEngine(DocEngine):
     def build(self):
         from pyot import utils
         (self.BASE_PATH).mkdir(parents=True, exist_ok=True)
+        with open(self.BASE_PATH / 'README.md', 'w+') as f:
+            f.writelines(["# Utils"])
         self.build_by_path(utils.__path__)
 
     def build_by_path(self, path: Iterable[str], nested_levels=tuple()):
@@ -267,6 +272,8 @@ class UtilsDocEngine(DocEngine):
                 if inspect.ismodule(obj) and obj.__name__.startswith("pyot.utils"):
                     middle_module = obj.__name__.split(".")[-2]
                     (self.BASE_PATH / middle_module).mkdir(parents=True, exist_ok=True)
+                    with open(self.BASE_PATH / middle_module / 'README.md', 'w+') as f:
+                        f.writelines([f"# {middle_module.capitalize()}"])
                     self.build_by_path([path[0] + '\\' + middle_module], (*nested_levels, middle_module))
                     jump_next_module = True
                     break
