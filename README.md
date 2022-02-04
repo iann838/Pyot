@@ -1,12 +1,12 @@
 ![Pyot](banner.jpg)
 # Pyot
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](https://github.com/paaksing/pyot/blob/master/LICENSE)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/paaksing/pyot)
+![Python](https://img.shields.io/badge/python-v3.7+-blue?style=flat-square)
+[![Licence](https://img.shields.io/github/license/paaksing/Pyot?color=blue&style=flat-square)](https://github.com/paaksing/pyot/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=flat-square&logo=github&logoColor=white)](https://github.com/paaksing/pyot)
 
 Pyot is an asyncIO based high-level Python Riot Games API framework which encourages rapid development and clean, pragmatic design. Takes care much of the hassle of the Riot Games API, so developers can focus on writing apps without needing to reinvent the wheel. It’s free and open source.
 
-## Features
+## 🔰 Features
 
 Features that Pyot has and can provide for better development.
 
@@ -21,7 +21,7 @@ Features that Pyot has and can provide for better development.
 
 If this framework is useful, consider giving a **star** to the repo.
 
-## Documentation
+## 📚 Documentation
 
 Portal: <https://pyot.paaksing.com>
 
