@@ -33,5 +33,8 @@ The documentation covers:
 - Stores.
 - Limiters.
 - Utilities.
+- Integrations.
+- Issues.
+- Changelog.
 
 Due to the complexity of the framework, there is no quick-start guide, as it is often misleading and raises more questions.
