@@ -132,6 +132,7 @@ class MerakiChampionChromaDescriptionsData(PyotStatic):
 class MerakiChampionChromaRaritiesData(PyotStatic):
     region: str = None
     description: str
+    rarity: int
 
 
 class MerakiChampionSkinChromaData(PyotStatic):

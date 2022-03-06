@@ -31,7 +31,7 @@ class MatchInfoData(PyotStatic):
         return datetime.fromtimestamp(self.start_millis//1000)
 
     @property
-    def length(self) -> datetime:
+    def length(self) -> timedelta:
         return timedelta(seconds=self.length_millis)
 
 

@@ -6,7 +6,7 @@ import motor.motor_asyncio as mongo
 from pyot.core.exceptions import NotFound
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.expiration import ExpirationManager
-from pyot.utils.eventloop import LoopSensitiveManager
+from pyot.utils.eventloop import EventLoopFactory
 from pyot.utils.logging import Logger
 
 from .base import Store, StoreType
@@ -29,7 +29,7 @@ class MongoDB(Store):
         self.db = db
         self.initialized = False
         self.client_kwargs = {"host": host, "port": port, **kwargs}
-        self.data = LoopSensitiveManager(self.mongo_data)
+        self.data = EventLoopFactory(self.mongo_data)
         self.location = f"{host}:{port}:{db}"
         self.expirations = ExpirationManager(game, expirations)
         self.log_level = log_level

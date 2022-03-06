@@ -38,7 +38,7 @@ Endpoints:
 * `match_v1_matchlist`: `['puuid']` 
 
 Queries: 
-* `count`: `int = 100000` 
+* `count`: `int = 20` 
 
 Attributes: 
 * `ids` -> `List[str]` 
@@ -66,11 +66,12 @@ Type: `PyotStatic`
 
 Attributes: 
 * `datetime_millis` -> `int` 
-* `length_secs` -> `int` 
+* `length_secs` -> `float` 
 * `variation` -> `str` 
 * `version` -> `str` 
 * `participants` -> `List[pyot.models.tft.match.MatchInfoParticipantData]` 
 * `queue_id` -> `int` 
+* `tft_mode` -> `str` 
 * `tft_set_number` -> `int` 
 
 Properties: 
@@ -90,13 +91,13 @@ Attributes:
 * `placement` -> `int` 
 * `players_eliminated` -> `int` 
 * `puuid` -> `str` 
-* `time_eliminated_secs` -> `int` 
+* `time_eliminated_secs` -> `float` 
 * `total_damage_to_players` -> `int` 
 * `traits` -> `List[pyot.models.tft.match.MatchInfoTraitData]` 
 * `units` -> `List[pyot.models.tft.match.MatchInfoUnitData]` 
 
 Properties: 
-* _property_ `summoner` -> `None` 
+* _property_ `summoner` -> `Summoner` 
 * _property_ `time_eliminated` -> `datetime.timedelta` 
 
 

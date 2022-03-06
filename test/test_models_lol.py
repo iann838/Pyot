@@ -9,10 +9,10 @@ from .core import assert_types, assert_walkable
 
 @async_to_sync
 async def test_champion():
-    o = await lol.Champion(id=235, locale="en_us").get()
+    o = await lol.Champion(id=81, locale="en_us").get()
     assert_walkable(o)
     assert_types(o)
-    o = await lol.Champion(key="Irelia", locale="es_mx").get()
+    o = await lol.Champion(key="Irelia", locale="es_mx", version="12.1").get()
     assert_walkable(o)
     assert_types(o)
     o = await lol.Champions(version="pbe").get()
@@ -90,19 +90,23 @@ async def test_match():
     o = await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform)).query(count=100, queue=420, start_time=datetime.now() - timedelta(days=200)).get()
     assert_walkable(o)
     assert_types(o)
-    i = o[0].id
-    o = await o[0].get()
+    o = await s.match_history.query(count=100, queue=420, start_time=datetime.now() - timedelta(days=200)).get()
     assert_walkable(o)
     assert_types(o)
-    o1 = await lol.Match(id=i, region=platform_to_region(s.platform)).get()
-    assert_walkable(o1)
-    assert_types(o1)
-    o2 = await lol.Timeline(id=i, region=platform_to_region(s.platform)).get()
-    assert_walkable(o2)
-    assert_types(o2)
-    o1.feed_timeline(o2)
-    assert_walkable(o1)
-    assert_types(o1)
+    for ind in range(2):
+        i = o[ind].id
+        o_ = await o[ind].get()
+        assert_walkable(o_)
+        assert_types(o_)
+        o1 = await lol.Match(id=i, region=platform_to_region(s.platform)).get()
+        assert_walkable(o1)
+        assert_types(o1)
+        o2 = await lol.Timeline(id=i, region=platform_to_region(s.platform)).get()
+        assert_walkable(o2)
+        assert_types(o2)
+        o1.feed_timeline(o2)
+        assert_walkable(o1)
+        assert_types(o1)
 
 
 @async_to_sync

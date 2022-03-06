@@ -32,7 +32,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="5.1.0",
+    version="5.2.0",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
@@ -57,9 +57,4 @@ setup(
     install_requires=install_requires,
     extras_require=extras_require,
     include_package_data=True,
-    entry_points={
-        'console_scripts': [
-            'pyot=pyot.management.scripts:main'
-        ]
-    }
 )

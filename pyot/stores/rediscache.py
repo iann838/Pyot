@@ -5,7 +5,7 @@ from pyot.core.exceptions import NotFound
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.expiration import ExpirationManager
 from pyot.utils.parsers import to_bytes, from_bytes
-from pyot.utils.eventloop import LoopSensitiveManager
+from pyot.utils.eventloop import EventLoopFactory
 from pyot.utils.logging import Logger
 
 from .base import Store, StoreType
@@ -22,7 +22,7 @@ class RedisCache(Store):
         self.game = game
         kwargs = kwargs or {}
         self.location = f"{host}:{port}/{db}"
-        self.data = LoopSensitiveManager(
+        self.data = EventLoopFactory(
             factory=lambda: aioredis.create_redis_pool(f"redis://{host}:{port}/{db}", **kwargs),
             callback=lambda x: x.close(),
         )

@@ -34,6 +34,7 @@ class ChampionChromaDescriptionsData(PyotStatic):
 class ChampionChromaRaritiesData(PyotStatic):
     region: str = None
     description: str
+    rarity: int
 
 
 class ChampionSkinChromaData(PyotStatic):
@@ -66,6 +67,7 @@ class ChampionSkinData(PyotStatic):
     is_legacy: bool
     chroma_path: str
     chromas: List[ChampionSkinChromaData]
+    emblems: List[str]
     skin_line: int
     description: str
     splash_video_path: str

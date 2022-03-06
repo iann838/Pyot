@@ -70,14 +70,14 @@ class MatchInfoData(PyotStatic):
 ## PYOT CORE OBJECTS
 
 class Match(PyotCore):
-    id: int
+    id: str
     metadata: MatchMetaData
     info: MatchInfoData
 
     class Meta(PyotCore.Meta):
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: int = None, region: str = models.lor.DEFAULT_REGION):
+    def __init__(self, id: str = None, region: str = models.lor.DEFAULT_REGION):
         self.initialize(locals())
 
     def transform(self, data):

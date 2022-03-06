@@ -1,4 +1,4 @@
-from typing import List, Iterator, Mapping
+from typing import List, Iterator, Dict, Union
 
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
@@ -10,11 +10,12 @@ from .base import PyotCore
 
 class Item(PyotCore):
     description: str
-    effects: Mapping[str, int]
+    effects: Dict[str, Union[float, str]]
     from_ids: List[int]
     icon_path: str
     id: int
     name: str
+    unique: bool
 
     class Meta(PyotCore.Meta):
         raws = {"from_ids", "effects"}
@@ -38,7 +39,7 @@ class Item(PyotCore):
 
     @property
     def from_items(self) -> List["Item"]:
-        return [Item(id=i, locale=self.locale) for i in self.from_ids]
+        return [Item(id=i, version=self.version, locale=self.locale) for i in self.from_ids]
 
 
 class Items(PyotCore):

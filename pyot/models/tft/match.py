@@ -79,7 +79,7 @@ class MatchInfoParticipantData(PyotStatic):
     placement: int
     players_eliminated: int
     puuid: str
-    time_eliminated_secs: int
+    time_eliminated_secs: float
     total_damage_to_players: int
     traits: List[MatchInfoTraitData]
     units: List[MatchInfoUnitData]
@@ -93,18 +93,19 @@ class MatchInfoParticipantData(PyotStatic):
         return timedelta(seconds=self.time_eliminated_secs)
 
     @property
-    def summoner(self):
+    def summoner(self) -> "Summoner":
         from .summoner import Summoner
         return Summoner(puuid=self.puuid, platform=self._pyot_calculated_platform)
 
 
 class MatchInfoData(PyotStatic):
     datetime_millis: int
-    length_secs: int
+    length_secs: float
     variation: str
     version: str
     participants: List[MatchInfoParticipantData]
     queue_id: int
+    tft_mode: str
     tft_set_number: int
 
     class Meta(PyotStatic.Meta):
@@ -161,7 +162,7 @@ class MatchHistory(PyotCore):
     def __init__(self, puuid: str = None, region: str = models.tft.DEFAULT_REGION):
         self.initialize(locals())
 
-    def query(self, count: int = 100000):
+    def query(self, count: int = 20):
         '''Query parameters setter.'''
         self._meta.query = parse_camelcase(locals())
         return self

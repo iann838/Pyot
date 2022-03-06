@@ -8,14 +8,14 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `int = None` 
+  * `id`: `str = None` 
   * `region`: `str = models.lor.DEFAULT_REGION` 
 
 Endpoints: 
 * `match_v1_match`: `['id']` 
 
 Attributes: 
-* `id` -> `int` 
+* `id` -> `str` 
 * `metadata` -> `pyot.models.lor.match.MatchMetaData` 
 * `info` -> `pyot.models.lor.match.MatchInfoData` 
 

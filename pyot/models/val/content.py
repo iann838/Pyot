@@ -60,6 +60,7 @@ class ContentItemData(PyotStatic):
     id: str
     name: str
     asset_name: str
+    asset_path: str
     localized_names: ContentLocalizedNamesData
 
 

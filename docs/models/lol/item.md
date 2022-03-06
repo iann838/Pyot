@@ -32,7 +32,7 @@ Attributes:
 * `required_currency` -> `str` 
 * `required_currency_cost` -> `int` 
 * `is_enchantment` -> `bool` 
-* `special_recipe` -> `int` 
+* `special_recipe_id` -> `int` 
 * `self_cost` -> `int` 
 * `total_cost` -> `int` 
 * `icon_path` -> `str` 
@@ -42,6 +42,8 @@ Properties:
 * _property_ `from_items` -> `List[ForwardRef(Item)]` 
 * _lazy_property_ `icon_abspath` -> `str` 
 * _property_ `meraki_item` -> `MerakiItem` 
+* _property_ `required_champion` -> `Champion` 
+* _property_ `special_recipe` -> `Item` 
 * _property_ `to_items` -> `List[ForwardRef(Item)]` 
 
 

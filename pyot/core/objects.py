@@ -1,4 +1,4 @@
-from typing import Dict, List, Mapping, Any, Set, Type, Union, get_type_hints
+from typing import Dict, List, Mapping, Any, Set, Tuple, Type, Union, get_type_hints
 import inspect
 import re
 
@@ -12,7 +12,8 @@ from .functional import lazy_property, laziable, parse_camelcase
 
 class PyotLazy:
 
-    def __init__(self, clas: Union[Type["PyotStaticBase"], Type["PyotCoreBase"]], obj: Any, root: "PyotCoreBase"):
+    def __init__(self, container: Union[None, Type[list], Type[dict]], clas: Union[Type["PyotStaticBase"], Type["PyotCoreBase"]], obj: Any, root: "PyotCoreBase"):
+        self.container = container
         self.clas = clas
         self.root = root
         self.obj = obj
@@ -20,12 +21,20 @@ class PyotLazy:
     def __call__(self):
         try:
             if issubclass(self.clas, PyotCoreBase):
-                if isinstance(self.obj, list):
+                if self.container is None:
+                    return self.load_core(self.obj)
+                if issubclass(self.container, list):
                     return [self.load_core(obj) for obj in self.obj]
-                return self.load_core(self.obj)
-            if isinstance(self.obj, list):
+                if issubclass(self.container, dict):
+                    return {okey: self.load_core(obj) for okey, obj in self.obj.items()}
+                raise TypeError(f"Invalid container type '{self.container.__name__}'")
+            if self.container is None:
+                return self.load_static(self.obj)
+            if issubclass(self.container, list):
                 return [self.load_static(obj) for obj in self.obj]
-            return self.load_static(self.obj)
+            if issubclass(self.container, dict):
+                return {okey: self.load_static(obj) for okey, obj in self.obj.items()}
+            raise TypeError(f"Invalid container type '{self.container.__name__}'")
         except Exception as e:
             raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object due to: ({type(e)}) {e}") from e
 
@@ -171,9 +180,13 @@ class PyotMetaClass(type):
         for typ, clas in types.items():
             try:
                 if clas.__origin__ is list:
-                    types[typ] = clas.__args__[0]
+                    types[typ] = (clas.__args__[0], list)
+                elif clas.__origin__ is dict:
+                    types[typ] = (clas.__args__[1], dict)
+                else:
+                    types[typ] = (clas, None)
             except Exception:
-                pass
+                types[typ] = (clas, None)
         return types
 
     @staticmethod
@@ -199,7 +212,7 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
         server_type: str = None
         lazy_props: List[str]
         nomcltrs: Dict[str, Any]
-        types: Dict[str, Any]
+        types: Dict[str, Tuple[Any, Union[None, Type[list], Type[dict]]]]
         data: Dict[str, Any]
         raws: Set[str] = set()
         renamed: Dict[str, str] = {}
@@ -245,7 +258,8 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                     setattr(self, attr, val)
                     continue
                 try:
-                    setattr(self, '_lazy__' + attr, PyotLazy(self._meta.types[attr], val, self._meta.root))
+                    attr_type = self._meta.types[attr]
+                    setattr(self, '_lazy__' + attr, PyotLazy(attr_type[1], attr_type[0], val, self._meta.root))
                 except KeyError:
                     setattr(self, attr, val)
             else:
@@ -263,12 +277,15 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
         if isinstance(attr, list):
             for val in attr:
                 self.load_lazy_properties(val, prop, ind + 1)
+        elif isinstance(attr, dict):
+            for val in attr.values():
+                self.load_lazy_properties(val, prop, ind + 1)
         else:
             self.load_lazy_properties(attr, prop, ind + 1)
 
     def rdict(self):
         dic = {}
-        for key, val in self._meta.types.items():
+        for key, (val, container) in self._meta.types.items():
             if key.startswith("_"):
                 continue
             try:
@@ -278,10 +295,14 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
             try:
                 if issubclass(val, PyotStaticBase):
                     try:
-                        if isinstance(obj, list):
-                            dic[key] = [ob.rdict() for ob in obj]
-                        else:
+                        if container is None:
                             dic[key] = obj.rdict()
+                        elif issubclass(container, list):
+                            dic[key] = [ob.rdict() for ob in obj]
+                        elif issubclass(container, dict):
+                            dic[key] = {okey: ob.rdict() for okey, ob in obj.items()}
+                        else:
+                            raise TypeError(f"Invalid container type '{container.__name__}'")
                     except AttributeError:
                         pass
                 else:

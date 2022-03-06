@@ -29,6 +29,6 @@ Type: `PyotStatic`
 Attributes: 
 * `name` -> `str` 
 * `rank` -> `int` 
-* `lp` -> `int` 
+* `lp` -> `float` 
 
 

@@ -26,6 +26,8 @@ Attributes:
 * `required_ally` -> `str` 
 * `icon` -> `str` 
 * `simple_description` -> `str` 
+* `icon_overlay` -> `bool` 
+* `special_recipe_id` -> `int` 
 * `nicknames` -> `List[str]` 
 * `passives` -> `List[pyot.models.lol.merakiitem.MerakiItemPassiveData]` 
 * `active` -> `List[pyot.models.lol.merakiitem.MerakiItemActiveData]` 
@@ -33,14 +35,12 @@ Attributes:
 * `shop` -> `pyot.models.lol.merakiitem.MerakiItemShopData` 
 
 Properties: 
-* _property_ `builds_from` -> `List[ForwardRef(Item)]` 
-* _property_ `builds_into` -> `List[ForwardRef(Item)]` 
+* _property_ `builds_from` -> `List[ForwardRef(MerakiItem)]` 
+* _property_ `builds_into` -> `List[ForwardRef(MerakiItem)]` 
 * _property_ `item` -> `Item` 
 * _property_ `locale` -> `str` 
-* _property_ `meraki_builds_from` -> `List[ForwardRef(MerakiItem)]` 
-* _property_ `meraki_builds_into` -> `List[ForwardRef(MerakiItem)]` 
-* _property_ `meraki_required_champion` -> `MerakiChampion` 
-* _property_ `required_champion` -> `Champion` 
+* _property_ `required_champion` -> `MerakiChampion` 
+* _property_ `special_recipe` -> `MerakiItem` 
 
 
 ### _class_ MerakiItemActiveData

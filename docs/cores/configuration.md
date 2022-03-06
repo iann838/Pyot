@@ -3,7 +3,7 @@
 Pyot requires many setups and configurations in order to work properly.
 
 These configurations generally stays all packed in a single file (generally called `conf.py` or `pyotconf.py`) or one file per model, they must be loaded **once and only once** at application startup, there are multiple ways to achieve this:
-- Import at module `__init__.py`. 
+- Import at module `__init__.py`.
 - If the application is a single file, place at the top.
 - Adding an import on `fastapi` startup event.
 - Adding `pyot` to Django's `INSTALLED_APPS` by following Django integration guide.
@@ -12,6 +12,7 @@ These configurations generally stays all packed in a single file (generally call
 ## Model Conf
 
 Module: `pyot.conf.model`
+
 Configurable models: `riot`, `lol`, `tft`, `lor`, `val`
 
 Setup, configure and activate the models of need. Define the default platform, region, version and locale, these are used for default values in class init definitions and object bridging. For a list of correct platforms and regions, they are documented under each models main page.
@@ -31,6 +32,7 @@ Setup, configure and activate the models of need. Define the default platform, r
 ## Pipeline Conf
 
 Module: `pyot.conf.pipeline`
+
 Configurable models: `lol`, `tft`, `lor`, `val`
 
 Setup, configure and activate a pipeline for the activated models. A pipeline is a list of prioritized data sources that a model will request data from. You may define and activate multiple pipelines under some circumstances, but one and only one default pipeline must exists for each model.

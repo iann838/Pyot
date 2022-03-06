@@ -88,6 +88,8 @@ class MerakiItem(PyotCore):
     required_ally: str
     icon: str
     simple_description: str
+    icon_overlay: bool
+    special_recipe_id: int
     nicknames: List[str]
     passives: List[MerakiItemPassiveData]
     active: List[MerakiItemActiveData]
@@ -98,7 +100,8 @@ class MerakiItem(PyotCore):
         server_type = "locale"
         rules = {"meraki_item_by_id": ["id"]}
         raws = {"builds_from_ids", "builds_into_ids", "nicknames", "rank"}
-        renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids", "required_champion": "required_champion_key"}
+        renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids",
+            "required_champion": "required_champion_key", "special_recipe": "special_recipe_id"}
 
     def __init__(self, id: int = None):
         self.initialize({"locale": "default", **locals()})
@@ -109,41 +112,24 @@ class MerakiItem(PyotCore):
         return Item(id=self.id, locale="en_us")
 
     @property
-    def meraki_builds_from(self) -> List["MerakiItem"]:
+    def builds_from(self) -> List["MerakiItem"]:
         mutable = []
         for i in self.builds_from_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def meraki_builds_into(self) -> List["MerakiItem"]:
+    def builds_into(self) -> List["MerakiItem"]:
         mutable = []
         for i in self.builds_into_ids:
             mutable.append(MerakiItem(id=i))
         return mutable
 
     @property
-    def builds_from(self) -> List["Item"]:
-        from .item import Item
-        mutable = []
-        for i in self.builds_from_ids:
-            mutable.append(Item(id=i, locale="en_us"))
-        return mutable
-
-    @property
-    def builds_into(self) -> List["Item"]:
-        from .item import Item
-        mutable = []
-        for i in self.builds_into_ids:
-            mutable.append(Item(id=i, locale="en_us"))
-        return mutable
-
-    @property
-    def required_champion(self) -> "Champion":
-        from .champion import Champion
-        return Champion(id=self.required_champion_key, locale="en_us")
-
-    @property
-    def meraki_required_champion(self) -> "MerakiChampion":
+    def required_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
         return MerakiChampion(id=self.required_champion_key)
+
+    @property
+    def special_recipe(self) -> "MerakiItem":
+        return MerakiItem(id=self.special_recipe_id)

@@ -9,6 +9,7 @@ Module: `pyot.utils.text`
 
 ### _function_ `snakecase` -> `str` 
 * `attr`: `str` 
+* `sep_numbers`: `bool = False` 
 > Convert string to python snakecase. 
 
 

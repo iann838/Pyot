@@ -17,11 +17,12 @@ Endpoints:
 
 Attributes: 
 * `description` -> `str` 
-* `effects` -> `Mapping[str, int]` 
+* `effects` -> `Dict[str, Union[float, str]]` 
 * `from_ids` -> `List[int]` 
 * `icon_path` -> `str` 
 * `id` -> `int` 
 * `name` -> `str` 
+* `unique` -> `bool` 
 
 Properties: 
 * _lazy_property_ `cleaned_description` -> `str` 

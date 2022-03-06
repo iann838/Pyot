@@ -20,6 +20,7 @@ class CardAssetData(PyotStatic):
 
 class Card(PyotCore):
     associated_card_codes: List[str]
+    associated_card_refs: List[str]
     assets: List[CardAssetData]
     region: str = None
     region_ref: str
@@ -50,10 +51,11 @@ class Card(PyotCore):
     set: int
     faction: str
     number: int
+    subcode: str
 
     class Meta(PyotCore.Meta):
-        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "_deleted__associated_cards", "regions", "region_refs"}
-        renamed = {"card_code": "code", "associated_card_refs": "associated_card_codes", "associated_cards": "_deleted__associated_cards"}
+        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "associated_card_refs", "regions", "region_refs"}
+        renamed = {"card_code": "code", "associated_cards": "associated_card_codes"}
         rules = {"ddragon_lor_set_data": ["set", "?code", "version", "locale"]}
 
     def __init__(self, code: str = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
@@ -79,7 +81,7 @@ class Card(PyotCore):
 
     @property
     def associated_cards(self) -> List["Card"]:
-        return [Card(code=code, locale=self.locale) for code in self.associated_card_codes]
+        return [Card(code=code, version=self.version, locale=self.locale) for code in self.associated_card_codes]
 
 
 class Cards(PyotCore):

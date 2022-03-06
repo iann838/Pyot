@@ -1,4 +1,4 @@
-from typing import List, Iterator, Dict
+from typing import List, Iterator, Dict, Union
 
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
@@ -14,7 +14,7 @@ class TraitEffectData(PyotStatic):
     max_units: int
     min_units: int
     style: int
-    variables: Dict[str, int]
+    variables: Dict[str, Union[float, str]]
 
     class Meta(PyotStatic.Meta):
         raws = {"variables"}
@@ -42,8 +42,8 @@ class Trait(PyotCore):
     def find_set(self):
         try:
             self.set = int(self.key.split("_")[0][3:])
-        except Exception as e:
-            raise TypeError("Could not parse 'set' value from key") from e
+        except Exception:
+            self.set = -1
 
     @cache_indexes
     def filter(self, indexer, data):

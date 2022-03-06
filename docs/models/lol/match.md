@@ -108,6 +108,7 @@ Attributes:
 * `creation_millis` -> `int` 
 * `duration_units` -> `int` 
 * `start_millis` -> `int` 
+* `end_millis` -> `int` 
 * `mode` -> `str` 
 * `name` -> `str` 
 * `type` -> `str` 
@@ -115,6 +116,7 @@ Attributes:
 * `platform` -> `str` 
 * `map_id` -> `int` 
 * `queue_id` -> `int` 
+* `tournament_code` -> `str` 
 * `participants` -> `List[pyot.models.lol.match.MatchParticipantData]` 
 * `teams` -> `List[pyot.models.lol.match.MatchTeamData]` 
 
@@ -123,6 +125,7 @@ Properties:
 * _property_ `duration` -> `datetime.timedelta` 
 * _property_ `duration_millis` -> `int` 
 * _property_ `duration_secs` -> `int` 
+* _property_ `end` -> `datetime.datetime` 
 * _property_ `start` -> `datetime.datetime` 
 
 
@@ -194,6 +197,7 @@ Attributes:
 * `gold_spent` -> `int` 
 * `individual_position` -> `str` 
 * `inhibitor_kills` -> `int` 
+* `inhibitor_takedowns` -> `int` 
 * `inhibitors_lost` -> `int` 
 * `item0` -> `int` 
 * `item1` -> `int` 
@@ -215,6 +219,7 @@ Attributes:
 * `magic_damage_taken` -> `int` 
 * `neutral_minions_killed` -> `int` 
 * `nexus_kills` -> `int` 
+* `nexus_takedowns` -> `int` 
 * `nexus_lost` -> `int` 
 * `objectives_stolen` -> `int` 
 * `objectives_stolen_assists` -> `int` 
@@ -261,12 +266,14 @@ Attributes:
 * `true_damage_dealt_to_champions` -> `int` 
 * `true_damage_taken` -> `int` 
 * `turret_kills` -> `int` 
+* `turret_takedowns` -> `int` 
 * `turrets_lost` -> `int` 
 * `unreal_kills` -> `int` 
 * `vision_score` -> `int` 
 * `vision_wards_bought_in_game` -> `int` 
 * `wards_killed` -> `int` 
 * `wards_placed` -> `int` 
+* `challenges` -> `Dict[str, float]` 
 * `frames` -> `List[pyot.models.lol.match.TimelineParticipantFrameData]` 
 * `events` -> `List[pyot.models.lol.match.TimelineEventData]` 
 * `win` -> `bool` 
@@ -400,6 +407,7 @@ Attributes:
 Type: `PyotStatic` 
 
 Attributes: 
+* `actual_start_time_millis` -> `int` 
 * `ascended_type` -> `str` 
 * `assisting_participant_ids` -> `List[int]` 
 * `after_id` -> `int` 
@@ -408,6 +416,7 @@ Attributes:
 * `building_type` -> `str` 
 * `creator_id` -> `int` 
 * `event_type` -> `str` 
+* `game_id` -> `int` 
 * `gold_gain` -> `int` 
 * `item_id` -> `int` 
 * `kill_streak_length` -> `int` 
@@ -415,30 +424,38 @@ Attributes:
 * `killer_id` -> `int` 
 * `killer_team_id` -> `int` 
 * `lane_type` -> `str` 
+* `level` -> `int` 
 * `level_up_type` -> `str` 
 * `monster_type` -> `str` 
 * `monster_sub_type` -> `str` 
 * `multi_kill_length` -> `int` 
+* `name` -> `str` 
 * `participant_id` -> `int` 
 * `point_captured` -> `str` 
 * `position` -> `pyot.models.lol.match.TimelinePositionData` 
+* `real_timestamp` -> `int` 
 * `skill_slot` -> `int` 
+* `shutdown_bounty` -> `int` 
 * `team_id` -> `int` 
-* `timestamp` -> `float` 
+* `timestamp` -> `int` 
+* `transform_type` -> `str` 
 * `type` -> `str` 
 * `tower_type` -> `str` 
 * `victim_id` -> `int` 
 * `victim_damage_dealt` -> `List[pyot.models.lol.match.TimelineVictimDamageData]` 
 * `victim_damage_received` -> `List[pyot.models.lol.match.TimelineVictimDamageData]` 
 * `ward_type` -> `str` 
+* `winning_team` -> `int` 
 
 Properties: 
+* _property_ `actual_start_time` -> `datetime.timedelta` 
 * _property_ `after_item` -> `Item` 
 * _property_ `before_item` -> `Item` 
 * _property_ `item` -> `Item` 
 * _property_ `meraki_after_item` -> `MerakiItem` 
 * _property_ `meraki_before_item` -> `MerakiItem` 
 * _property_ `meraki_item` -> `MerakiItem` 
+* _property_ `real_time` -> `datetime.datetime` 
 * _property_ `time` -> `datetime.timedelta` 
 
 
@@ -449,6 +466,10 @@ Type: `PyotStatic`
 Attributes: 
 * `events` -> `List[pyot.models.lol.match.TimelineEventData]` 
 * `participant_frames` -> `List[pyot.models.lol.match.TimelineParticipantFrameData]` 
+* `timestamp` -> `int` 
+
+Properties: 
+* _property_ `time` -> `datetime.timedelta` 
 
 
 ### _class_ TimelineInfoData

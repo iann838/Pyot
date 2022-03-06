@@ -2,9 +2,9 @@
 
 Module: `pyot.utils.eventloop` 
 
-### _class_ LoopSensitiveManager
+### _class_ EventLoopFactory
 
-> Manager for managing internal streams and creates isolated copies of them based on their event loops.
+> Factory for creating isolated copies of internal streams for each unique event loop.
 
 Extends: 
 * `Generic` 
@@ -22,9 +22,28 @@ Definitions:
   * `kwds`: `None` 
 
 Methods: 
+* _asyncmethod_ `close` -> `None` 
+  * `loop`: `None` 
 * _asyncmethod_ `cull` -> `None` 
 * _asyncmethod_ `get` -> `Union[~R1, ~R2]` 
   * `args`: `None` 
   * `kwargs`: `None` 
+
+Attributes: 
+* `loops` -> `Dict[asyncio.events.AbstractEventLoop, Union[~R1, ~R2]]` 
+
+
+### _class_ ResourceManager
+
+> Resource managers for event loops
+
+Attributes: 
+* `states` -> `Dict[str, Dict[asyncio.events.AbstractEventLoop, bool]]` 
+
+
+### _constant_ `factories`: `[]` 
+
+
+### _alias_ `resource_manager` ~ `ResourceManager` 
 
 

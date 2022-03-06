@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class ChampionAbilityVariableData(PyotStatic):
     name: str
-    value: List[int]
+    value: List[float]
 
     class Meta(PyotStatic.Meta):
         raws = {"value"}
@@ -39,22 +39,22 @@ class ChampionAbilityData(PyotStatic):
 
 
 class ChampionStatData(PyotStatic):
-    armor: int
+    armor: float
     attack_speed: float
     crit_chance: float
     crit_multiplier: float
-    damage: int
-    hp: int
-    initial_mana: int
-    magic_resist: int
-    mana: int
-    range: int
+    damage: float
+    hp: float
+    initial_mana: float
+    magic_resist: float
+    mana: float
+    range: float
 
 
 # PYOT CORE OBJECTS
 
 class Champion(PyotCore):
-    set: str
+    set: int
     key: str
     name: str
     cost: int
@@ -77,8 +77,8 @@ class Champion(PyotCore):
     def find_set(self):
         try:
             self.set = int(self.key.split("_")[0][3:])
-        except Exception as e:
-            raise TypeError("Could not parse 'set' value from key") from e
+        except Exception:
+            self.set = -1
 
     @cache_indexes
     def filter(self, indexer, data):
@@ -95,7 +95,7 @@ class Champion(PyotCore):
     @property
     def traits(self) -> List["Trait"]:
         from .trait import Trait
-        return [Trait(key=i, locale=self.locale) for i in self.trait_keys]
+        return [Trait(key=i, set=self.set, version=self.version, locale=self.locale) for i in self.trait_keys]
 
 
 class Champions(PyotCore):

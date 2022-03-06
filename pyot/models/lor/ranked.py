@@ -8,7 +8,7 @@ from .base import PyotCore, PyotStatic
 class LeaderboardPlayerData(PyotStatic):
     name: str
     rank: int
-    lp: int
+    lp: float
 
 
 # PYOT CORE OBJECTS

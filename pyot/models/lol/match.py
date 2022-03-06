@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
+import re
 from typing import List, Iterator, Dict, TYPE_CHECKING, Tuple, Union
 
 from pyot.conf.model import models
 from pyot.core.functional import parse_camelcase, lazy_property
+
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -168,6 +170,7 @@ class TimelineVictimDamageData(PyotStatic):
 
 
 class TimelineEventData(PyotStatic):
+    actual_start_time_millis: int
     ascended_type: str
     assisting_participant_ids: List[int]
     after_id: int
@@ -176,6 +179,7 @@ class TimelineEventData(PyotStatic):
     building_type: str
     creator_id: int
     event_type: str
+    game_id: int
     gold_gain: int
     item_id: int
     kill_streak_length: int
@@ -183,29 +187,44 @@ class TimelineEventData(PyotStatic):
     killer_id: int
     killer_team_id: int
     lane_type: str
+    level: int
     level_up_type: str
     monster_type: str
     monster_sub_type: str
     multi_kill_length: int
+    name: str
     participant_id: int
     point_captured: str
     position: TimelinePositionData
+    real_timestamp: int
     skill_slot: int
+    shutdown_bounty: int
     team_id: int
-    timestamp: float
+    timestamp: int
+    transform_type: str
     type: str
     tower_type: str
     victim_id: int
     victim_damage_dealt: List[TimelineVictimDamageData]
     victim_damage_received: List[TimelineVictimDamageData]
     ward_type: str
+    winning_team: int
 
     class Meta(PyotStatic.Meta):
         raws = {"assisting_participant_ids"}
+        renamed = {"actual_start_time": "actual_start_time_millis"}
+
+    @property
+    def actual_start_time(self) -> timedelta:
+        return timedelta(milliseconds=self.actual_start_time_millis)
 
     @property
     def time(self) -> timedelta:
         return timedelta(milliseconds=self.timestamp)
+
+    @property
+    def real_time(self) -> datetime:
+        return datetime.fromtimestamp(self.timestamp // 1000)
 
     @property
     def after_item(self) -> "Item":
@@ -267,6 +286,7 @@ class MatchParticipantData(PyotStatic):
     gold_spent: int
     individual_position: str
     inhibitor_kills: int
+    inhibitor_takedowns: int
     inhibitors_lost: int
     item0: int
     item1: int
@@ -288,6 +308,7 @@ class MatchParticipantData(PyotStatic):
     magic_damage_taken: int
     neutral_minions_killed: int
     nexus_kills: int
+    nexus_takedowns: int
     nexus_lost: int
     objectives_stolen: int
     objectives_stolen_assists: int
@@ -334,17 +355,20 @@ class MatchParticipantData(PyotStatic):
     true_damage_dealt_to_champions: int
     true_damage_taken: int
     turret_kills: int
+    turret_takedowns: int
     turrets_lost: int
     unreal_kills: int
     vision_score: int
     vision_wards_bought_in_game: int
     wards_killed: int
     wards_placed: int
+    challenges: Dict[str, float]
     frames: List[TimelineParticipantFrameData]
     events: List[TimelineEventData]
     win: bool
 
     class Meta(PyotStatic.Meta):
+        raws = {'challenges'}
         renamed = {
             "participant_id": "id", "profile_icon": "profile_icon_id", "time_c_cing_others": "time_ccing_others_secs",
             "total_time_cc_dealt": "total_time_cc_dealt_secs", "total_time_spent_dead": "total_time_spent_dead_secs",
@@ -446,6 +470,7 @@ class MatchInfoData(PyotStatic):
     creation_millis: int
     duration_units: int
     start_millis: int
+    end_millis: int
     mode: str
     name: str
     type: str
@@ -453,6 +478,7 @@ class MatchInfoData(PyotStatic):
     platform: str
     map_id: int
     queue_id: int
+    tournament_code: str
     participants: List[MatchParticipantData]
     teams: List[MatchTeamData]
 
@@ -460,6 +486,7 @@ class MatchInfoData(PyotStatic):
         renamed = {
             "game_creation": "creation_millis", "game_duration": "duration_units", "game_mode": "mode", "game_name": "name",
             "game_start_timestamp": "start_millis", "game_type": "type", "game_version": "version", "platform_id": "platform",
+            "game_end_timestamp": "end_millis",
         }
 
     @property
@@ -473,6 +500,10 @@ class MatchInfoData(PyotStatic):
     @property
     def start(self) -> datetime:
         return datetime.fromtimestamp(self.start_millis // 1000)
+
+    @property
+    def end(self) -> datetime:
+        return datetime.fromtimestamp(self.end_millis // 1000)
 
     @property
     def duration_millis(self) -> int:
@@ -494,6 +525,11 @@ class MatchInfoData(PyotStatic):
 class TimelineFrameData(PyotStatic):
     events: List[TimelineEventData]
     participant_frames: List[TimelineParticipantFrameData]
+    timestamp: int
+
+    @property
+    def time(self) -> timedelta:
+        return timedelta(milliseconds=self.timestamp)
 
 
 class TimelineParticipantData(PyotStatic):

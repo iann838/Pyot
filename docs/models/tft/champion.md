@@ -20,7 +20,7 @@ Methods:
 * _method_ `find_set` -> `None` 
 
 Attributes: 
-* `set` -> `str` 
+* `set` -> `int` 
 * `key` -> `str` 
 * `name` -> `str` 
 * `cost` -> `int` 
@@ -76,7 +76,7 @@ Type: `PyotStatic`
 
 Attributes: 
 * `name` -> `str` 
-* `value` -> `List[int]` 
+* `value` -> `List[float]` 
 
 
 ### _class_ ChampionStatData
@@ -84,15 +84,15 @@ Attributes:
 Type: `PyotStatic` 
 
 Attributes: 
-* `armor` -> `int` 
+* `armor` -> `float` 
 * `attack_speed` -> `float` 
 * `crit_chance` -> `float` 
 * `crit_multiplier` -> `float` 
-* `damage` -> `int` 
-* `hp` -> `int` 
-* `initial_mana` -> `int` 
-* `magic_resist` -> `int` 
-* `mana` -> `int` 
-* `range` -> `int` 
+* `damage` -> `float` 
+* `hp` -> `float` 
+* `initial_mana` -> `float` 
+* `magic_resist` -> `float` 
+* `mana` -> `float` 
+* `range` -> `float` 
 
 

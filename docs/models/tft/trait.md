@@ -60,6 +60,6 @@ Attributes:
 * `max_units` -> `int` 
 * `min_units` -> `int` 
 * `style` -> `int` 
-* `variables` -> `Dict[str, int]` 
+* `variables` -> `Dict[str, Union[float, str]]` 
 
 

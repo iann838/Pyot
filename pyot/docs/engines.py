@@ -277,7 +277,7 @@ class UtilsDocEngine(DocEngine):
                     self.build_by_path([path[0] + '\\' + middle_module], (*nested_levels, middle_module))
                     jump_next_module = True
                     break
-                if key.startswith("__") or inspect.ismodule(obj) or isinstance(obj, TypeVar) or (not isinstance(obj, (str, bool, int, float)) and obj.__module__ != module.__name__):
+                if key.startswith("__") or inspect.ismodule(obj) or isinstance(obj, TypeVar) or (not isinstance(obj, (str, bool, int, float, list)) and obj.__module__ != module.__name__):
                     continue
                 if inspect.isclass(obj):
                     is_alias = obj.__name__ != key

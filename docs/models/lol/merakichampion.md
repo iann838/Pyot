@@ -86,6 +86,7 @@ Type: `PyotStatic`
 Attributes: 
 * `region` -> `str` 
 * `description` -> `str` 
+* `rarity` -> `int` 
 
 
 ### _class_ MerakiChampionPriceData

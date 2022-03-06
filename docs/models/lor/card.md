@@ -18,6 +18,7 @@ Endpoints:
 
 Attributes: 
 * `associated_card_codes` -> `List[str]` 
+* `associated_card_refs` -> `List[str]` 
 * `assets` -> `List[pyot.models.lor.card.CardAssetData]` 
 * `region` -> `str` 
 * `region_ref` -> `str` 
@@ -48,6 +49,7 @@ Attributes:
 * `set` -> `int` 
 * `faction` -> `str` 
 * `number` -> `int` 
+* `subcode` -> `str` 
 
 Properties: 
 * _property_ `associated_cards` -> `List[ForwardRef(Card)]` 

@@ -2,7 +2,7 @@ from typing import List, Any, Iterator
 import aiohttp
 
 from pyot.core.exceptions import NotFound, NotFindable, PyotException
-from pyot.utils.eventloop import LoopSensitiveManager
+from pyot.utils.eventloop import EventLoopFactory
 from pyot.stores.base import Store
 
 from .token import PipelineToken
@@ -15,7 +15,7 @@ class Pipeline:
         self.model = model
         self.name = name
         self.stores = stores
-        self.sessions = LoopSensitiveManager(
+        self.sessions = EventLoopFactory(
             factory=lambda: aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)),
             callback=lambda session: session.close()
         )

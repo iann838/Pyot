@@ -104,7 +104,7 @@ Attributes:
 * `season_id` -> `str` 
 
 Properties: 
-* _property_ `length` -> `datetime.datetime` 
+* _property_ `length` -> `datetime.timedelta` 
 * _property_ `start` -> `datetime.datetime` 
 
 

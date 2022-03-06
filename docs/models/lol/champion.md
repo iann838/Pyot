@@ -89,6 +89,7 @@ Type: `PyotStatic`
 Attributes: 
 * `region` -> `str` 
 * `description` -> `str` 
+* `rarity` -> `int` 
 
 
 ### _class_ ChampionPassiveData
@@ -152,6 +153,7 @@ Attributes:
 * `is_legacy` -> `bool` 
 * `chroma_path` -> `str` 
 * `chromas` -> `List[pyot.models.lol.champion.ChampionSkinChromaData]` 
+* `emblems` -> `List[str]` 
 * `skin_line` -> `int` 
 * `description` -> `str` 
 * `splash_video_path` -> `str` 
