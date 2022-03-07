@@ -87,5 +87,5 @@ async def foo():
 For more info, please refer to [Django Asynchronous Support](https://docs.djangoproject.com/en/dev/topics/async/).
 
 {% hint style='danger' %}
-If wsgi is used instead of asgi, errors like `RuntimeError: Event loop is closed` may appear, to fix this please refer to **Issues > RuntimeError > Threading**. 
+If wsgi is used instead of asgi, errors like `RuntimeError: Event loop is closed` may appear, to fix this please refer to **Issues > RuntimeError -> Threading**. 
 {% endhint %}
