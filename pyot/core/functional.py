@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Any, Dict, Union
 from functools import partial, wraps
 
 from pyot.utils.text import camelcase
@@ -8,25 +8,28 @@ from .exceptions import NotFound
 class lazy_property(property):
     """
     Decorator that converts a method with a single self argument into a
-    property cached on the instance and inserted into the meta data dict using camelcase key.
-    A cached property can be made out of an existing method:
-    (e.g. ``url = lazy_property(get_absolute_url)``).
+    property cached on the instance and inserted into the meta data dict using camelcase key.\n
+    Can only be used on pyot class methods.
     """
     name = None
 
-    @staticmethod
-    def func(instance): # pylint: disable=method-hidden
+    @classmethod
+    def func(cls, instance) -> Any:
         raise TypeError(
-            'Cannot use lazy_property instance without calling '
+            f'Cannot use {cls.__class__.__name__} instance without calling '
             '__set_name__() on it.'
         )
 
     def __init__(self, func, name=None): # pylint: disable=super-init-not-called
         self.real_func = func
         self.key = camelcase(func.__name__)
+        self.once = False
         self.__doc__ = getattr(func, '__doc__')
 
     def __set_name__(self, owner, name):
+        from .objects import PyotStaticBase
+        if not issubclass(owner, PyotStaticBase):
+            raise TypeError('Cannot use lazy_property on non pyot class methods.')
         if self.name is None:
             self.name = name
             self.func = self.real_func
@@ -37,13 +40,14 @@ class lazy_property(property):
             )
 
     def __get__(self, instance, cls=None):
-        """
-        Call the function and put the return value in instance.__dict__ so that
-        subsequent attribute access on the instance returns the cached value
-        instead of calling cached_property.__get__().
-        """
         if instance is None:
             return self
+        if self.once:
+            try:
+                return instance._meta.data[self.key]
+            except KeyError:
+                pass
+        self.once = True
         res = instance._meta.data[self.key] = instance.__dict__[self.name] = self.func(instance)
         return res
 

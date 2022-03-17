@@ -9,8 +9,8 @@ Module: `pyot.utils.runners`
 
 ### _asyncfunction_ `thread_run` -> `~R` 
 * `func`: `Callable[..., ~R]` 
-* `args`: `None` 
-* `kwargs`: `None` 
+* `args`: `Sequence[Any]` 
+* `kwargs`: `Mapping[str, Any]` 
 > Run a blocking function in a thread. 
 
 

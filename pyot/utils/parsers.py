@@ -1,4 +1,4 @@
-from typing import ByteString, Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 import pickle
 import json
 
@@ -6,17 +6,17 @@ import json
 T = TypeVar("T")
 
 
-def to_bytes(obj) -> ByteString:
+def to_bytes(obj: Any) -> bytes:
     '''Convert a python object to byte string.'''
     return pickle.dumps(obj)
 
 
-def from_bytes(obj, class_of_t: Optional[Type[T]] = None) -> T:
+def from_bytes(obj: bytes, class_of_t: Optional[Type[T]] = None) -> T:
     '''Convert a byte string to python object.'''
     return pickle.loads(obj)
 
 
-def safejson(content: str):
+def safejson(content: str) -> Any:
     '''Same as json.loads with graceful fallback by returning original string'''
     try:
         return json.loads(content)

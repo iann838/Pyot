@@ -1,18 +1,41 @@
+from datetime import datetime, timedelta
+from ..functools import async_property
+
+import asyncio
 import aiohttp
-from ..cache import PtrCache
 
 
-CHAMPION_SUMMARY = PtrCache()
+class ChampionKeysCache:
 
+    def __init__(self) -> None:
+        self.cached_data = {
+            "id_by_key": {},
+            "id_by_name": {},
+            "key_by_id": {},
+            "key_by_name": {},
+            "name_by_id": {},
+            "name_by_key": {},
+        }
+        self.lock = asyncio.Lock()
+        self.last_updated = datetime.now() - timedelta(days=1)
 
-async def fill_champion_summary(cache: PtrCache):
-    '''Fill champion summary data to cache.'''
-    url = "https://raw.communitydragon.org/pbe/plugins/rcp-be-lol-game-data/global/en_gb/v1/champion-summary.json"
-    async with aiohttp.ClientSession() as session:
-        response = await session.request("GET", url)
-        if response and response.status == 200:
-            dic = await response.json(encoding="utf-8")
-            transformers = {
+    def __str__(self) -> str:
+        return 'ChampionKeysCache()'
+
+    @async_property
+    async def data(self):
+        if datetime.now() - self.last_updated < timedelta(hours=3):
+            return self.cached_data
+        async with self.lock:
+            if datetime.now() - self.last_updated < timedelta(hours=3):
+                return self.cached_data
+            url = "https://raw.communitydragon.org/pbe/plugins/rcp-be-lol-game-data/global/en_gb/v1/champion-summary.json"
+            async with aiohttp.ClientSession() as session:
+                response = await session.request("GET", url)
+                if not (response and response.status == 200):
+                    raise RuntimeError(f"Failed to pull champion summary ({response.status})")
+                dic = await response.json(encoding="utf-8")
+            data = {
                 "id_by_key": {},
                 "id_by_name": {},
                 "key_by_id": {},
@@ -23,67 +46,51 @@ async def fill_champion_summary(cache: PtrCache):
             for champ in dic:
                 if champ["id"] == -1:
                     continue
-                transformers["id_by_key"][champ["alias"]] = champ["id"]
-                transformers["id_by_name"][champ["name"]] = champ["id"]
-                transformers["key_by_id"][champ["id"]] = champ["alias"]
-                transformers["key_by_name"][champ["name"]] = champ["alias"]
-                transformers["name_by_id"][champ["id"]] = champ["name"]
-                transformers["name_by_key"][champ["alias"]] = champ["name"]
-            for key, val in transformers.items():
-                cache.set(key, val)
-        else:
-            raise RuntimeError("Unable to pull champion summary")
+                data["id_by_key"][champ["alias"]] = champ["id"]
+                data["id_by_name"][champ["name"]] = champ["id"]
+                data["key_by_id"][champ["id"]] = champ["alias"]
+                data["key_by_name"][champ["name"]] = champ["alias"]
+                data["name_by_id"][champ["id"]] = champ["name"]
+                data["name_by_key"][champ["alias"]] = champ["name"]
+            self.cached_data = data
+            self.last_updated = datetime.now()
+        return self.cached_data
 
 
-async def id_by_key(value):
+champion_keys_cache = ChampionKeysCache()
+
+
+async def id_by_key(value: str) -> int:
     '''Get champion id by key'''
-    data = CHAMPION_SUMMARY.get("id_by_key")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("id_by_key")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["id_by_key"][value]
 
 
-async def id_by_name(value):
+async def id_by_name(value: str) -> int:
     '''Get champion id by name'''
-    data = CHAMPION_SUMMARY.get("id_by_name")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("id_by_name")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["id_by_name"][value]
 
 
-async def key_by_id(value):
+async def key_by_id(value: int) -> str:
     '''Get champion key by id'''
-    data = CHAMPION_SUMMARY.get("key_by_id")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("key_by_id")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["key_by_id"][value]
 
 
-async def key_by_name(value):
+async def key_by_name(value: str) -> str:
     '''Get champion key by name'''
-    data = CHAMPION_SUMMARY.get("key_by_name")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("key_by_name")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["key_by_name"][value]
 
 
-async def name_by_id(value):
+async def name_by_id(value: int) -> str:
     '''Get champion name by id'''
-    data = CHAMPION_SUMMARY.get("name_by_id")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("name_by_id")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["name_by_id"][value]
 
 
-async def name_by_key(value):
+async def name_by_key(value: str) -> str:
     '''Get champion name by key'''
-    data = CHAMPION_SUMMARY.get("name_by_key")
-    if data is None:
-        await fill_champion_summary(CHAMPION_SUMMARY)
-        data = CHAMPION_SUMMARY.get("name_by_key")
-    return data[value]
+    data = await champion_keys_cache.data
+    return data["name_by_key"][value]

@@ -9,6 +9,10 @@ These configurations generally stays all packed in a single file (generally call
 - Adding `pyot` to Django's `INSTALLED_APPS` by following Django integration guide.
 - Or any way that would cause imports on these configurations files.
 
+{% hint style='tip' %}
+If an integration of Pyot to another framework is needed. General integration guides are provided for Django, FastAPI and Celery projects at the **Integrations** page. These guides does not require to be strictly followed and only serves for reference purposes.
+{% endhint %}
+
 ## Model Conf
 
 Module: `pyot.conf.model`

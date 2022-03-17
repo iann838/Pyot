@@ -1,5 +1,5 @@
 from functools import partial
-from typing import TypeVar, Callable, Awaitable
+from typing import Any, Mapping, Sequence, TypeVar, Callable, Awaitable
 import asyncio
 
 
@@ -11,7 +11,7 @@ def loop_run(coro: Awaitable[R]) -> R:
     return asyncio.get_event_loop().run_until_complete(coro)
 
 
-async def thread_run(func: Callable[..., R], *args, **kwargs) -> R:
+async def thread_run(func: Callable[..., R], *args: Sequence[Any], **kwargs: Mapping[str, Any]) -> R:
     '''Run a blocking function in a thread.'''
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, partial(func, *args, **kwargs))

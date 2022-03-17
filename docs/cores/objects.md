@@ -17,6 +17,7 @@ Some internal info has been hidden, to learn more please review source code inst
 ### _class_ PyotStaticBase
 
 Metaclass: `PyotMetaClass`
+
 Extends: `PyotRoutingBase`
 
 Definitions:
@@ -51,7 +52,6 @@ Methods:
 ## Pyot Core
 
 Base class: `PyotCoreBase`
-Extend class: `PyotStaticBase`
 
 Inherits all functionalities of `PyotStaticBase`. This type of objects has the ability to request for data on pipelines.
 
