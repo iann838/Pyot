@@ -8,14 +8,14 @@ Module: `pyot.utils.functools`
 > converts it to a cached property that returns an awaitable with the return value.
 > 
 > Usage:
-> ```
->     class A:
->         @async_cached_property
->         async def b(self):
->             ...
+> ```python
+> class A:
+>     @async_cached_property
+>     async def b(self):
+>         ...
 > 
->     a = A()
->     await a.b
+> a = A()
+> await a.b
 > ```
 
 Extends: 
@@ -42,7 +42,7 @@ Definitions:
 
 Methods: 
 * _asyncmethod_ `proxy` -> `Awaitable[~R]` 
-  * `instance`: `None` 
+  * `instance`: `Any` 
 
 
 ### _class_ async_property
@@ -51,14 +51,13 @@ Methods:
 > converts it to a property that returns an awaitable with the return value.
 > 
 > Usage:
-> ```
->     class A:
->         @async_property
->         async def b(self):
->             ...
-> 
->     a = A()
->     await a.b
+> ```python
+> class A:
+>     @async_property
+>     async def b(self):
+>         ...
+> a = A()
+> await a.b
 > ```
 
 Extends: 
@@ -83,7 +82,9 @@ Definitions:
   * `name`: `None` 
 
 Methods: 
+* _classmethod_ `func` -> `Any` 
+  * `instance`: `Any` 
 * _asyncmethod_ `proxy` -> `Awaitable[~R]` 
-  * `instance`: `None` 
+  * `instance`: `Any` 
 
 

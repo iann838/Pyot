@@ -8,7 +8,7 @@ When threading is used, Pyot will automatically create isolated copies of resour
 
 ## Solution
 
-Use the atomic resource manager decorator. This decorator tells Pyot where exactly resources will be used in the event loop to properly do setups and cleanups of these resources. **Only one instance** at most should be in action at any moment in an **event loop**.
+Use the atomic resource manager wrapper. This manager tells where exactly resources will be used in an event loop and does proper setups and cleanups of these resources. **Only one instance** at most should be in action at any moment in an **event loop**.
 
 ```python
 from pyot.utils.eventloop import resource_manager
@@ -19,7 +19,7 @@ async def some_func():
 ```
 
 {% hint style='info' %}
-Generally only the **top most async function** is decorated. For example:
+Generally only the **top most async function** is wrapped. For example:
 - Projects main function.
 - Django's wsgi views methods and functions.
 - Functions passed to concurrent executors.

@@ -24,10 +24,12 @@ class ResourceManager:
     @classmethod
     def atomic(cls, async_func: Callable[..., Awaitable[R]]) -> Callable[..., Awaitable[R]]:
         '''
-        Decorator.\n
         Wrap an async function with an atomic resource manager.
-        Ensure proper management of internal streams and resources for the current event loop.\n
-        Only one atomic manager at most may be in action at any moment in the event loop. 
+        This manager tells where exactly resources will be used in an event loop and
+        does proper setups and cleanups of these resources.\n
+        Only one atomic manager may be in action at any moment in an event loop.
+
+        Usage: As decorators.
         '''
         if not asyncio.iscoroutinefunction(async_func):
             raise TypeError(f"'{async_func}' is not an async function")

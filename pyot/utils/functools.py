@@ -13,20 +13,19 @@ class async_property(Generic[R]):
     converts it to a property that returns an awaitable with the return value.
 
     Usage:
-    ```
-        class A:
-            @async_property
-            async def b(self):
-                ...
-
-        a = A()
-        await a.b
+    ```python
+    class A:
+        @async_property
+        async def b(self):
+            ...
+    a = A()
+    await a.b
     ```
     '''
     name = None
 
     @classmethod
-    def func(cls, instance) -> Any:
+    def func(cls, instance: Any) -> Any:
         raise TypeError(
             f'Cannot use {cls.__class__.__name__} instance without calling '
             '__set_name__() on it.'
@@ -55,7 +54,7 @@ class async_property(Generic[R]):
     def __set__(self, obj, value):
         raise AttributeError("can't set attribute")
 
-    async def proxy(self, instance) -> Awaitable[R]:
+    async def proxy(self, instance: Any) -> Awaitable[R]:
         res = await self.func(instance)
         return res
 
@@ -66,14 +65,14 @@ class async_cached_property(async_property, Generic[R]):
     converts it to a cached property that returns an awaitable with the return value.
 
     Usage:
-    ```
-        class A:
-            @async_cached_property
-            async def b(self):
-                ...
+    ```python
+    class A:
+        @async_cached_property
+        async def b(self):
+            ...
 
-        a = A()
-        await a.b
+    a = A()
+    await a.b
     ```
     '''
     name = None
@@ -84,7 +83,7 @@ class async_cached_property(async_property, Generic[R]):
         self.once = False
         self.__doc__ = getattr(func, '__doc__')
 
-    async def proxy(self, instance) -> Awaitable[R]:
+    async def proxy(self, instance: Any) -> Awaitable[R]:
         if self.once:
             try:
                 return instance.__dict__[self.name]

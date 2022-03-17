@@ -353,7 +353,7 @@ class UtilsDocEngine(DocEngine):
                     lines.append('\n\n')
                 f.writelines(lines)
 
-    def get_func_details(self, func: Callable, is_method=False):
+    def get_func_details(self, func: Callable, is_method=False, member_class=None):
         key = func.__name__.split(".")[-1]
         member_type = "method" if is_method else "function"
         args = None
@@ -367,6 +367,11 @@ class UtilsDocEngine(DocEngine):
             return_type = inspect.signature(func.fget).return_annotation
             docs_string = func.fget.__doc__
         else:
+            if member_type == "method" and member_class and func.__name__ in member_class.__dict__:
+                if isinstance(member_class.__dict__[func.__name__], classmethod):
+                    member_type = "classmethod"
+                elif isinstance(member_class.__dict__[func.__name__], staticmethod):
+                    member_type = "staticmethod"
             return_type = inspect.signature(func).return_annotation
             docs_string = func.__doc__
             args = {}
@@ -410,7 +415,7 @@ class UtilsDocEngine(DocEngine):
             }
         for key, func in get_method_properties(clas):
             if key not in o:
-                func_details = self.get_func_details(func, True)
+                func_details = self.get_func_details(func, True, clas)
                 if func_details:
                     o[key] = func_details
         extends = []

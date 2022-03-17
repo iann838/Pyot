@@ -37,6 +37,17 @@ Attributes:
 
 > Resource managers for event loops
 
+Methods: 
+* _classmethod_ `atomic` -> `Callable[..., Awaitable[~R]]` 
+  * `async_func`: `Callable[..., Awaitable[~R]]` 
+  > Wrap an async function with an atomic resource manager.
+  > This manager tells where exactly resources will be used in an event loop and
+  > does proper setups and cleanups of these resources.
+  > 
+  > Only one atomic manager may be in action at any moment in an event loop.
+  > 
+  > Usage: As decorators. 
+
 Attributes: 
 * `states` -> `Dict[str, Dict[asyncio.events.AbstractEventLoop, bool]]` 
 
