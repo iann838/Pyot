@@ -276,6 +276,7 @@ class MatchParticipantData(PyotStatic):
     detector_wards_placed: int
     double_kills: int
     dragon_kills: int
+    eligible_for_progression: bool
     first_blood_assist: bool
     first_blood_kill: bool
     first_tower_assist: bool

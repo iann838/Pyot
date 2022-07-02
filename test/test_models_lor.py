@@ -24,7 +24,7 @@ async def test_ranked():
 
 @async_to_sync
 async def test_match():
-    a = await riot.Account(game_name="J01", tag_line="KOR").get(pipeline="lor")
+    a = await riot.Account(game_name="dango", tag_line="1557").get(pipeline="lor")
     o = await lor.MatchHistory(puuid=a.puuid, region="sea").get()
     assert_walkable(o)
     assert_types(o)
