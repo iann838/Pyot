@@ -100,6 +100,7 @@ Attributes:
 * `custom_game_name` -> `str` 
 * `queue_id` -> `str` 
 * `game_mode` -> `str` 
+* `game_version` -> `str` 
 * `is_ranked` -> `bool` 
 * `season_id` -> `str` 
 

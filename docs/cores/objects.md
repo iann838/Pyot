@@ -1,14 +1,18 @@
 # Objects
 
-Each model provides classes, and these classes creates instances of Pyot objects. Different types of Pyot objects has different structure and functionalities.
+Pyot provides many models, each model contains Pyot classes, and these classes creates instances of Pyot objects. Different types of Pyot objects has different structure and functionalities.
 
 Module: `pyot.core.objects`
+
+{% hint style='info' %}
+This page documents the bases of Pyot classes and objects, for information of models, please go to **Models** page.
+{% endhint %}
 
 ## Pyot Static
 
 Base class: `PyotStaticBase`
 
-Takes a Python data and serialize it into Python objects based on defined type hints of its subclass. Attributes may return other Pyot Static objects, these objects are initially not serialized and assigned as an instance of `PyotLazy`, these objects will only be serialized upon first access of the attribute.
+Takes a Python data and serialize it into Python objects based on defined type hints of its subclass. Attributes may return other Pyot Static objects, these objects are initially not serialized, instead are assigned as instances of `PyotLazy`, these objects will only be serialized upon first access of the attribute.
 
 {% hint style='info' %}
 Some internal info has been hidden, to learn more please review source code instead.
@@ -42,7 +46,7 @@ Methods:
   * `deepcopy`: `bool = False`
     > Make a deep copy before returning, False for shallow copy.
   * `lazy_props`: `bool = False`
-    > True for loading all _lazy_property_s before returning, False otherwise.
+    > True for loading all `lazy_property`s before returning, False otherwise.
   * `recursive`: `bool = False`
     > True for returning `rdict()` content instead.
   > Returns the Python dict that is used for serialization on this object.
