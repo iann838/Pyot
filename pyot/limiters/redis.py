@@ -4,7 +4,6 @@ from typing import Dict, List, Union
 from aiohttp import ClientResponse
 import aioredis
 
-from pyot.utils.locks import SealLock
 from pyot.utils.eventloop import EventLoopFactory
 
 from .base import BaseLimiter, LimiterToken
@@ -17,7 +16,6 @@ class RedisLimiter(BaseLimiter):
         self.api_key = api_key
         self.api_hash = api_key[-5:]
         self.limiting_share = limiting_share
-        self.lock = SealLock()
         self.redis = EventLoopFactory(
             factory=lambda: aioredis.create_redis_pool(f"redis://{host}:{port}/{db}", **kwargs),
             callback=lambda pool: pool.close(),

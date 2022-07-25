@@ -1,8 +1,9 @@
+import asyncio
 from datetime import datetime, timedelta
+from functools import cached_property
 
 import aiohttp
 
-from ..locks import SealLock
 from ..functools import async_property
 
 
@@ -17,11 +18,14 @@ class ChampionKeysCache:
             "name_by_id": {},
             "name_by_key": {},
         }
-        self.lock = SealLock()
         self.last_updated = datetime.now() - timedelta(days=1)
 
     def __str__(self) -> str:
         return 'ChampionKeysCache()'
+
+    @cached_property
+    def lock(self):
+        return asyncio.Lock()
 
     @async_property
     async def data(self):
