@@ -6,9 +6,10 @@
 
 Pyot is an asyncIO based high-level Python Riot Games API framework which encourages rapid development and clean, pragmatic design. Takes care much of the hassle of the Riot Games API, so developers can focus on writing apps without needing to reinvent the wheel. It’s free and open source.
 
-Version on PyPi: `6.0.0`
-
-Version on master: `6.0.0`
+| Index | Version |
+| ---- | ------- |
+| PyPI | `6.0.0` |
+| master | `6.0.0` |
 
 If you're migrating your project to a newer version of Pyot, please refer to **Changelog** section of the [documentation](https://pyot.paaksing.com).
 
