@@ -52,6 +52,8 @@ Methods:
 
 ### _global_ `resource_managed_loops`: `Set[asyncio.AbstractEventLoop]`
 
+Set of event loops with active resource managers.
+
 ### _class_ `ResourceTemplate`
 
 Template for acquiring resources bound to event loops.
@@ -87,7 +89,8 @@ Methods:
     > Purge acquired resources for all closed loops. Ungraceful release.
 
 ### _global_ `resource_templates`: `List["ResourceTemplate"]`
-    > List of all instantiated resource templates by Pyot.
+
+List of all instantiated resource templates by Pyot.
 
 
 ## Example
