@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class MatchInfoData(PyotStatic):
     id: str
-    map_id: str
+    map_url: str
     start_millis: int
     length_millis: int
     provisioning_flow_id: str
@@ -25,7 +25,7 @@ class MatchInfoData(PyotStatic):
     season_id: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id"}
+        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id", "map_id": "map_url"}
 
     @property
     def start(self) -> datetime:
@@ -73,13 +73,16 @@ class MatchPlayerData(PyotStatic):
     character_id: str
     stats: MatchPlayerStatData
     competitive_tier: int
-    player_card: str
-    player_title: str
+    player_card_id: str
+    player_title_id: str
+
+    class Meta(PyotStatic.Meta):
+        renamed = {"player_card": "player_card_id", "player_title": "player_title_id"}
 
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).using(self.metapipeline.name)
 
 
 class MatchTeamData(PyotStatic):
@@ -136,17 +139,17 @@ class MatchPlayerKillData(PyotStatic):
     @property
     def killer(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.killer_puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.killer_puuid).using(self.metapipeline.name)
 
     @property
     def victim(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.victim_puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.victim_puuid).using(self.metapipeline.name)
 
     @property
     def assistants(self) -> List["Account"]:
         from ..riot.account import Account
-        return [Account(puuid=i).pipeline(self.metapipeline.name) for i in self.assistant_puuids]
+        return [Account(puuid=i).using(self.metapipeline.name) for i in self.assistant_puuids]
 
 
 class MatchPlayerDamageData(PyotStatic):
@@ -159,10 +162,13 @@ class MatchPlayerDamageData(PyotStatic):
 
 class MatchPlayerEconomyData(PyotStatic):
     loadout_value: int
-    weapon: str
-    armor: str
+    weapon_id: str
+    armor_id: str
     remaining: int
     spent: int
+
+    class Meta(PyotStatic.Meta):
+        renamed = {"armor": "armor_id", "weapon": "weapon_id"}
 
 
 class MatchPlayerRoundStatData(PyotStatic):
@@ -206,12 +212,12 @@ class MatchRoundResultData(PyotStatic):
     @property
     def bomb_planter(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_planter_puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.bomb_planter_puuid).using(self.metapipeline.name)
 
     @property
     def bomb_defuser(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.bomb_defuser_puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.bomb_defuser_puuid).using(self.metapipeline.name)
 
 
 class MatchCoachData(PyotStatic):
@@ -269,7 +275,7 @@ class MatchHistory(PyotCore):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).using(self.metapipeline.name)
 
 
 class RecentMatches(PyotCore):

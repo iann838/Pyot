@@ -17,7 +17,7 @@ This rate limiter is built using aioredis v1.3, it does not support aioredis v2+
 
 An extra installation is required: `pip install pyot[redis]`
 
-## _class_ RedisLimiter
+## _class_ `RedisLimiter`
 
 Backend: `pyot.limiters.redis.RedisLimiter`
 
@@ -30,4 +30,6 @@ Definitions:
     > Port of Redis.
   * `db`: `int = 0`
     > Database number of Redis.
-  * `limiting_share`: `int = 1`
+  * `limiting_share`: `float = 1`
+  * `**kwargs`
+    > Any extra kwargs provided will passed into `aioredis.Redis`. e.g. username and password.

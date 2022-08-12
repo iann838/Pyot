@@ -2,18 +2,13 @@
 
 Pyot requires many setups and configurations in order to work properly.
 
-These configurations generally stays all packed in a single file (generally called `conf.py` or `pyotconf.py`) or one file per model, they must be loaded **once and only once** at application startup, there are multiple ways to achieve this:
-- Import at module `__init__.py`.
-- If the application is a single file, place at the top.
-- Adding an import on `fastapi` startup event.
-- Adding `pyot` to Django's `INSTALLED_APPS` by following Django integration guide.
-- Or any way that would cause imports on these configurations files.
+These configurations generally stays all packed in a single file (generally called `conf.py` or `pyotconf.py`) or one file per model, they must be loaded **once and only once** at application startup.
 
 {% hint style='tip' %}
-If an integration of Pyot to another framework is needed. General integration guides are provided for Django, FastAPI and Celery projects at the **Integrations** page. These guides does not require to be strictly followed and only serves for reference purposes.
+If an integration of Pyot to another framework is needed. General integration guides are provided for Django, FastAPI and Celery projects at the **Integrations** section. These guides does not require to be strictly followed and only serves for reference purposes.
 {% endhint %}
 
-## Model Conf
+## Models
 
 Module: `pyot.conf.model`
 
@@ -32,8 +27,7 @@ Setup, configure and activate the models of need. Define the default platform, r
     * `default_version`: `str`
     * `default_locale`: `str`
 
-
-## Pipeline Conf
+## Pipelines
 
 Module: `pyot.conf.pipeline`
 
@@ -64,11 +58,29 @@ A variety of stores is provided, including caches (e.g. Redis, MongoDB) and serv
 For cache stores, multiple stores of the same backend can be configured, it may be useful for scenarios where different types of objects should be cached in different places (e.g. Two `DiskCache`s with different directory for storing lol matches and lol timelines).
 {% endhint %}
 
-## Example Usage
+## Imports
+
+Conf files can be imported in following ways:
+
+- Using `import_confs` from `pyot.conf.utils`.
+- Manually importing the conf file in python syntax.
+- If an integration is being used (e.g. Django), check if the integration has a custom conf import hook and use it instead.
+
+### _function_ `import_confs` -> `None`
+  * Arguments:
+    * `path_or_paths`: Import path or list of import paths to the conf files.
+
+{% hint style='tip' %}
+Import path is the path used as if the file/module is being imported using python syntax via `import`, `__import__` or `importlib.import_module`
+{% endhint %}
+
+## Example
 
 Example configuration of `lol` model and a default pipeline including a cache store that caches summoners for 100 seconds, matches and timelines for 10 minutes; and service stores for CDragon and RiotAPI:
 
 ```python
+# myproject/mymodule/pyotconf.py
+
 from pyot.conf.model import activate_model, ModelConf
 from pyot.conf.pipeline import activate_pipeline, PipelineConf
 
@@ -102,4 +114,14 @@ class LolPipeline(PipelineConf):
             "api_key": os.environ["RIOT_API_KEY"],
         }
     ]
+```
+
+Now import the confs into your application:
+
+```python
+# myproject/mymodule/__main__.py
+
+from pyot.conf.utils import import_confs
+
+import_confs("mymodule.pyotconf")
 ```

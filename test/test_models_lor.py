@@ -2,7 +2,7 @@
 from pyot.models import lor, riot
 from pyot.utils.sync import async_to_sync
 
-from .core import assert_types, assert_walkable
+from .engine_core import assert_types, assert_walkable
 
 
 @async_to_sync
@@ -24,11 +24,10 @@ async def test_ranked():
 
 @async_to_sync
 async def test_match():
-    a = await riot.Account(game_name="dango", tag_line="1557").get(pipeline="lor")
+    a = await riot.Account(game_name="dango", tag_line="1557").using("lor").get()
     o = await lor.MatchHistory(puuid=a.puuid, region="sea").get()
     assert_walkable(o)
     assert_types(o)
-    print(o.ids)
     for ind in range(2):
         o_ = await o[ind].get()
         assert_walkable(o_)

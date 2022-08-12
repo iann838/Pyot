@@ -3,8 +3,8 @@ from typing import List, Iterator, Dict, Union
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
 from pyot.core.exceptions import NotFound
-from pyot.utils.tft.cdragon import abs_url, join_set_data
-from pyot.utils.lol.cdragon import sanitize
+from pyot.utils.tft.cdragon import abs_url, merge_set_data
+from pyot.utils.lol.cdragon import sanitize_description
 from .base import PyotCore, PyotStatic
 
 
@@ -47,7 +47,7 @@ class Trait(PyotCore):
 
     @cache_indexes
     def filter(self, indexer, data):
-        return indexer.get(self.key, join_set_data(data, self.set, "traits"), "apiName")
+        return indexer.get(self.key, merge_set_data(data, self.set, "traits"), "apiName")
 
     @lazy_property
     def icon_abspath(self) -> str:
@@ -55,7 +55,7 @@ class Trait(PyotCore):
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return sanitize(self.description)
+        return sanitize_description(self.description)
 
 
 class Traits(PyotCore):
@@ -81,7 +81,7 @@ class Traits(PyotCore):
 
     def filter(self, data):
         try:
-            return join_set_data(data, self.set, "traits")
+            return merge_set_data(data, self.set, "traits")
         except KeyError as e:
             raise NotFound("Request was successful but filtering gave no matching item") from e
 

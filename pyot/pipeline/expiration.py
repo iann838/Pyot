@@ -1,11 +1,9 @@
 from typing import Dict
 from datetime import timedelta as td
 import copy
+import warnings
 
-from pyot.utils.logging import Logger
-
-
-LOGGER = Logger(__name__)
+from pyot.core.warnings import PyotPipelineWarning
 
 
 class ExpirationManager:
@@ -122,7 +120,7 @@ class ExpirationManager:
         try:
             return self.expirations[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARN: A non defined expiration token was passed, returned 0 by default")
+            warnings.warn("Expiration manager received an unknown expiration token, returned 0 by default", PyotPipelineWarning)
             return 0
 
     def __iter__(self):

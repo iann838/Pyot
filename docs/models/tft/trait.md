@@ -2,7 +2,7 @@
 
 Module: `pyot.models.tft.trait` 
 
-### _class_ Trait
+### _class_ `Trait`
 
 Type: `PyotCore` 
 
@@ -27,12 +27,8 @@ Attributes:
 * `icon_path` -> `str` 
 * `description` -> `str` 
 
-Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ Traits
+### _class_ `Traits`
 
 Type: `PyotCore` 
 
@@ -52,7 +48,7 @@ Attributes:
 * `traits` -> `List[pyot.models.tft.trait.Trait]` 
 
 
-### _class_ TraitEffectData
+### _class_ `TraitEffectData`
 
 Type: `PyotStatic` 
 

@@ -2,7 +2,7 @@ from pyot.models import tft
 from pyot.utils.sync import async_to_sync
 from pyot.utils.tft.routing import platform_to_region
 
-from .core import assert_types, assert_walkable
+from .engine_core import assert_types, assert_walkable
 
 
 @async_to_sync

@@ -6,7 +6,7 @@
 
 DDragon only supports Legends of Runeterra endpoints (the only one well maintained), DDragon for LoL and TFT are not supported because they are badly maintained and considered low priority by the game team.
 
-## _class_ DDragon
+## _class_ `DDragon`
 
 Backend: `pyot.stores.ddragon.DDragon`
 

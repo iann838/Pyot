@@ -5,7 +5,7 @@ Pyot provides many models, each model contains Pyot classes, and these classes c
 Module: `pyot.core.objects`
 
 {% hint style='info' %}
-This page documents the bases of Pyot classes and objects, for information of models, please go to **Models** page.
+This page documents the bases of Pyot classes and objects, for reference of models, please go to **Models** section.
 {% endhint %}
 
 ## Pyot Static
@@ -18,7 +18,7 @@ Takes a Python data and serialize it into Python objects based on defined type h
 Some internal info has been hidden, to learn more please review source code instead.
 {% endhint %}
 
-### _class_ PyotStaticBase
+### _class_ `PyotStaticBase`
 
 Metaclass: `PyotMetaClass`
 
@@ -43,8 +43,8 @@ Properties:
 
 Methods: 
 * _method_ `dict` -> `Dict`
-  * `deepcopy`: `bool = False`
-    > Make a deep copy before returning, False for shallow copy.
+  * `force_copy`: `bool = False`
+    > Force make deep copy before returning, default to `False` for shallow copy.
   * `lazy_props`: `bool = False`
     > True for loading all `lazy_property`s before returning, False otherwise.
   * `recursive`: `bool = False`
@@ -63,45 +63,37 @@ Inherits all functionalities of `PyotStaticBase`. This type of objects has the a
 Some internal info has been hidden, to learn more please review source code instead.
 {% endhint %}
 
-### _class_ PyotCoreBase
+### _class_ `PyotCoreBase`
 
 Extends: `PyotStaticBase`
 
 Methods:
-* `pipeline` -> `None`
-  * `name`: `str`
-  > Change the pipeline of this object to request data on.
+* `using` -> `None`
+  * `pipeline_name`: `str`
+  > Set the pipeline used for request in this instance.
 * `query` -> `Self`
-  * `**kwargs`
-  > Add query parameters to the request. Typings are present if the class accepts query parameters.
+  > Add query parameters to the request. This method is only present if the class accepts query parameters.
 * `body` -> `Self`
-  * `**kwargs`
-  > Add body parameters to the request. Typings are present if the class accepts body parameters.
+  > Add body parameters to the request. This method is only present if the class requires body parameters.
 * _async_ `token` -> `PipelineToken`
   > Create a pipeline token that identifies this object.
 * _async_ `get` -> `Self`
-  * `pipeline`: `str = None`
-  * `deepcopy`: `bool = False`
+  * `force_copy`: `bool = False`
   > Make a GET request to the pipeline.
-  > - `pipeline`: Name of the pipeline to make request on, default to default pipeline.
-  > - `deepcopy`: Make a deepcopy to the raw response before serializing, default to False, use smart copy (make limited levels of recursive shallow copies) instead.
+  > - `force_copy`: Force make a deep copy on raw before serializing, default to `False` for smart copy (multi-level shallow copy).
 * _async_ `post` -> `Self`
-  * `pipeline`: `str = None`
-  * `deepcopy`: `bool = False`
+  * `force_copy`: `bool = False`
   > Make a POST request to the pipeline.
-  > - `pipeline`: Name of the pipeline to make request on, default to default pipeline.
-  > - `deepcopy`: Make a deepcopy to the raw response before serializing, default to False, use smart copy (make limited levels of recursive shallow copies) instead.
+  > - `force_copy`: Force make a deep copy on raw before serializing, default to `False` for smart copy (multi-level shallow copy).
 * _async_ `put` -> `Self`
-  * `pipeline`: `str = None`
-  * `deepcopy`: `bool = False`
+  * `force_copy`: `bool = False`
   > Make a PUT request to the pipeline.
-  > - `pipeline`: Name of the pipeline to make request on, default to default pipeline.
-  > - `deepcopy`: Make a deepcopy to the raw response before serializing, default to False, use smart copy (make limited levels of recursive shallow copies) instead.
+  > - `force_copy`: Force make a deep copy on raw before serializing, default to `False` for smart copy (multi-level shallow copy).
 * `raw` -> `Any`
-  > Returns the raw response of the request, by default smart copy is used, therefore there could be differences and should not be modified, a safer option is use `deepcopy` flag to do deepcopy of the response at the cost of performance.
+  > Returns the raw response of the request, by default smart copy is used, therefore there could be differences and should not be modified, a safer option is use `force_copy` flag to do deepcopy of the response at the cost of performance.
 * _classmethod_ `load` -> `Self`
-  * `raw_data`: `Any`
-  > Return an instance of the class and loads the raw data into the object.
+  * `raw`: `Any`
+  > Return an instance of the class and load the submitted raw data.
 
 ## Pyot Utils
 
@@ -109,7 +101,7 @@ Base class: `PyotUtilBase`
 
 This type of objects are meant to be utilities objects. The definition of this base class is empty, it is only used for generating documentations and possible usecases involving `isinstance`.
 
-## Example Usage
+## Example
 
 Get ranked solo/duo match ids of the last 24 hours for a summoner by name and platform. Assuming model is activated and pipeline properly configured.
 

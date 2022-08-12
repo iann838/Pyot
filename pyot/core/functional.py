@@ -1,14 +1,14 @@
 from typing import Any, Dict, Union
 from functools import partial, wraps
 
-from pyot.utils.text import camelcase
+from pyot.utils.text import camel_case
 from .exceptions import NotFound
 
 
 class lazy_property(property):
     """
     Decorator that converts a method with a single self argument into a
-    property cached on the instance and inserted into the meta data dict using camelcase key.\n
+    property cached on the instance and inserted into the meta data dict using camel_case key.\n
     Can only be used on pyot class methods.
     """
     name = None
@@ -22,7 +22,7 @@ class lazy_property(property):
 
     def __init__(self, func, name=None): # pylint: disable=super-init-not-called
         self.real_func = func
-        self.key = camelcase(func.__name__)
+        self.key = camel_case(func.__name__)
         self.once = False
         self.__doc__ = getattr(func, '__doc__')
 
@@ -112,39 +112,19 @@ def turbo_copy(data, top, level=0):
     if isinstance(data, dict):
         data = data.copy()
         for key, val in data.items():
-            data[key] = turbo_copy(val, top, level+1)
+            data[key] = turbo_copy(val, top, level + 1)
     elif isinstance(data, list):
         data = data.copy()
         for key, val in enumerate(data):
-            data[key] = turbo_copy(val, top, level+1)
+            data[key] = turbo_copy(val, top, level + 1)
     return data
 
 
-def save_raw_response(func):
-    @wraps(func)
-    def wrapper(self, data, *args, **kwargs):
-        self._meta.raw_data = turbo_copy(data, self._meta.turbo_level)
-        return func(self, data, *args, **kwargs)
-    return wrapper
-
-
-def laziable(obj):
+def is_laziable(obj):
     if isinstance(obj, dict) or isinstance(obj, list):
         return True
     return False
 
-def parse_camelcase(kwargs: Dict) -> Dict:
-    return {camelcase(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
 
-
-def handle_import_error(module: ImportError):
-    if isinstance(module, (ImportError, ValueError)):
-        def raise_when_called(func):
-            @wraps(func)
-            def wrapper(self, *args, **kwargs):
-                raise module
-            return wrapper
-        return raise_when_called
-    def decorate(func):
-        return func
-    return decorate
+def convert_keys_camel_case(kwargs: Dict) -> Dict:
+    return {camel_case(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}

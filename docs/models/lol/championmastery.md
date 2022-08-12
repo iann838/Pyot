@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.championmastery` 
 
-### _class_ ChampionMasteries
+### _class_ `ChampionMasteries`
 
 Type: `PyotCore` 
 
@@ -22,11 +22,10 @@ Attributes:
 * `total_score` -> `int` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ ChampionMastery
+### _class_ `ChampionMastery`
 
 Type: `PyotCore` 
 
@@ -54,7 +53,6 @@ Properties:
 * _property_ `champion` -> `Champion` 
 * _property_ `last_play_time` -> `datetime.datetime` 
 * _property_ `meraki_champion` -> `MerakiChampion` 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 

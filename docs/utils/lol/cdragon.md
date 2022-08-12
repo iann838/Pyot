@@ -11,7 +11,7 @@ Module: `pyot.utils.lol.cdragon`
 > Return the CDragon url for the given game asset url 
 
 
-### _function_ `sanitize` -> `str` 
+### _function_ `sanitize_description` -> `str` 
 * `string`: `str` 
 > Sanitize CDragon descriptions 
 

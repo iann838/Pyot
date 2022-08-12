@@ -1,6 +1,6 @@
 # Token
 
-### _class_ PipelineToken
+### _class_ `PipelineToken`
 
 Token class is used among all the stores in the pipeline. Typically generated from `token()` on `PyotCore` objects.
 

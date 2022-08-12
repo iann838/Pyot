@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.clash` 
 
-### _class_ ClashPlayers
+### _class_ `ClashPlayers`
 
 Type: `PyotCore` 
 
@@ -19,11 +19,10 @@ Attributes:
 * `players` -> `List[pyot.models.lol.clash.ClashPlayerData]` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ ClashTeam
+### _class_ `ClashTeam`
 
 Type: `PyotCore` 
 
@@ -47,11 +46,10 @@ Attributes:
 
 Properties: 
 * _property_ `captain` -> `Summoner` 
-* _property_ `platform` -> `str` 
 * _property_ `tournament` -> `ClashTournament` 
 
 
-### _class_ ClashTournament
+### _class_ `ClashTournament`
 
 Type: `PyotCore` 
 
@@ -77,11 +75,10 @@ Attributes:
 * `team_id` -> `str` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `team` -> `pyot.models.lol.clash.ClashTeam` 
 
 
-### _class_ ClashTournaments
+### _class_ `ClashTournaments`
 
 Type: `PyotCore` 
 
@@ -97,11 +94,8 @@ Endpoints:
 Attributes: 
 * `tournaments` -> `List[pyot.models.lol.clash.ClashTournamentData]` 
 
-Properties: 
-* _property_ `platform` -> `str` 
 
-
-### _class_ ClashPlayerData
+### _class_ `ClashPlayerData`
 
 Type: `PyotStatic` 
 
@@ -116,7 +110,7 @@ Properties:
 * _property_ `team` -> `ClashTeam` 
 
 
-### _class_ ClashTournamentData
+### _class_ `ClashTournamentData`
 
 Type: `PyotStatic` 
 
@@ -128,7 +122,7 @@ Attributes:
 * `schedule` -> `List[pyot.models.lol.clash.ClashTournamentPhaseData]` 
 
 
-### _class_ ClashTournamentPhaseData
+### _class_ `ClashTournamentPhaseData`
 
 Type: `PyotStatic` 
 

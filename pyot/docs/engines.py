@@ -6,7 +6,7 @@ import pkgutil
 import inspect
 
 from pyot.core.objects import PyotCoreBase, PyotRoutingBase, PyotStaticBase, PyotUtilBase, lazy_property
-from pyot.utils.importlib import import_class, import_module
+from pyot.utils.importlib import import_variable, import_module
 from pyot.utils.nullsafe import nullsafe as _
 
 from .serializers import PyotDocTypeSerializer
@@ -84,7 +84,7 @@ class ModelsDocEngine(DocEngine):
                     for classtype, classes in classcontent.items():
                         for clas in classes:
                             clas_detail = self.get_model_class_details(model, submodule, clas)
-                            lines.append(f'### _class_ {clas}' + '\n')
+                            lines.append(f'### _class_ `{clas}`' + '\n')
                             lines.append(f'\nType: `Pyot{classtype.capitalize()}` \n')
                             if clas_detail['extends']:
                                 lines.append(f'\nExtends: \n')
@@ -100,9 +100,13 @@ class ModelsDocEngine(DocEngine):
                                 lines.append(f'\nEndpoints: \n')
                                 for end_name, end_args in clas_detail['endpoints'].items():
                                     lines.append(f"* `{end_name}`: `{end_args}` \n")
-                            if clas_detail['queries']:
-                                lines.append(f'\nQueries: \n')
-                                for q_name, q_type in clas_detail['queries'].items():
+                            if clas_detail['query_params']:
+                                lines.append(f'\nQuery Params: \n')
+                                for q_name, q_type in clas_detail['query_params'].items():
+                                    lines.append(f"* `{q_name}`: `{q_type}` \n")
+                            if clas_detail['body_params']:
+                                lines.append(f'\nBody Params: \n')
+                                for q_name, q_type in clas_detail['body_params'].items():
                                     lines.append(f"* `{q_name}`: `{q_type}` \n")
                             if clas_detail['methods']:
                                 lines.append(f'\nMethods: \n')
@@ -153,7 +157,7 @@ class ModelsDocEngine(DocEngine):
 
 
     def get_model_class_details(self, name: str, submodule: str, clasname: str):
-        clas: PyotStaticBase = import_class(f"pyot.models.{name}.{submodule}.{clasname}")
+        clas: PyotStaticBase = import_variable(f"pyot.models.{name}.{submodule}.{clasname}")
         o = {}
         for key, typ in get_type_hints(clas).items():
             if key[0] == "_" and key[-1] != "_":
@@ -164,21 +168,36 @@ class ModelsDocEngine(DocEngine):
                 "type": "attribute",
                 "docs": None,
             }
-        queries = {}
+        query_params = {}
+        body_params = {}
         if issubclass(clas, PyotCoreBase):
-            for paramname, typ in inspect.signature(clas.query).parameters.items():
-                if paramname in ("self", "kwargs"):
-                    continue
-                typ_anno = typ.annotation
-                if typ.annotation == inspect._empty:
-                    if typ.default != inspect._empty and typ.default is not None:
-                        typ_anno = typ.default.__class__
-                    else:
-                        typ_anno = None
-                queries[paramname] = PyotDocTypeSerializer(typ_anno, []).data
-                if typ.default != inspect._empty:
-                    queries[paramname] += " = " + str(typ.default)
-        base_class_method_props = get_method_property_names(PyotCoreBase) + get_method_property_names(PyotRoutingBase)
+            if hasattr(clas, "query"):
+                for paramname, typ in inspect.signature(clas.query).parameters.items():
+                    if paramname in ("self"):
+                        continue
+                    typ_anno = typ.annotation
+                    if typ.annotation == inspect._empty:
+                        if typ.default != inspect._empty and typ.default is not None:
+                            typ_anno = typ.default.__class__
+                        else:
+                            typ_anno = None
+                    query_params[paramname] = PyotDocTypeSerializer(typ_anno, []).data
+                    if typ.default != inspect._empty:
+                        query_params[paramname] += " = " + str(typ.default)
+            if hasattr(clas, "body"):
+                for paramname, typ in inspect.signature(clas.body).parameters.items():
+                    if paramname in ("self"):
+                        continue
+                    typ_anno = typ.annotation
+                    if typ.annotation == inspect._empty:
+                        if typ.default != inspect._empty and typ.default is not None:
+                            typ_anno = typ.default.__class__
+                        else:
+                            typ_anno = None
+                    body_params[paramname] = PyotDocTypeSerializer(typ_anno, []).data
+                    if typ.default != inspect._empty:
+                        body_params[paramname] += " = " + str(typ.default)
+        base_class_method_props = get_method_property_names(PyotCoreBase) + get_method_property_names(PyotRoutingBase) + ["query", "body"]
         for key, func in get_method_properties(clas):
             if (key not in base_class_method_props or key in [_(clas).Meta.server_type, "__init__", "__iter__"]) and key not in o:
                 member_type = "method"
@@ -240,7 +259,8 @@ class ModelsDocEngine(DocEngine):
         return {
             "extends": extends,
             "endpoints": endpoints,
-            "queries": queries,
+            "query_params": query_params,
+            "body_params": body_params,
             "definitions": dict(filter(lambda item: item[1]["type"].endswith("definition"), o.items())),
             "attributes": dict(filter(lambda item: item[1]["type"].endswith("attribute"), o.items())),
             "properties": dict(filter(lambda item: item[1]["type"].endswith(("property", "lazy_property")), o.items())),
@@ -308,7 +328,7 @@ class UtilsDocEngine(DocEngine):
                 ]
                 for key, member_info in members.items():
                     if member_info["type"] == "class":
-                        lines.append(f'### _class_ {key}' + '\n')
+                        lines.append(f'### _class_ `{key}`' + '\n')
                         if member_info['docs']:
                             doc_str = '\n> '.join(inspect.cleandoc(member_info['docs']).split('\n'))
                             lines.append(f"\n> {doc_str}\n")
@@ -414,7 +434,7 @@ class UtilsDocEngine(DocEngine):
                 "docs": None,
             }
         for key, func in get_method_properties(clas):
-            if key not in o:
+            if key not in o and (not key.startswith("_") or key.startswith("__")) :
                 func_details = self.get_func_details(func, True, clas)
                 if func_details:
                     o[key] = func_details

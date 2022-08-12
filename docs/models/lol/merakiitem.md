@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.merakiitem` 
 
-### _class_ MerakiItem
+### _class_ `MerakiItem`
 
 Type: `PyotCore` 
 
@@ -38,12 +38,11 @@ Properties:
 * _property_ `builds_from` -> `List[ForwardRef(MerakiItem)]` 
 * _property_ `builds_into` -> `List[ForwardRef(MerakiItem)]` 
 * _property_ `item` -> `Item` 
-* _property_ `locale` -> `str` 
 * _property_ `required_champion` -> `MerakiChampion` 
 * _property_ `special_recipe` -> `MerakiItem` 
 
 
-### _class_ MerakiItemActiveData
+### _class_ `MerakiItemActiveData`
 
 Type: `PyotStatic` 
 
@@ -55,7 +54,7 @@ Attributes:
 * `cooldown` -> `int` 
 
 
-### _class_ MerakiItemPassiveData
+### _class_ `MerakiItemPassiveData`
 
 Type: `PyotStatic` 
 
@@ -67,7 +66,7 @@ Attributes:
 * `stats` -> `pyot.models.lol.merakiitem.MerakiItemStatData` 
 
 
-### _class_ MerakiItemShopData
+### _class_ `MerakiItemShopData`
 
 Type: `PyotStatic` 
 
@@ -77,7 +76,7 @@ Attributes:
 * `tags` -> `List[str]` 
 
 
-### _class_ MerakiItemShopPriceData
+### _class_ `MerakiItemShopPriceData`
 
 Type: `PyotStatic` 
 
@@ -87,7 +86,7 @@ Attributes:
 * `sell` -> `int` 
 
 
-### _class_ MerakiItemStatData
+### _class_ `MerakiItemStatData`
 
 Type: `PyotStatic` 
 
@@ -115,7 +114,7 @@ Attributes:
 * `omnivamp` -> `pyot.models.lol.merakiitem.MerakiItemStatDetailData` 
 
 
-### _class_ MerakiItemStatDetailData
+### _class_ `MerakiItemStatDetailData`
 
 Type: `PyotStatic` 
 

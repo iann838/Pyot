@@ -5,12 +5,12 @@ from asgiref.sync import sync_to_async
 from pyot.core.exceptions import NotFound
 from pyot.pipeline.token import PipelineToken
 from pyot.pipeline.expiration import ExpirationManager
-from pyot.utils.logging import Logger
+from pyot.utils.logging import LazyLogger
 
 from .base import Store, StoreType
 
 
-LOGGER = Logger(__name__)
+LOGGER = LazyLogger(__name__)
 
 
 class DjangoCache(Store):
@@ -31,7 +31,7 @@ class DjangoCache(Store):
             if timeout == -1:
                 timeout = None
             await sync_to_async(self.data.set)(token.value, value, timeout)
-            LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] SET: {token.value}")
+            LOGGER.log(self.log_level, f"[pyot.stores.djangocache:DjangoCache#{self.alias}] SET {token.value}")
 
     async def get(self, token: PipelineToken, **kwargs) -> Any:
         timeout = self.expirations.get_timeout(token.method)
@@ -40,12 +40,12 @@ class DjangoCache(Store):
         item = await sync_to_async(self.data.get)(token.value)
         if item is None:
             raise NotFound(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] GET: {token.value}")
+        LOGGER.log(self.log_level, f"[pyot.stores.djangocache:DjangoCache#{self.alias}] GET {token.value}")
         return item
 
     async def delete(self, token: PipelineToken, **kwargs) -> None:
         await sync_to_async(self.data.delete)(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] DELETE: {token.value}")
+        LOGGER.log(self.log_level, f"[pyot.stores.djangocache:DjangoCache#{self.alias}] DELETE {token.value}")
 
     async def contains(self, token: PipelineToken, **kwargs) -> bool:
         item = await sync_to_async(self.data.get)(token.value)
@@ -55,4 +55,4 @@ class DjangoCache(Store):
 
     async def clear(self, **kwargs):
         await sync_to_async(self.data.clear)()
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] CLEAR: Store has been cleared successfully")
+        LOGGER.log(self.log_level, f"[pyot.stores.djangocache:DjangoCache#{self.alias}] Store cleared successfully")

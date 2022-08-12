@@ -2,7 +2,7 @@
 
 Module: `pyot.models.val.status` 
 
-### _class_ Status
+### _class_ `Status`
 
 Type: `PyotCore` 
 
@@ -20,11 +20,8 @@ Attributes:
 * `maintenances` -> `List[pyot.models.val.status.StatusDetailData]` 
 * `incidents` -> `List[pyot.models.val.status.StatusDetailData]` 
 
-Properties: 
-* _property_ `platform` -> `str` 
 
-
-### _class_ StatusContentData
+### _class_ `StatusContentData`
 
 Type: `PyotStatic` 
 
@@ -33,7 +30,7 @@ Attributes:
 * `content` -> `str` 
 
 
-### _class_ StatusDetailData
+### _class_ `StatusDetailData`
 
 Type: `PyotStatic` 
 
@@ -54,7 +51,7 @@ Properties:
 * _property_ `updated_at` -> `datetime.datetime` 
 
 
-### _class_ StatusUpdateData
+### _class_ `StatusUpdateData`
 
 Type: `PyotStatic` 
 

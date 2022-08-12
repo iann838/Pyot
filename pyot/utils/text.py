@@ -2,8 +2,8 @@
 import re
 
 
-def snakecase(attr: str, sep_numbers=False) -> str:
-    '''Convert string to python snakecase.'''
+def snake_case(attr: str, sep_numbers=False) -> str:
+    '''Convert string to python snake_case.'''
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', attr)
     snake_case = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
     if sep_numbers:
@@ -11,8 +11,8 @@ def snakecase(attr: str, sep_numbers=False) -> str:
     return snake_case
 
 
-def camelcase(snake_str: str) -> str:
-    '''Convert string to json camelcase.'''
+def camel_case(snake_str: str) -> str:
+    '''Convert string to json camel_case.'''
     components = snake_str.split('_')
     if len(components) == 1:
         return components[0]

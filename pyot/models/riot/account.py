@@ -17,7 +17,7 @@ class Account(PyotCore):
         self.initialize(locals())
 
     def active_shard(self, game: str):
-        return ActiveShard(puuid=self.puuid, game=game).pipeline(self.metapipeline.name)
+        return ActiveShard(puuid=self.puuid, game=game).using(self.metapipeline.name)
 
 
 class ActiveShard(PyotCore):

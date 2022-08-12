@@ -1,7 +1,6 @@
 from typing import List, Iterator, TYPE_CHECKING, NoReturn
 
 from pyot.conf.model import models
-from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -143,8 +142,8 @@ class DivisionLeague(SummonerLeague):
         self.initialize(locals())
 
     def query(self, page: int = None):
-        '''Query parameters setter.'''
-        self._meta.query = parse_camelcase(locals())
+        '''Set query request parameters.'''
+        super()._place_query(locals())
         return self
 
     @property

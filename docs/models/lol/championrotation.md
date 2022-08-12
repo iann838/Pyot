@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.championrotation` 
 
-### _class_ ChampionRotation
+### _class_ `ChampionRotation`
 
 Type: `PyotCore` 
 
@@ -23,6 +23,5 @@ Properties:
 * _property_ `free_newie_champions` -> `List[ForwardRef(Champion)]` 
 * _property_ `meraki_free_champions` -> `List[ForwardRef(MerakiChampion)]` 
 * _property_ `meraki_free_newie_champions` -> `List[ForwardRef(MerakiChampion)]` 
-* _property_ `platform` -> `str` 
 
 

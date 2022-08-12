@@ -37,7 +37,7 @@ Code 800 is for unidentified status codes that are not in the list, for example:
 * `602 : ("R", [2])`
 * `800 : ("T", [])`
 
-## Example Usage
+## Example
 
 This will override the strategy used for 404 to throw inmediately, 502 to retry 3 times before throwing and 429 to exponentially backoff with a initial backoff of 3 seconds and a max tries of 3 times.
 ```python

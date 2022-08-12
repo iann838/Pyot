@@ -1,7 +1,7 @@
-from logging import Logger as ILogger
+from logging import Logger
 
 
-class Logger(ILogger):
+class LazyLogger(Logger):
     '''Lazy logger which its `log()` method will do nothing if level equals 0'''
 
     def __init__(self, name):

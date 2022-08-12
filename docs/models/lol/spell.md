@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.spell` 
 
-### _class_ Spell
+### _class_ `Spell`
 
 Type: `PyotCore` 
 
@@ -24,11 +24,8 @@ Attributes:
 * `modes` -> `List[str]` 
 * `icon_path` -> `str` 
 
-Properties: 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ Spells
+### _class_ `Spells`
 
 Type: `PyotCore` 
 

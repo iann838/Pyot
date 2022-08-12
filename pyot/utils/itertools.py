@@ -1,5 +1,6 @@
-from typing import Dict, TypeVar, Generic, List, Iterator
-import pickle
+from typing import TypeVar, Generic, List, Iterator
+
+from .copy import fast_copy
 
 
 T = TypeVar("T")
@@ -17,12 +18,7 @@ class FrozenGenerator(Generic[T]):
         self.objects = li
 
     def __iter__(self) -> Iterator[T]:
-        return (pickle.loads(pickle.dumps(obj)) for obj in self.objects)
+        return (fast_copy(obj) for obj in self.objects)
 
 
 frozen_generator = FrozenGenerator
-
-
-def swapped_dict(dic: Dict[K, V]) -> Dict[V, K]:
-    '''Swap keys and values of a dictionary'''
-    return {v: k for k, v in dic.items()}

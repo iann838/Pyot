@@ -3,11 +3,11 @@ import inspect
 
 from typeguard import check_type
 
-from pyot.core.functional import laziable, lazy_property
+from pyot.core.functional import is_laziable, lazy_property
 from pyot.core.objects import PyotCoreBase, PyotLazy, PyotStaticBase
 
-from .exceptions import UntypedAttribute
-from .utils import get_module_locals, get_properties, get_forward_refs
+from .engine_exceptions import UntypedAttribute
+from .engine_utils import get_module_locals, get_properties, get_forward_refs
 
 
 def assert_walkable(o: PyotStaticBase):
@@ -64,7 +64,7 @@ def inject_guards():
             if attr not in self._meta.types:
                 raise UntypedAttribute(self.__class__, attr, val)
 
-            if laziable(val):
+            if is_laziable(val):
                 if attr in self._meta.raws:
                     setattr(self, attr, val)
                     continue

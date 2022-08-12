@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lor.match` 
 
-### _class_ Match
+### _class_ `Match`
 
 Type: `PyotCore` 
 
@@ -19,11 +19,8 @@ Attributes:
 * `metadata` -> `pyot.models.lor.match.MatchMetaData` 
 * `info` -> `pyot.models.lor.match.MatchInfoData` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ MatchHistory
+### _class_ `MatchHistory`
 
 Type: `PyotCore` 
 
@@ -44,10 +41,9 @@ Attributes:
 Properties: 
 * _property_ `account` -> `Account` 
 * _property_ `matches` -> `List[pyot.models.lor.match.Match]` 
-* _property_ `region` -> `str` 
 
 
-### _class_ MatchInfoData
+### _class_ `MatchInfoData`
 
 Type: `PyotStatic` 
 
@@ -63,7 +59,7 @@ Properties:
 * _property_ `start_time` -> `datetime.datetime` 
 
 
-### _class_ MatchMetaData
+### _class_ `MatchMetaData`
 
 Type: `PyotStatic` 
 
@@ -76,7 +72,7 @@ Properties:
 * _property_ `participants` -> `List[ForwardRef(Account)]` 
 
 
-### _class_ MatchPlayerData
+### _class_ `MatchPlayerData`
 
 Type: `PyotStatic` 
 

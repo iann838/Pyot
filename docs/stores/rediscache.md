@@ -5,13 +5,9 @@
 
 This Cache is built on top of Async Python integration of [redis](https://github.com/aio-libs/aioredis-py).
 
-{% hint style='info' %}
-This store is built using aioredis v1.3, it does not support aioredis v2+ since it went through massive rework of all interfaces. A future store called `RedisCacheV2` will be added with support for aioredis v2+.
-{% endhint %}
-
 An extra installation is required: `pip install pyot[redis]`
 
-## _class_ RedisCache
+## _class_ `RedisCache`
 
 Backend: `pyot.stores.rediscache.RedisCache`
 
@@ -26,5 +22,5 @@ Definitions:
     > Database number of Redis.
   * `expirations`: `Dict[str, int | float | timedelta] = None`
   * `log_level`: `int = 0`
-  * `kwargs`: `Dict[str, Any]`
-    > Extra kwargs to be passed to `aioredis.create_redis_pool`.
+  * `**kwargs`
+    > Any extra kwargs provided will passed into `aioredis.Redis`. e.g username and password.

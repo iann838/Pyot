@@ -7,7 +7,7 @@ This Cache is built on top of [diskcache](http://www.grantjenks.com/docs/diskcac
 
 An extra installation is required: `pip install pyot[diskcache]`
 
-## _class_ DiskCache
+## _class_ `DiskCache`
 
 Backend: `pyot.stores.diskcache.DiskCache`
 
@@ -18,5 +18,5 @@ Definitions:
     > Path of the directory used as cache.
   * `expirations`: `Dict[str, int | float | timedelta] = None`
   * `log_level`: `int = 0`
-  * `kwargs`: `Dict[str, Any]`
-    > Extra kwargs to be passed to instantiation of `diskcache.FanoutCache`.
+  * `**kwargs`
+    > Any extra kwargs provided will be passed into `diskcache.FanoutCache`.

@@ -1,15 +1,15 @@
 import asyncio
+import contextlib
 from datetime import datetime, timedelta
-from functools import cached_property
 
-import aiohttp
-
+from ..aiohttp import SafeClientSession
 from ..functools import async_property
 
 
 class ChampionKeysCache:
 
     def __init__(self) -> None:
+        self._is_locked = False
         self.cached_data = {
             "id_by_key": {},
             "id_by_name": {},
@@ -23,20 +23,27 @@ class ChampionKeysCache:
     def __str__(self) -> str:
         return 'ChampionKeysCache()'
 
-    @cached_property
-    def lock(self):
-        return asyncio.Lock()
+    @property
+    @contextlib.asynccontextmanager
+    async def _lock(self):
+        try:
+            while self._is_locked:
+                await asyncio.sleep(0.01)
+            self._is_locked = True
+            yield None
+        finally:
+            self._is_locked = False
 
     @async_property
     async def data(self):
         if datetime.now() - self.last_updated < timedelta(hours=3):
             return self.cached_data
-        async with self.lock:
+        async with self._lock:
             if datetime.now() - self.last_updated < timedelta(hours=3):
                 return self.cached_data
             url = "https://raw.communitydragon.org/pbe/plugins/rcp-be-lol-game-data/global/en_gb/v1/champion-summary.json"
-            async with aiohttp.ClientSession() as session:
-                response = await session.request("GET", url)
+            async with SafeClientSession() as session:
+                response = await session.get(url)
                 if not (response and response.status == 200):
                     raise RuntimeError(f"Failed to pull champion summary ({response.status})")
                 dic = await response.json(encoding="utf-8")

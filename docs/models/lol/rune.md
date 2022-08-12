@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.rune` 
 
-### _class_ Rune
+### _class_ `Rune`
 
 Type: `PyotCore` 
 
@@ -25,12 +25,8 @@ Attributes:
 * `icon_path` -> `str` 
 * `end_of_game_stat_descs` -> `List[str]` 
 
-Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ Runes
+### _class_ `Runes`
 
 Type: `PyotCore` 
 

@@ -19,7 +19,7 @@ def abs_url(link: str, version="latest") -> str:
     return BASE_URL + version + "/plugins/rcp-be-lol-game-data/global/default/" + link
 
 
-def sanitize(string: str) -> str:
+def sanitize_description(string: str) -> str:
     '''Sanitize CDragon descriptions'''
     if string is None: return string
     new_string = ""

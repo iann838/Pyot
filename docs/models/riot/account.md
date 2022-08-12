@@ -2,7 +2,7 @@
 
 Module: `pyot.models.riot.account` 
 
-### _class_ Account
+### _class_ `Account`
 
 Type: `PyotCore` 
 
@@ -26,11 +26,8 @@ Attributes:
 * `game_name` -> `str` 
 * `tag_line` -> `str` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ ActiveShard
+### _class_ `ActiveShard`
 
 Type: `PyotCore` 
 
@@ -50,6 +47,5 @@ Attributes:
 
 Properties: 
 * _property_ `account` -> `None` 
-* _property_ `region` -> `str` 
 
 

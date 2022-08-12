@@ -1,16 +1,16 @@
+import functools
 from typing import Awaitable, Callable, TypeVar
 from functools import wraps
+import inspect
 import asyncio
-
-from .runners import thread_run
 
 
 R = TypeVar("R")
 
 
 def async_to_sync(func: Callable[..., Awaitable[R]]) -> Callable[..., R]:
-    '''Wraps `asyncio.run` on an async function converting to sync callable. Can be used as decorator @async_to_sync'''
-    if not asyncio.iscoroutinefunction(func):
+    '''Wraps `asyncio.run` on an async function converting it into a blocking function. Can be used as decorator @async_to_sync'''
+    if not inspect.iscoroutinefunction(func):
         raise TypeError(f"{func} is not a coroutine function")
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -19,8 +19,9 @@ def async_to_sync(func: Callable[..., Awaitable[R]]) -> Callable[..., R]:
 
 
 def sync_to_async(func: Callable[..., R]) -> Callable[..., Awaitable[R]]:
-    '''Wraps `thread_run` on a blocking function converting to async by running in a thread. Can be used as decorator @sync_to_async'''
+    '''Wraps `asyncio.get_event_loop().run_in_executor` on a blocking function converting it into a Future. Can be used as decorator @sync_to_async'''
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        return await thread_run(func, *args, **kwargs)
+        new_func = functools.partial(func, *args, **kwargs)
+        return await asyncio.get_event_loop().run_in_executor(None, new_func)
     return wrapper

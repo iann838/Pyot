@@ -2,7 +2,7 @@
 
 Module: `pyot.models.tft.champion` 
 
-### _class_ Champion
+### _class_ `Champion`
 
 Type: `PyotCore` 
 
@@ -31,11 +31,10 @@ Attributes:
 * `icon_path` -> `str` 
 
 Properties: 
-* _lazy_property_ `icon_abspath` -> `str` 
 * _property_ `traits` -> `List[ForwardRef(Trait)]` 
 
 
-### _class_ Champions
+### _class_ `Champions`
 
 Type: `PyotCore` 
 
@@ -55,7 +54,7 @@ Attributes:
 * `champions` -> `List[pyot.models.tft.champion.Champion]` 
 
 
-### _class_ ChampionAbilityData
+### _class_ `ChampionAbilityData`
 
 Type: `PyotStatic` 
 
@@ -65,12 +64,8 @@ Attributes:
 * `icon_path` -> `str` 
 * `variables` -> `List[pyot.models.tft.champion.ChampionAbilityVariableData]` 
 
-Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ ChampionAbilityVariableData
+### _class_ `ChampionAbilityVariableData`
 
 Type: `PyotStatic` 
 
@@ -79,7 +74,7 @@ Attributes:
 * `value` -> `List[float]` 
 
 
-### _class_ ChampionStatData
+### _class_ `ChampionStatData`
 
 Type: `PyotStatic` 
 

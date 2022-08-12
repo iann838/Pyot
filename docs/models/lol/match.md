@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.match` 
 
-### _class_ Match
+### _class_ `Match`
 
 Type: `PyotCore` 
 
@@ -28,11 +28,8 @@ Attributes:
 * `info` -> `pyot.models.lol.match.MatchInfoData` 
 * `id` -> `str` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ MatchHistory
+### _class_ `MatchHistory`
 
 Type: `PyotCore` 
 
@@ -46,7 +43,7 @@ Definitions:
 Endpoints: 
 * `match_v5_matches`: `['puuid']` 
 
-Queries: 
+Query Params: 
 * `start`: `int = 0` 
 * `count`: `int = 20` 
 * `queue`: `int = None` 
@@ -61,11 +58,10 @@ Attributes:
 Properties: 
 * _property_ `match_timelines` -> `List[Tuple[pyot.models.lol.match.Match, pyot.models.lol.match.Timeline]]` 
 * _property_ `matches` -> `List[pyot.models.lol.match.Match]` 
-* _property_ `region` -> `str` 
 * _property_ `timelines` -> `List[pyot.models.lol.match.Timeline]` 
 
 
-### _class_ Timeline
+### _class_ `Timeline`
 
 Type: `PyotCore` 
 
@@ -82,11 +78,8 @@ Attributes:
 * `info` -> `pyot.models.lol.match.TimelineInfoData` 
 * `id` -> `str` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ MatchBanData
+### _class_ `MatchBanData`
 
 Type: `PyotStatic` 
 
@@ -99,7 +92,7 @@ Properties:
 * _property_ `meraki_champion` -> `MerakiChampion` 
 
 
-### _class_ MatchInfoData
+### _class_ `MatchInfoData`
 
 Type: `PyotStatic` 
 
@@ -129,7 +122,7 @@ Properties:
 * _property_ `start` -> `datetime.datetime` 
 
 
-### _class_ MatchMetaData
+### _class_ `MatchMetaData`
 
 Type: `PyotStatic` 
 
@@ -142,7 +135,7 @@ Properties:
 * _property_ `participants` -> `Summoner` 
 
 
-### _class_ MatchObjectiveData
+### _class_ `MatchObjectiveData`
 
 Type: `PyotStatic` 
 
@@ -155,7 +148,7 @@ Attributes:
 * `tower` -> `pyot.models.lol.match.MatchObjectiveDetailData` 
 
 
-### _class_ MatchObjectiveDetailData
+### _class_ `MatchObjectiveDetailData`
 
 Type: `PyotStatic` 
 
@@ -164,7 +157,7 @@ Attributes:
 * `kills` -> `int` 
 
 
-### _class_ MatchParticipantData
+### _class_ `MatchParticipantData`
 
 Type: `PyotStatic` 
 
@@ -172,6 +165,7 @@ Attributes:
 * `id` -> `int` 
 * `assists` -> `int` 
 * `baron_kills` -> `int` 
+* `basic_pings` -> `int` 
 * `bounty_level` -> `int` 
 * `champ_experience` -> `int` 
 * `champ_level` -> `int` 
@@ -280,17 +274,11 @@ Attributes:
 * `win` -> `bool` 
 
 Properties: 
-* _lazy_property_ `item_ids` -> `List[int]` 
 * _property_ `items` -> `List[ForwardRef(Item)]` 
 * _property_ `longest_time_spent_living` -> `datetime.timedelta` 
 * _property_ `meraki_items` -> `List[ForwardRef(MerakiItem)]` 
-* _lazy_property_ `rune_ids` -> `List[int]` 
-* _lazy_property_ `rune_primary_style` -> `int` 
-* _lazy_property_ `rune_sub_style` -> `int` 
 * _property_ `runes` -> `List[ForwardRef(Rune)]` 
-* _lazy_property_ `spell_ids` -> `List[int]` 
 * _property_ `spells` -> `List[ForwardRef(Spell)]` 
-* _lazy_property_ `stat_rune_ids` -> `List[int]` 
 * _property_ `summoner` -> `Summoner` 
 * _property_ `time_ccing_others` -> `datetime.timedelta` 
 * _property_ `time_played` -> `datetime.timedelta` 
@@ -298,7 +286,7 @@ Properties:
 * _property_ `total_time_spent_dead` -> `datetime.timedelta` 
 
 
-### _class_ MatchPerkData
+### _class_ `MatchPerkData`
 
 Type: `PyotStatic` 
 
@@ -307,7 +295,7 @@ Attributes:
 * `styles` -> `List[pyot.models.lol.match.MatchPerkStyleData]` 
 
 
-### _class_ MatchPerkSelectionData
+### _class_ `MatchPerkSelectionData`
 
 Type: `PyotStatic` 
 
@@ -318,7 +306,7 @@ Attributes:
 * `var3` -> `int` 
 
 
-### _class_ MatchPerkStyleData
+### _class_ `MatchPerkStyleData`
 
 Type: `PyotStatic` 
 
@@ -328,7 +316,7 @@ Attributes:
 * `style` -> `int` 
 
 
-### _class_ MatchStatPerkData
+### _class_ `MatchStatPerkData`
 
 Type: `PyotStatic` 
 
@@ -338,7 +326,7 @@ Attributes:
 * `defense` -> `int` 
 
 
-### _class_ MatchTeamData
+### _class_ `MatchTeamData`
 
 Type: `PyotStatic` 
 
@@ -352,7 +340,7 @@ Properties:
 * _property_ `participants` -> `List[ForwardRef(MatchParticipantData)]` 
 
 
-### _class_ TimelineChampionStatData
+### _class_ `TimelineChampionStatData`
 
 Type: `PyotStatic` 
 
@@ -384,7 +372,7 @@ Attributes:
 * `spell_vamp` -> `int` 
 
 
-### _class_ TimelineDamageStatData
+### _class_ `TimelineDamageStatData`
 
 Type: `PyotStatic` 
 
@@ -403,7 +391,7 @@ Attributes:
 * `true_damage_taken` -> `int` 
 
 
-### _class_ TimelineEventData
+### _class_ `TimelineEventData`
 
 Type: `PyotStatic` 
 
@@ -460,7 +448,7 @@ Properties:
 * _property_ `time` -> `datetime.timedelta` 
 
 
-### _class_ TimelineFrameData
+### _class_ `TimelineFrameData`
 
 Type: `PyotStatic` 
 
@@ -473,7 +461,7 @@ Properties:
 * _property_ `time` -> `datetime.timedelta` 
 
 
-### _class_ TimelineInfoData
+### _class_ `TimelineInfoData`
 
 Type: `PyotStatic` 
 
@@ -487,7 +475,7 @@ Properties:
 * _property_ `frame_interval` -> `datetime.timedelta` 
 
 
-### _class_ TimelineParticipantData
+### _class_ `TimelineParticipantData`
 
 Type: `PyotStatic` 
 
@@ -499,7 +487,7 @@ Properties:
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ TimelineParticipantFrameData
+### _class_ `TimelineParticipantFrameData`
 
 Type: `PyotStatic` 
 
@@ -521,7 +509,7 @@ Properties:
 * _property_ `time_enemy_spent_controlled` -> `datetime.timedelta` 
 
 
-### _class_ TimelinePositionData
+### _class_ `TimelinePositionData`
 
 Type: `PyotStatic` 
 
@@ -530,7 +518,7 @@ Attributes:
 * `y` -> `int` 
 
 
-### _class_ TimelineVictimDamageData
+### _class_ `TimelineVictimDamageData`
 
 Type: `PyotStatic` 
 

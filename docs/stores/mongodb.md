@@ -9,7 +9,7 @@ DB level sharding is possible by following the Mongo's docs for sharding and pas
 
 An extra installation is required: `pip install pyot[mongodb]`
 
-## _class_ MongoDB
+## _class_ `MongoDB`
 
 Backend: `pyot.stores.mongodb.MongoDB`
 
@@ -24,5 +24,5 @@ Definitions:
     > Port of the Mongo DB instance.
   * `expirations`: `Dict[str, int | float | timedelta] = None`
   * `log_level`: `int = 0`
-  * `kwargs`: `Dict[str, Any]`
-    > Extra kwargs to be passed to instantiation of `motor.motor_asyncio.AsyncIOMotorClient`.
+  * `**kwargs`
+    > Any extra kwargs provided will passed into `motor.motor_asyncio.AsyncIOMotorClient`. e.g. authentication params.

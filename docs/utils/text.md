@@ -2,14 +2,14 @@
 
 Module: `pyot.utils.text` 
 
-### _function_ `camelcase` -> `str` 
+### _function_ `camel_case` -> `str` 
 * `snake_str`: `str` 
-> Convert string to json camelcase. 
+> Convert string to json camel_case. 
 
 
-### _function_ `snakecase` -> `str` 
+### _function_ `snake_case` -> `str` 
 * `attr`: `str` 
 * `sep_numbers`: `bool = False` 
-> Convert string to python snakecase. 
+> Convert string to python snake_case. 
 
 

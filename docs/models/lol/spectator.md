@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.spectator` 
 
-### _class_ CurrentGame
+### _class_ `CurrentGame`
 
 Type: `PyotCore` 
 
@@ -33,14 +33,12 @@ Attributes:
 Properties: 
 * _property_ `banned_champions` -> `List[pyot.models.lol.spectator.CurrentGameBansData]` 
 * _property_ `blue_team` -> `pyot.models.lol.spectator.CurrentGameTeamData` 
-* _property_ `length` -> `datetime.timedelta` 
 * _property_ `participants` -> `List[pyot.models.lol.spectator.CurrentGameParticipantData]` 
 * _property_ `red_team` -> `pyot.models.lol.spectator.CurrentGameTeamData` 
-* _property_ `start_time` -> `datetime.datetime` 
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ FeaturedGames
+### _class_ `FeaturedGames`
 
 Type: `PyotCore` 
 
@@ -58,11 +56,10 @@ Attributes:
 * `refresh_interval_secs` -> `int` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `refresh_interval` -> `datetime.timedelta` 
 
 
-### _class_ CurrentGameBansData
+### _class_ `CurrentGameBansData`
 
 Type: `PyotStatic` 
 
@@ -76,7 +73,7 @@ Properties:
 * _property_ `meraki_champion` -> `MerakiChampion` 
 
 
-### _class_ CurrentGameParticipantCustomizationData
+### _class_ `CurrentGameParticipantCustomizationData`
 
 Type: `PyotStatic` 
 
@@ -85,7 +82,7 @@ Attributes:
 * `content` -> `str` 
 
 
-### _class_ CurrentGameParticipantData
+### _class_ `CurrentGameParticipantData`
 
 Type: `PyotStatic` 
 
@@ -112,7 +109,7 @@ Properties:
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ CurrentGameTeamData
+### _class_ `CurrentGameTeamData`
 
 Type: `PyotStatic` 
 
@@ -122,7 +119,7 @@ Attributes:
 * `participants` -> `List[pyot.models.lol.spectator.CurrentGameParticipantData]` 
 
 
-### _class_ FeaturedGameData
+### _class_ `FeaturedGameData`
 
 Type: `PyotStatic` 
 
@@ -147,7 +144,7 @@ Properties:
 * _property_ `start_time` -> `datetime.datetime` 
 
 
-### _class_ FeaturedGameParticipantData
+### _class_ `FeaturedGameParticipantData`
 
 Type: `PyotStatic` 
 
@@ -168,7 +165,7 @@ Properties:
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ FeaturedGameTeamData
+### _class_ `FeaturedGameTeamData`
 
 Type: `PyotStatic` 
 

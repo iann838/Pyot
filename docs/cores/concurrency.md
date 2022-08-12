@@ -14,7 +14,7 @@ Worker queue for scheduling coroutines concurrently.
 This object is only accessible as a context manager with the `async with` syntax for safeguarding session closing and workers joining.
 {% endhint %}
 
-### _class_ Queue
+### _class_ `Queue`
 
 Definitions:
 * `__init__` -> `None`
@@ -55,7 +55,8 @@ Methods:
 You can use the same queue to `join()` as many time as you want, it will clear previous collected responses, this creates a nice way to do everything in a single Queue. Method `join()` will be automatically called before exiting the `async with` block, it is not needed to call explicitly unless the content of it is needed.
 {% endhint %}
 
-### Example Usage
+## Example
+
 ```python
 from pyot.models import lol
 from pyot.core.queue import Queue

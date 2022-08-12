@@ -7,7 +7,7 @@ from pyot.pipeline.core import Pipeline
 from pyot.pipeline.token import PipelineToken
 from pyot.utils.copy import fast_copy
 
-from .functional import lazy_property, laziable, parse_camelcase
+from .functional import lazy_property, is_laziable, convert_keys_camel_case
 
 
 class PyotLazy:
@@ -253,7 +253,7 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                 attr = self.qualkey(key)
                 mapping[key] = attr
 
-            if laziable(val):
+            if is_laziable(val):
                 if attr in self._meta.raws:
                     setattr(self, attr, val)
                     continue
@@ -311,12 +311,12 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                 pass
         return dic
 
-    def dict(self, deepcopy=False, lazy_props=False, recursive=False):
+    def dict(self, force_copy=False, lazy_props=False, recursive=False):
         if lazy_props:
             for prop in self._meta.lazy_props:
                 self.load_lazy_properties(self, prop)
         dic = self.rdict() if recursive else self._meta.data
-        return fast_copy(dic) if deepcopy else dic.copy()
+        return fast_copy(dic) if force_copy else dic.copy()
 
 
 class PyotCoreBase(PyotStaticBase):
@@ -331,7 +331,6 @@ class PyotCoreBase(PyotStaticBase):
         arg_names: Set[str]
         server_type: str
         server_type_names = {"platform", "region"}
-        allow_query: bool = False
         rules: Mapping[str, List[str]] = {}
         raw_data: Any
 
@@ -345,14 +344,15 @@ class PyotCoreBase(PyotStaticBase):
         self._meta.data = {}
         self._meta.body = {}
 
-        kwargs.pop("self")
+        kwargs.pop("self", None)
+        kwargs.pop("__class__", None)
         for name, val in kwargs.items():
             if val is not None:
                 self._meta.data[name] = val
                 setattr(self, name, val)
         return self
 
-    def match_rule(self):
+    def _match_rule(self):
         if len(self._meta.rules) == 0:
             raise TypeError("This Pyot object is static")
         for key, attr in self._meta.rules.items():
@@ -372,7 +372,7 @@ class PyotCoreBase(PyotStaticBase):
                 return self
         raise TypeError("Incomplete values for pipeline token creation")
 
-    def match_server(self):
+    def _match_server(self):
         server_type = self._meta.server_type
         if server_type:
             server: str = getattr(self, server_type)
@@ -381,82 +381,66 @@ class PyotCoreBase(PyotStaticBase):
             self._meta.server = None
         return self
 
-    def pre_request(self, pipeline: str = None):
-        if pipeline:
-            self.pipeline(pipeline)
+    def _place_query(self, kwargs: Dict):
+        '''Parse and place request query parameters from dict.'''
+        kwargs.pop("self", None)
+        kwargs.pop("__class__", None)
+        self._meta.query = convert_keys_camel_case(kwargs)
 
-    def post_request(self, data, deepcopy: bool):
+    def _place_body(self, kwargs: Dict):
+        '''Parse and place request body parameters from dict.'''
+        kwargs.pop("self", None)
+        kwargs.pop("__class__", None)
+        self._meta.body = convert_keys_camel_case(kwargs)
+
+    def _after_request(self, data: Any, force_copy: bool):
         data = self.filter(data)
-        self._meta.raw_data = fast_copy(data) if deepcopy else data
+        self._meta.raw_data = fast_copy(data) if force_copy else data
         self._meta.data = self.transform(data)
         self.fill()
+
+    async def setup(self):
+        """Coroutine. Set up the object to make request, this comes before `validate()`."""
 
     async def token(self) -> PipelineToken:
         '''Coroutine. Create a pipeline token that identifies this object (its parameters).'''
         await self.setup()
-        self.match_rule()
-        self.match_server()
-        self.clean()
+        self._match_rule()
+        self._match_server()
+        self.validate()
         try:
             return PipelineToken(self._meta.pipeline.model, self._meta.server, self._meta.key, self._meta.load, self._meta.query)
         except AttributeError as e:
             raise ValueError("Token creation failed, please ensure a pipeline is activated or provided") from e
 
-    async def get(self, pipeline: str = None, deepcopy: bool = False):
+    async def get(self, force_copy: bool = False):
         '''Coroutine. Make a GET request to the pipeline.'''
-        self.pre_request(pipeline)
         data = await self._meta.pipeline.get(await self.token())
-        self.post_request(data, deepcopy)
+        self._after_request(data, force_copy)
         return self
 
-    async def post(self, pipeline: str = None, deepcopy: bool = False):
+    async def post(self, force_copy: bool = False):
         '''Coroutine. Make a POST request to the pipeline.'''
-        self.pre_request(pipeline)
         data = await self._meta.pipeline.post(await self.token(), self._meta.body)
-        self.post_request(data, deepcopy)
+        self._after_request(data, force_copy)
         return self
 
-    async def put(self, pipeline: str = None, deepcopy: bool = False):
+    async def put(self, force_copy: bool = False):
         '''Coroutine. Make a PUT request to the pipeline.'''
-        self.pre_request(pipeline)
         data = await self._meta.pipeline.put(await self.token(), self._meta.body)
-        self.post_request(data, deepcopy)
+        self._after_request(data, force_copy)
         return self
 
-    def pipeline(self, name: str = None):
+    def using(self, pipeline_name: str):
+        '''Set the pipeline used for request.'''
         try:
-            self._meta.pipeline = pipelines[name]
+            self._meta.pipeline = pipelines[pipeline_name]
         except KeyError as e:
-            raise ValueError(f"Pipeline '{name}' does not exist, inactive or dead") from e
+            raise ValueError(f"Pipeline '{pipeline_name}' does not exist, inactive or dead") from e
         return self
 
-    def query(self, **kwargs):
-        '''Query parameters setter.'''
-        self._meta.query = parse_camelcase(locals())
-        return self
-
-    def body(self, **kwargs):
-        '''Body parameters setter.'''
-        self._meta.body = parse_camelcase(locals())
-        return self
-
-    def raw(self):
-        """Return the raw response of the request, only available for Core objects"""
-        return self._meta.raw_data
-
-    @classmethod
-    def load(cls, raw_data: Any):
-        o = cls()
-        o._meta.raw_data = raw_data
-        o._meta.data = o.transform(raw_data)
-        o.fill()
-        return o
-
-    async def setup(self):
-        """Coroutine. Set up the object to make request, this comes before `clean()`."""
-
-    def clean(self):
-        """Clean up the object to make request, this comes right before the request."""
+    def validate(self):
+        """Validate the object to make request, this comes right before the request."""
 
     def filter(self, data):
         """Filter out the requested data from the response, this comes right after the request and before 'transform()'."""
@@ -465,6 +449,18 @@ class PyotCoreBase(PyotStaticBase):
     def transform(self, data) -> Dict:
         """Transform the data into a pyot compatible structure non-destructively, this comes after `filter()`."""
         return data
+
+    def raw(self):
+        """Return the raw response of the request, only available for Core objects"""
+        return self._meta.raw_data
+
+    @classmethod
+    def load(cls, raw: Any):
+        o = cls()
+        o._meta.raw_data = raw
+        o._meta.data = o.transform(raw)
+        o.fill()
+        return o
 
 
 class PyotUtilBase: pass

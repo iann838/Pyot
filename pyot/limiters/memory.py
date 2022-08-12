@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 
 from aiohttp import ClientResponse
 
-from pyot.utils.locks import SealLock
+from pyot.utils.threading import AsyncLock
 
 from .base import BaseLimiter, LimiterToken
 
@@ -32,11 +32,11 @@ class MemoryLimiterDict(dict):
 class MemoryLimiter(BaseLimiter):
 
     def __init__(self, game: str, api_key: str, limiting_share: int = 1):
+        self._lock = AsyncLock()
         self.game = game
         self.api_key = api_key
         self.api_hash = api_key[-5:]
         self.limiting_share = limiting_share
-        self.lock = SealLock()
         self.entries = MemoryLimiterDict()
 
     async def get_token(self, server: str, method: str):
@@ -44,7 +44,7 @@ class MemoryLimiter(BaseLimiter):
         allowed = []
         pinging_list = []
         epoch = 0
-        async with self.lock:
+        async with self._lock:
             app_prefix = f'{self.api_hash}:{self.game}:{server}'
             method_prefix = f'{self.api_hash}:{self.game}:{server}:{method}'
             now = epoch = time()
@@ -80,14 +80,12 @@ class MemoryLimiter(BaseLimiter):
                     self.entries.set(f'{prefix_i}:pingbegintime', now)
                     pinging_list.append((prefix_i, type, i))
                     continue
-                # print(called, maxcall, now, nextstart, qualified)
                 if (rollover or 0) + called >= maxcall:
                     sleep = max(sleep, qualified)
                     continue
                 if now >= blackout:
                     sleep = max(sleep, qualified)
                     continue
-                # print(pingtime)
                 allowed.append(prefix_i)
             if sleep == 0:
                 for allow in allowed:
@@ -105,13 +103,12 @@ class MemoryLimiter(BaseLimiter):
             await self.ping_fail(token)
             return
         if token.pinging:
-            async with self.lock:
+            async with self._lock:
                 now = time()
                 for (prefix_i, type, i) in token.pinging:
                     if i >= len(header[f'{type}_limit']):
                         self.entries.set(f'{prefix_i}:exists', 0)
                     else:
-                        # print(prefix_i, header[f'{type}_limit'][i][0], header[f'{type}_limit'][i][1], header[f'{type}_count'][i][0])
                         self.entries.set(f'{prefix_i}:exists', 1)
                         self.entries.set(f'{prefix_i}:maxcall', header[f'{type}_limit'][i][0])
                         self.entries.set(f'{prefix_i}:timespan', header[f'{type}_limit'][i][1])
@@ -123,7 +120,7 @@ class MemoryLimiter(BaseLimiter):
                         self.entries.set(f'{prefix_i}:pingtime', now - begintime)
                         self.entries.set(f'{prefix_i}:pinging', 0)
         else:
-            async with self.lock:
+            async with self._lock:
                 for prefix_i in token.allowed:
                     begintime = self.entries.get(f'{prefix_i}:begintime')
                     if token.epoch >= begintime:
@@ -131,14 +128,14 @@ class MemoryLimiter(BaseLimiter):
         return header
 
     async def ping_fail(self, token: LimiterToken):
-        async with self.lock:
+        async with self._lock:
             for (prefix_i, _, _) in token.pinging:
                 self.entries.set(f'{prefix_i}:pinging', 0)
 
     async def freeze_rates(self, token: LimiterToken, response: ClientResponse) -> Dict[str, Union[str, int]]:
         header = self.parse_429(response)
         now = time()
-        async with self.lock:
+        async with self._lock:
             for (prefix_i, type, _) in token.pinging:
                 if type != header["type"]:
                     continue

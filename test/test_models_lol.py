@@ -4,7 +4,7 @@ from pyot.models import lol
 from pyot.utils.sync import async_to_sync
 from pyot.utils.lol.routing import platform_to_region
 
-from .core import assert_types, assert_walkable
+from .engine_core import assert_types, assert_walkable
 
 
 @async_to_sync
@@ -180,5 +180,8 @@ async def test_status():
 @async_to_sync
 async def test_summoner():
     o = await lol.Summoner(name="Morimorph").get()
+    assert_walkable(o)
+    assert_types(o)
+    o = await lol.Summoner(puuid=o.puuid).get()
     assert_walkable(o)
     assert_types(o)

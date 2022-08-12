@@ -2,7 +2,7 @@
 from pyot.models import val
 from pyot.utils.sync import async_to_sync
 
-from .core import assert_types, assert_walkable
+from .engine_core import assert_types, assert_walkable
 
 
 @async_to_sync

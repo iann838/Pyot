@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.summoner` 
 
-### _class_ Summoner
+### _class_ `Summoner`
 
 Type: `PyotCore` 
 
@@ -36,7 +36,6 @@ Properties:
 * _property_ `current_game` -> `CurrentGame` 
 * _property_ `league_entries` -> `SummonerLeague` 
 * _property_ `match_history` -> `MatchHistory` 
-* _property_ `platform` -> `str` 
 * _property_ `profile_icon` -> `ProfileIcon` 
 * _property_ `revision_date` -> `datetime.datetime` 
 * _property_ `third_party_code` -> `ThirdPartyCode` 

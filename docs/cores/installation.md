@@ -9,7 +9,7 @@ Get the latest version of Python at <https://www.python.org/downloads/> or with 
 Installing an official release with pip:
 
 ```shell
-pip install pyot
+pip install pyot -U
 ```
 
 ## Github

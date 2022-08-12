@@ -8,7 +8,7 @@ from pyot.conf.pipeline import pipelines
 lol_pipeline = pipelines["lol"]
 ```
 
-### _class_ Pipeline
+### _class_ `Pipeline`
 
 Definitions:
 
@@ -31,7 +31,7 @@ Attributes:
 * `model`: `str`
 * `name`: `str`
 * `stores`: `List[StoreObject]`
-* `sessions`: `LoopSensitiveManager[aiohttp.ClientSession]`
+* `sessions`: `ResourceTemplate[aiohttp.ClientSession]`
 
 Methods:
 
@@ -73,7 +73,7 @@ Methods:
   - `token`: `PipelineToken`
     > Token identifying the data, created by `token()` on Pyot Core objects.
 
-## Example Usage
+## Example
 
 ```python
 from pyot.conf.pipeline import pipelines

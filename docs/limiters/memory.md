@@ -13,11 +13,11 @@ Cons:
 - Rate limiter state is lost when the process is stopped or restarted.
 
 
-## _class_ MemoryLimiter
+## _class_ `MemoryLimiter`
 
 Backend: `pyot.limiters.memory.MemoryLimiter`
 
 Definitions:
 
 * `__init__`
-  * `limiting_share`: `int = 1`
+  * `limiting_share`: `float = 1`

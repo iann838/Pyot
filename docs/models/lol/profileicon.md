@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.profileicon` 
 
-### _class_ ProfileIcon
+### _class_ `ProfileIcon`
 
 Type: `PyotCore` 
 
@@ -19,11 +19,8 @@ Attributes:
 * `id` -> `int` 
 * `icon_path` -> `str` 
 
-Properties: 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ ProfileIcons
+### _class_ `ProfileIcons`
 
 Type: `PyotCore` 
 

@@ -5,7 +5,7 @@
 
 This Cache doesn't expire data after it is _expired_. To prevent memory overflow, a cull system is in place. When the amount of data reaches a limit, it calls the `expire()` coroutine on its own. If the amount of data is still higher than `MAX_ENTRIES` * (1 - 1/`CULL_FRECUENCY`), it deletes items until its less than the limit. Deletion prioritizes least recently used data.
 
-## _class_ Omnistone
+## _class_ `Omnistone`
 
 Backend: `pyot.stores.omnistone.Omnistone`
 

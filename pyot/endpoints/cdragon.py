@@ -1,6 +1,7 @@
 
 from typing import Dict
 from pyot.pipeline.token import PipelineToken
+
 from .base import BaseEndpoint
 
 

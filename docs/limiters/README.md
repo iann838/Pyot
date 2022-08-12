@@ -14,7 +14,7 @@ There are a few configurable values that exists across multiple rate limiters, t
 * `limiting_share`: `float = 1`
   > Value from 0 to 1. Rate limiter will only allow requests up to `bucket_max * limiting_share` (e.g. 0.7 will result in only using 70% of the limit).
 
-## Example config
+## Example
 
 ```python
     # ... Other stores

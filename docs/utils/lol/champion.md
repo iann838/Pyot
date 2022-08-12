@@ -2,7 +2,7 @@
 
 Module: `pyot.utils.lol.champion` 
 
-### _class_ ChampionKeysCache
+### _class_ `ChampionKeysCache`
 
 Definitions: 
 * `__init__` -> `None` 

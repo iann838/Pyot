@@ -14,7 +14,7 @@ By configuring this argument, it overrides the default endpoints expirations.
 
 All expirations defaults to `0` (No-Cache). Except for static data sources (e.g. cdragon, meraki, ddragon, etc.) which defaults to `timedelta(minutes=20)` (20 minutes) due to its frequency of data changes and helping to decrease traffic load.
 
-## Example Usage
+## Example
 
 This will override the `summoner_v4_by_name` endpoint to cache 2 minutes, and `league_v4_challenger_league` to cache for 10 minutes, and leaving the rest of the default expirations untouched.
 ```python

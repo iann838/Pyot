@@ -11,19 +11,19 @@ Module: `pyot.utils.tft.cdragon`
 > Return the CDragon url for the given tft asset url 
 
 
-### _function_ `join_set_data` -> `None` 
+### _function_ `merge_set_data` -> `None` 
 * `data`: `Dict` 
 * `set`: `int` 
 * `collection_key`: `str` 
 
 
-### _function_ `sanitize_champion` -> `str` 
+### _function_ `sanitize_champion_description` -> `str` 
 * `string`: `str` 
 * `list_of_obj`: `list` 
 > Sanitize CDragon tft champion descriptions 
 
 
-### _function_ `sanitize_item` -> `str` 
+### _function_ `sanitize_item_description` -> `str` 
 * `string`: `str` 
 * `obj`: `dict` 
 > Sanitize CDragon tft item descriptions 

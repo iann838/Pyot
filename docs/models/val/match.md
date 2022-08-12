@@ -2,7 +2,7 @@
 
 Module: `pyot.models.val.match` 
 
-### _class_ Match
+### _class_ `Match`
 
 Type: `PyotCore` 
 
@@ -26,11 +26,10 @@ Attributes:
 * `queue_id` -> `str` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `start_time` -> `datetime.datetime` 
 
 
-### _class_ MatchHistory
+### _class_ `MatchHistory`
 
 Type: `PyotCore` 
 
@@ -50,10 +49,9 @@ Attributes:
 
 Properties: 
 * _property_ `account` -> `Account` 
-* _property_ `platform` -> `str` 
 
 
-### _class_ RecentMatches
+### _class_ `RecentMatches`
 
 Type: `PyotCore` 
 
@@ -74,10 +72,9 @@ Attributes:
 Properties: 
 * _property_ `current_time` -> `datetime.datetime` 
 * _property_ `matches` -> `List[pyot.models.val.match.Match]` 
-* _property_ `platform` -> `str` 
 
 
-### _class_ MatchCoachData
+### _class_ `MatchCoachData`
 
 Type: `PyotStatic` 
 
@@ -86,13 +83,13 @@ Attributes:
 * `team_id` -> `str` 
 
 
-### _class_ MatchInfoData
+### _class_ `MatchInfoData`
 
 Type: `PyotStatic` 
 
 Attributes: 
 * `id` -> `str` 
-* `map_id` -> `str` 
+* `map_url` -> `str` 
 * `start_millis` -> `int` 
 * `length_millis` -> `int` 
 * `provisioning_flow_id` -> `str` 
@@ -109,7 +106,7 @@ Properties:
 * _property_ `start` -> `datetime.datetime` 
 
 
-### _class_ MatchLocationData
+### _class_ `MatchLocationData`
 
 Type: `PyotStatic` 
 
@@ -118,7 +115,7 @@ Attributes:
 * `y` -> `int` 
 
 
-### _class_ MatchPlayerAbilityCastData
+### _class_ `MatchPlayerAbilityCastData`
 
 Type: `PyotStatic` 
 
@@ -129,7 +126,7 @@ Attributes:
 * `ultimate_casts` -> `int` 
 
 
-### _class_ MatchPlayerAbilityData
+### _class_ `MatchPlayerAbilityData`
 
 Type: `PyotStatic` 
 
@@ -140,7 +137,7 @@ Attributes:
 * `ultimate_effects` -> `int` 
 
 
-### _class_ MatchPlayerDamageData
+### _class_ `MatchPlayerDamageData`
 
 Type: `PyotStatic` 
 
@@ -152,7 +149,7 @@ Attributes:
 * `headshots` -> `int` 
 
 
-### _class_ MatchPlayerData
+### _class_ `MatchPlayerData`
 
 Type: `PyotStatic` 
 
@@ -165,26 +162,26 @@ Attributes:
 * `character_id` -> `str` 
 * `stats` -> `pyot.models.val.match.MatchPlayerStatData` 
 * `competitive_tier` -> `int` 
-* `player_card` -> `str` 
-* `player_title` -> `str` 
+* `player_card_id` -> `str` 
+* `player_title_id` -> `str` 
 
 Properties: 
 * _property_ `account` -> `Account` 
 
 
-### _class_ MatchPlayerEconomyData
+### _class_ `MatchPlayerEconomyData`
 
 Type: `PyotStatic` 
 
 Attributes: 
 * `loadout_value` -> `int` 
-* `weapon` -> `str` 
-* `armor` -> `str` 
+* `weapon_id` -> `str` 
+* `armor_id` -> `str` 
 * `remaining` -> `int` 
 * `spent` -> `int` 
 
 
-### _class_ MatchPlayerFinishingDamageData
+### _class_ `MatchPlayerFinishingDamageData`
 
 Type: `PyotStatic` 
 
@@ -194,7 +191,7 @@ Attributes:
 * `is_secondary_fire_mode` -> `bool` 
 
 
-### _class_ MatchPlayerKillData
+### _class_ `MatchPlayerKillData`
 
 Type: `PyotStatic` 
 
@@ -216,7 +213,7 @@ Properties:
 * _property_ `victim` -> `Account` 
 
 
-### _class_ MatchPlayerLocationData
+### _class_ `MatchPlayerLocationData`
 
 Type: `PyotStatic` 
 
@@ -226,7 +223,7 @@ Attributes:
 * `location` -> `pyot.models.val.match.MatchLocationData` 
 
 
-### _class_ MatchPlayerRoundStatData
+### _class_ `MatchPlayerRoundStatData`
 
 Type: `PyotStatic` 
 
@@ -239,7 +236,7 @@ Attributes:
 * `ability` -> `pyot.models.val.match.MatchPlayerAbilityData` 
 
 
-### _class_ MatchPlayerStatData
+### _class_ `MatchPlayerStatData`
 
 Type: `PyotStatic` 
 
@@ -256,7 +253,7 @@ Properties:
 * _property_ `playtime` -> `datetime.timedelta` 
 
 
-### _class_ MatchRoundResultData
+### _class_ `MatchRoundResultData`
 
 Type: `PyotStatic` 
 
@@ -284,7 +281,7 @@ Properties:
 * _property_ `plant_round_time` -> `datetime.timedelta` 
 
 
-### _class_ MatchTeamData
+### _class_ `MatchTeamData`
 
 Type: `PyotStatic` 
 

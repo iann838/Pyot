@@ -6,13 +6,17 @@
 
 Pyot is an asyncIO based high-level Python Riot Games API framework which encourages rapid development and clean, pragmatic design. Takes care much of the hassle of the Riot Games API, so developers can focus on writing apps without needing to reinvent the wheel. It’s free and open source.
 
+Version on PyPi: `6.0.0`
+Version on master: `6.0.0`
+
+If you're migrating your project to a newer version of Pyot, please refer to **Changelog** section of the documentation.
+
 ## Features
 
-Features that Pyot has and can provide for better development.
+Features that Pyot can provide for your projects.
 
 - **_AsyncIO Based_**: Performing 60x faster with AsyncIO, highly configurable settings and wide range of tools to speed I/O tasks.
-- **_Django Support_**: Full support for Django Caches Framework and async Views, enable as installed app and point the setting modules in the `settings.py` file.
-- **_Community Projects Integrated_**: Includes support for CDragon, MerakiCDN. DDragon for LoL is Forbidden due to incompatible APIs.
+- **_Community Projects Integrations_**: Includes support for CDragon, MerakiCDN. DDragon for LoL is Forbidden due to incompatible APIs.
 - **_Caches Integrated_**: A wide range of Caches Stores is available out of the box, currently supports Omnistone(Runtime), RedisCache(RAM), DiskCache(Disk) and MongoDB(NoSQL).
 - **_Multiple Models_**: Available models of League of Legends, Teamfight Tactics, Legends of Runeterra and VALORANT.
 - **_Code Autocompletion_**: Access data through attributes and properties, maximize code efficiency with code autocompletion.
@@ -29,12 +33,16 @@ The documentation covers:
 - Configuration.
 - Base Objects.
 - Concurrency Basics.
+- Examples.
 - Models API.
 - Stores.
 - Limiters.
 - Utilities.
 - Integrations.
-- Issues.
 - Changelog.
 
-Due to the complexity of the framework, there is no quick-start guide, as it is often misleading and raises more questions.
+Due to the complexity of the framework, there is no quick-start guide, it is recommended to start with:
+
+- Reading and understanding the **Cores** section of the documentation.
+- Reading and understanding the example projects at **Examples** section to get familiar.
+- If your project requires a specific integration, check out **Integrations** section.

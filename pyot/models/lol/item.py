@@ -2,7 +2,7 @@ from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
-from pyot.utils.lol.cdragon import abs_url, sanitize
+from pyot.utils.lol.cdragon import abs_url, sanitize_description
 from .base import PyotCore
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ class Item(PyotCore):
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return sanitize(self.description)
+        return sanitize_description(self.description)
 
     @property
     def from_items(self) -> List["Item"]:

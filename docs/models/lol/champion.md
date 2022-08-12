@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.champion` 
 
-### _class_ Champion
+### _class_ `Champion`
 
 Type: `PyotCore` 
 
@@ -36,14 +36,10 @@ Attributes:
 * `recommended_item_defaults` -> `List[str]` 
 
 Properties: 
-* _lazy_property_ `ban_vo_abspath` -> `str` 
-* _lazy_property_ `choose_vo_abspath` -> `str` 
 * _property_ `meraki_champion` -> `MerakiChampion` 
-* _lazy_property_ `square_abspath` -> `str` 
-* _lazy_property_ `stinger_sfx_abspath` -> `str` 
 
 
-### _class_ Champions
+### _class_ `Champions`
 
 Type: `PyotCore` 
 
@@ -61,7 +57,7 @@ Attributes:
 * `champions` -> `List[pyot.models.lol.champion.Champion]` 
 
 
-### _class_ ChampionAbilityData
+### _class_ `ChampionAbilityData`
 
 Type: `PyotStatic` 
 
@@ -73,7 +69,7 @@ Attributes:
 * `r` -> `pyot.models.lol.champion.ChampionSpellData` 
 
 
-### _class_ ChampionChromaDescriptionsData
+### _class_ `ChampionChromaDescriptionsData`
 
 Type: `PyotStatic` 
 
@@ -82,7 +78,7 @@ Attributes:
 * `description` -> `str` 
 
 
-### _class_ ChampionChromaRaritiesData
+### _class_ `ChampionChromaRaritiesData`
 
 Type: `PyotStatic` 
 
@@ -92,7 +88,7 @@ Attributes:
 * `rarity` -> `int` 
 
 
-### _class_ ChampionPassiveData
+### _class_ `ChampionPassiveData`
 
 Type: `PyotStatic` 
 
@@ -103,11 +99,8 @@ Attributes:
 * `ability_video_path` -> `str` 
 * `ability_video_image_path` -> `str` 
 
-Properties: 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ ChampionPlayerStyleData
+### _class_ `ChampionPlayerStyleData`
 
 Type: `PyotStatic` 
 
@@ -119,7 +112,7 @@ Attributes:
 * `utility` -> `int` 
 
 
-### _class_ ChampionSkinChromaData
+### _class_ `ChampionSkinChromaData`
 
 Type: `PyotStatic` 
 
@@ -131,11 +124,8 @@ Attributes:
 * `descriptions` -> `List[pyot.models.lol.champion.ChampionChromaDescriptionsData]` 
 * `rarities` -> `List[pyot.models.lol.champion.ChampionChromaRaritiesData]` 
 
-Properties: 
-* _lazy_property_ `chroma_abspath` -> `str` 
 
-
-### _class_ ChampionSkinData
+### _class_ `ChampionSkinData`
 
 Type: `PyotStatic` 
 
@@ -162,18 +152,8 @@ Attributes:
 * `region_rarity_id` -> `int` 
 * `rarity_gem_path` -> `str` 
 
-Properties: 
-* _lazy_property_ `chroma_abspath` -> `str` 
-* _lazy_property_ `collection_splash_video_abspath` -> `str` 
-* _lazy_property_ `load_screen_abspath` -> `str` 
-* _lazy_property_ `load_screen_vintage_abspath` -> `str` 
-* _lazy_property_ `splash_abspath` -> `str` 
-* _lazy_property_ `splash_video_abspath` -> `str` 
-* _lazy_property_ `tile_abspath` -> `str` 
-* _lazy_property_ `uncentered_splash_abspath` -> `str` 
 
-
-### _class_ ChampionSpellData
+### _class_ `ChampionSpellData`
 
 Type: `PyotStatic` 
 
@@ -194,12 +174,8 @@ Attributes:
 * `effect_amounts` -> `Dict[str, List[float]]` 
 * `ammo` -> `Dict[str, List[float]]` 
 
-Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
-* _lazy_property_ `icon_abspath` -> `str` 
 
-
-### _class_ ChampionTacticalData
+### _class_ `ChampionTacticalData`
 
 Type: `PyotStatic` 
 

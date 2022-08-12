@@ -5,7 +5,7 @@
 
 This store is intended for projects built with Django. It can be used with **any** cache of Django. The configuration of this cache is only an alias to the configuration in Django's project settings.
 
-## _class_ DjangoCache
+## _class_ `DjangoCache`
 
 Backend: `pyot.stores.djangocache.DjangoCache`
 

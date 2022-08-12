@@ -6,7 +6,7 @@
 
 The CDragon has data that the game client uses. The data structure in CDragon might change at any time without warning, the Pyot Core objects for this might break aswell. Submit an issue if this happens and it will be fixed asap.
 
-## _class_ CDragon
+## _class_ `CDragon`
 
 Backend: `pyot.stores.cdragon.CDragon`
 
@@ -15,10 +15,6 @@ Definitions:
 * `__init__`
   * `error_handler`: `Dict[int, Tuple] = None`
   * `log_level`: `int = 0`
-
-Implemented Methods:
-
-* `get`
 
 ## Endpoints
 

@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lor.ranked` 
 
-### _class_ Leaderboard
+### _class_ `Leaderboard`
 
 Type: `PyotCore` 
 
@@ -18,11 +18,8 @@ Endpoints:
 Attributes: 
 * `players` -> `List[pyot.models.lor.ranked.LeaderboardPlayerData]` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ LeaderboardPlayerData
+### _class_ `LeaderboardPlayerData`
 
 Type: `PyotStatic` 
 

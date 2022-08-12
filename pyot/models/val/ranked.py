@@ -1,7 +1,6 @@
 from typing import Dict, List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
-from pyot.core.functional import parse_camelcase
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -22,7 +21,7 @@ class LeaderboardPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
-        return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
+        return Account(puuid=self.puuid).using(self.metapipeline.name)
 
 
 class LeaderboardTierDetailData(PyotStatic):
@@ -63,7 +62,7 @@ class Leaderboard(PyotCore):
     def __len__(self) -> int:
         return len(self.players)
 
-    def query(self, size: int = None, start_index: int = None):
-        '''Query parameters setter.'''
-        self._meta.query = parse_camelcase(locals())
+    def query(self, size: int = 200, start_index: int = 0):
+        '''Set query request parameters.'''
+        super()._place_query(locals())
         return self

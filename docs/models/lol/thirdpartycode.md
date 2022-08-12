@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.thirdpartycode` 
 
-### _class_ ThirdPartyCode
+### _class_ `ThirdPartyCode`
 
 Type: `PyotCore` 
 
@@ -19,7 +19,6 @@ Attributes:
 * `summoner_id` -> `str` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 

@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple
 
-from aiohttp.client_reqrep import ClientResponse
+from aiohttp import ClientResponse
 
-from pyot.utils.logging import Logger
+from pyot.utils.logging import LazyLogger
 
 
-LOGGER = Logger(__name__)
+LOGGER = LazyLogger(__name__)
 
 
 class LimiterToken:

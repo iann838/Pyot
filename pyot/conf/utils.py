@@ -1,5 +1,6 @@
-import re
-from typing import Mapping, TypeVar, Type
+
+from typing import List, Mapping, TypeVar, Type, Union
+from importlib import import_module
 
 
 K = TypeVar("K")
@@ -35,5 +36,11 @@ def reraise_model_inactive(func):
     return wrapper
 
 
-def valid_attribute_key(key: str):
-    return bool(re.match(r"^([a-zA-Z_])([a-zA-Z0-9_]*)$", key))
+def import_confs(path_or_paths: Union[str, List[str]]):
+    if isinstance(path_or_paths, str):
+        import_module(path_or_paths)
+    elif isinstance(path_or_paths, list):
+        for path in path_or_paths:
+            import_module(path)
+    else:
+        raise ValueError(path_or_paths)

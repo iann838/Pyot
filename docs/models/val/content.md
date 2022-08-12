@@ -2,7 +2,7 @@
 
 Module: `pyot.models.val.content` 
 
-### _class_ Content
+### _class_ `Content`
 
 Type: `PyotCore` 
 
@@ -13,7 +13,7 @@ Definitions:
 Endpoints: 
 * `content_v1_contents`: `[]` 
 
-Queries: 
+Query Params: 
 * `locale`: `str = None` 
 
 Attributes: 
@@ -34,11 +34,8 @@ Attributes:
 * `ceremonies` -> `List[pyot.models.val.content.ContentItemData]` 
 * `acts` -> `List[pyot.models.val.content.ContentActData]` 
 
-Properties: 
-* _property_ `platform` -> `str` 
 
-
-### _class_ ContentActData
+### _class_ `ContentActData`
 
 Type: `PyotStatic` 
 
@@ -54,7 +51,7 @@ Properties:
 * _property_ `leaderboard` -> `Leaderboard` 
 
 
-### _class_ ContentItemData
+### _class_ `ContentItemData`
 
 Type: `PyotStatic` 
 
@@ -66,7 +63,7 @@ Attributes:
 * `localized_names` -> `pyot.models.val.content.ContentLocalizedNamesData` 
 
 
-### _class_ ContentLocalizedNamesData
+### _class_ `ContentLocalizedNamesData`
 
 Type: `PyotStatic` 
 

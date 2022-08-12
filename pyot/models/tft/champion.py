@@ -3,7 +3,7 @@ from typing import List, Iterator, TYPE_CHECKING
 from pyot.conf.model import models
 from pyot.core.functional import lazy_property, cache_indexes
 from pyot.core.exceptions import NotFound
-from pyot.utils.tft.cdragon import join_set_data, sanitize_champion, abs_url
+from pyot.utils.tft.cdragon import merge_set_data, sanitize_champion_description, abs_url
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ class ChampionAbilityData(PyotStatic):
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return sanitize_champion(self.description, self["variables"])
+        return sanitize_champion_description(self.description, self["variables"])
 
 
 class ChampionStatData(PyotStatic):
@@ -84,7 +84,7 @@ class Champion(PyotCore):
     def filter(self, indexer, data):
         return indexer.get(
             self.key,
-            join_set_data(data, self.set, "champions"),
+            merge_set_data(data, self.set, "champions"),
             "apiName"
         )
 
@@ -121,7 +121,7 @@ class Champions(PyotCore):
 
     def filter(self, data):
         try:
-            return join_set_data(data, self.set, "champions")
+            return merge_set_data(data, self.set, "champions")
         except KeyError as e:
             raise NotFound("Request was successful but filtering gave no matching item") from e
 

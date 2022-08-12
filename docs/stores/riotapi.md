@@ -6,7 +6,7 @@
 
 Integrated with the official Riot Games API. Official endpoints are found at the [Riot Games Developer Portal](https://developer.riotgames.com/). 
 
-## _class_ RiotAPI
+## _class_ `RiotAPI`
 
 Backend: `pyot.stores.riotapi.RiotAPI`
 

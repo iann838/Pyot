@@ -2,7 +2,7 @@ from typing import List, Iterator, Dict, Union
 
 from pyot.conf.model import models
 from pyot.core.functional import cache_indexes, lazy_property
-from pyot.utils.tft.cdragon import sanitize_item, abs_url
+from pyot.utils.tft.cdragon import sanitize_item_description, abs_url
 from .base import PyotCore
 
 
@@ -35,7 +35,7 @@ class Item(PyotCore):
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return sanitize_item(self.description, self.effects)
+        return sanitize_item_description(self.description, self.effects)
 
     @property
     def from_items(self) -> List["Item"]:

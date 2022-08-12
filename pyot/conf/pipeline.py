@@ -1,13 +1,14 @@
 from abc import ABC
 from typing import Dict, List, Mapping
+import warnings
 
+from pyot.core.warnings import PyotConfWarning
 from pyot.pipeline.core import Pipeline
-from pyot.utils.logging import Logger
-from pyot.utils.importlib import import_class
+from pyot.utils.importlib import import_variable
 
-from .utils import ConfDict, valid_attribute_key
+from .utils import ConfDict
 
-LOGGER = Logger(__name__)
+
 AVAILABLE_MODELS = {"lol", "tft", "lor", "val"}
 
 pipelines: ConfDict[str, Pipeline] = ConfDict(Pipeline, False)
@@ -23,7 +24,7 @@ def activate_pipeline(model: str):
     def build_pipeline(pipeline_configs: List[Dict]):
         stores = []
         for config in pipeline_configs:
-            store_cls = import_class(config.pop("backend"))
+            store_cls = import_variable(config.pop("backend"))
             config.update({"game": model.lower()})
             store = store_cls(**config)
             stores.append(store)
@@ -34,16 +35,14 @@ def activate_pipeline(model: str):
             if hasattr(cls, key):
                 continue
             raise ValueError(f"Missing value for '{key}' in {cls} conf")
-        if not valid_attribute_key(key):
-            raise ValueError("Name of pipeline must be alphanumeric")
         pipeline = Pipeline(model, cls.name, build_pipeline(cls.stores))
         if cls.name in AVAILABLE_MODELS and (not cls.default or not cls.name == model):
             raise ValueError("Pipeline name must be different than model's name or the same as the subscripted model if set to default")
         if model in pipelines:
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (default pipeline of model already active)")
+            warnings.warn(f"An attempt to activate pipeline '{cls.name}' was ignored due to default pipeline of model already active", PyotConfWarning)
             return cls
         if cls.name in pipelines:
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (pipeline already active)")
+            warnings.warn(f"An attempt to activate pipeline '{cls.name}' was ignored due to pipeline already active", PyotConfWarning)
             return cls
         if cls.default:
             pipelines[model] = pipeline

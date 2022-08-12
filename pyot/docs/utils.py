@@ -1,11 +1,17 @@
 import inspect
-from typing import Any, List
+from typing import Any, List, Type
 
 
-def get_method_properties(clas: Any) -> List[str]:
+def get_method_properties(clas: Type[object]) -> List[str]:
     return inspect.getmembers(clas, predicate=lambda func: (
-        inspect.isfunction(func) or
-        isinstance(func, property) or (
+        (
+            inspect.isfunction(func) and
+            func.__name__ in clas.__dict__
+        ) or (
+            isinstance(func, property) and
+            func.fget and
+            func.fget.__name__ in clas.__dict__
+        ) or (
             inspect.ismethod(func) and
             func.__name__ in clas.__dict__ and
             isinstance(clas.__dict__[func.__name__], (classmethod, staticmethod))

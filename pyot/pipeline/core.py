@@ -1,9 +1,10 @@
 from typing import List, Any, Iterator
-import aiohttp
+from aiohttp import TCPConnector
 
 from pyot.core.exceptions import NotFound, NotFindable, PyotException
-from pyot.utils.eventloop import EventLoopFactory
+from pyot.core.resources import ResourceTemplate
 from pyot.stores.base import Store
+from pyot.utils.aiohttp import SafeClientSession
 
 from .token import PipelineToken
 
@@ -15,9 +16,9 @@ class Pipeline:
         self.model = model
         self.name = name
         self.stores = stores
-        self.sessions = EventLoopFactory(
-            factory=lambda: aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)),
-            callback=lambda session: session.close()
+        self.sessions = ResourceTemplate(
+            acquire_func=lambda: SafeClientSession(connector=TCPConnector(ssl=False)),
+            release_func=lambda session: session.close()
         )
 
     def __iter__(self) -> Iterator[Store]:
@@ -28,7 +29,7 @@ class Pipeline:
 
     async def get(self, token: PipelineToken):
         '''Get an object from the stores.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         found_in = None
         last_exc = NotFindable
         for store in self.stores:
@@ -48,7 +49,7 @@ class Pipeline:
 
     async def set(self, token: PipelineToken, value: Any, stop=None):
         '''Set an object to stores of type Cache.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         for store in self.stores:
             if store is stop: break
             try:
@@ -58,7 +59,7 @@ class Pipeline:
 
     async def post(self, token: PipelineToken, body: Any):
         '''Post an object to stores of type Service.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         last_exc = NotFindable
         for store in self.stores:
             try:
@@ -75,7 +76,7 @@ class Pipeline:
 
     async def put(self, token: PipelineToken, body: Any):
         '''Put an object to stores of type Service.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         last_exc = NotFindable
         for store in self.stores:
             try:
@@ -92,7 +93,7 @@ class Pipeline:
 
     async def clear(self):
         '''Clear stores of type Cache.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         for store in self.stores:
             try:
                 await store.clear(session=session)
@@ -101,7 +102,7 @@ class Pipeline:
 
     async def expire(self):
         '''Expire stores of type Cache that cannot dynamically expire.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         for store in self.stores:
             try:
                 await store.expire(session=session)
@@ -110,7 +111,7 @@ class Pipeline:
 
     async def delete(self, token: PipelineToken):
         '''Delete an object from the stores.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         for store in self.stores:
             try:
                 await store.delete(token, session=session)
@@ -119,7 +120,7 @@ class Pipeline:
 
     async def contains(self, token: PipelineToken) -> bool:
         '''Check if an object exist in stores of type Cache.'''
-        session = await self.sessions.get()
+        session = await self.sessions.acquire()
         contains = False
         for store in self.stores:
             try:

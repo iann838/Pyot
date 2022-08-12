@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
-import re
 from typing import List, Iterator, Dict, TYPE_CHECKING, Tuple, Union
 
 from pyot.conf.model import models
-from pyot.core.functional import parse_camelcase, lazy_property
+from pyot.core.functional import lazy_property
 
 from .base import PyotCore, PyotStatic
 
@@ -261,6 +260,7 @@ class MatchParticipantData(PyotStatic):
     id: int
     assists: int
     baron_kills: int
+    basic_pings: int
     bounty_level: int
     champ_experience: int
     champ_level: int
@@ -590,7 +590,6 @@ class Match(PyotCore):
             participants[participant["participantId"]] = participant
             participant["frames"] = []
             participant["events"] = []
-        # print(participants)
         idkeys = ["participantId", "creatorId", "killerId"]
         for frame in timeline.info.frames:
             for participant_frame in frame["participantFrames"]:
@@ -674,12 +673,12 @@ class MatchHistory(PyotCore):
         return [(Match(id=id_, region=self.region), Timeline(id=id_, region=self.region)) for id_ in self.ids]
 
     def query(self, start: int = 0, count: int = 20, queue: int = None, type: str = None, start_time: Union[int, datetime] = None, end_time: Union[int, datetime] = None):
-        '''Query parameters setter.'''
+        '''Set query request parameters.'''
         if isinstance(start_time, datetime):
             start_time = int(start_time.timestamp())
         if isinstance(end_time, datetime):
             end_time = int(end_time.timestamp())
-        self._meta.query = parse_camelcase(locals())
+        super()._place_query(locals())
         return self
 
     def transform(self, data) -> Dict:

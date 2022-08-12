@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.item` 
 
-### _class_ Item
+### _class_ `Item`
 
 Type: `PyotCore` 
 
@@ -38,16 +38,14 @@ Attributes:
 * `icon_path` -> `str` 
 
 Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
 * _property_ `from_items` -> `List[ForwardRef(Item)]` 
-* _lazy_property_ `icon_abspath` -> `str` 
 * _property_ `meraki_item` -> `MerakiItem` 
 * _property_ `required_champion` -> `Champion` 
 * _property_ `special_recipe` -> `Item` 
 * _property_ `to_items` -> `List[ForwardRef(Item)]` 
 
 
-### _class_ Items
+### _class_ `Items`
 
 Type: `PyotCore` 
 

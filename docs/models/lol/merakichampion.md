@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lol.merakichampion` 
 
-### _class_ MerakiChampion
+### _class_ `MerakiChampion`
 
 Type: `PyotCore` 
 
@@ -38,10 +38,9 @@ Attributes:
 
 Properties: 
 * _property_ `champion` -> `Champion` 
-* _property_ `locale` -> `str` 
 
 
-### _class_ MerakiChampionAbilityData
+### _class_ `MerakiChampionAbilityData`
 
 Type: `PyotStatic` 
 
@@ -53,7 +52,7 @@ Attributes:
 * `r` -> `List[pyot.models.lol.merakichampion.MerakiChampionSpellData]` 
 
 
-### _class_ MerakiChampionAttributeRatingData
+### _class_ `MerakiChampionAttributeRatingData`
 
 Type: `PyotStatic` 
 
@@ -70,7 +69,7 @@ Attributes:
 * `difficulty` -> `int` 
 
 
-### _class_ MerakiChampionChromaDescriptionsData
+### _class_ `MerakiChampionChromaDescriptionsData`
 
 Type: `PyotStatic` 
 
@@ -79,7 +78,7 @@ Attributes:
 * `description` -> `str` 
 
 
-### _class_ MerakiChampionChromaRaritiesData
+### _class_ `MerakiChampionChromaRaritiesData`
 
 Type: `PyotStatic` 
 
@@ -89,7 +88,7 @@ Attributes:
 * `rarity` -> `int` 
 
 
-### _class_ MerakiChampionPriceData
+### _class_ `MerakiChampionPriceData`
 
 Type: `PyotStatic` 
 
@@ -99,7 +98,7 @@ Attributes:
 * `sale_rp` -> `int` 
 
 
-### _class_ MerakiChampionSkinChromaData
+### _class_ `MerakiChampionSkinChromaData`
 
 Type: `PyotStatic` 
 
@@ -112,7 +111,7 @@ Attributes:
 * `rarities` -> `List[pyot.models.lol.merakichampion.MerakiChampionChromaRaritiesData]` 
 
 
-### _class_ MerakiChampionSkinData
+### _class_ `MerakiChampionSkinData`
 
 Type: `PyotStatic` 
 
@@ -145,7 +144,7 @@ Attributes:
 * `splash_artist` -> `List[str]` 
 
 
-### _class_ MerakiChampionSpellAttrData
+### _class_ `MerakiChampionSpellAttrData`
 
 Type: `PyotStatic` 
 
@@ -155,7 +154,7 @@ Attributes:
 * `affected_by_cdr` -> `bool` 
 
 
-### _class_ MerakiChampionSpellData
+### _class_ `MerakiChampionSpellData`
 
 Type: `PyotStatic` 
 
@@ -190,7 +189,7 @@ Attributes:
 * `target_range` -> `str` 
 
 
-### _class_ MerakiChampionSpellEffectData
+### _class_ `MerakiChampionSpellEffectData`
 
 Type: `PyotStatic` 
 
@@ -199,7 +198,7 @@ Attributes:
 * `leveling` -> `List[pyot.models.lol.merakichampion.MerakiChampionSpellAttrData]` 
 
 
-### _class_ MerakiChampionSpellModifierData
+### _class_ `MerakiChampionSpellModifierData`
 
 Type: `PyotStatic` 
 
@@ -208,7 +207,7 @@ Attributes:
 * `units` -> `List[str]` 
 
 
-### _class_ MerakiChampionStatData
+### _class_ `MerakiChampionStatData`
 
 Type: `PyotStatic` 
 
@@ -243,7 +242,7 @@ Attributes:
 * `urf_shielding` -> `pyot.models.lol.merakichampion.MerakiChampionStatDetailData` 
 
 
-### _class_ MerakiChampionStatDetailData
+### _class_ `MerakiChampionStatDetailData`
 
 Type: `PyotStatic` 
 

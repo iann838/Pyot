@@ -1,17 +1,21 @@
 import asyncio
+import inspect
+import sys
 import traceback
+from types import TracebackType
 from typing import Any, Callable, List, Dict, Awaitable, TypeVar, Optional, Type
 
-from pyot.utils.logging import Logger
-from .exceptions import PyotException
+from pyot.utils.logging import LazyLogger
 
 
-LOGGER = Logger(__name__)
+LOGGER = LazyLogger(__name__)
 
 T = TypeVar('T')
 
+ExceptionHandlerFunction = Callable[[Type[BaseException], BaseException, TracebackType], Any]
 
-class Item:
+
+class QueueItem:
 
     def __init__(self, id, coro):
         self.id = id
@@ -20,17 +24,18 @@ class Item:
 
 class Queue:
     '''A managed Queue on top of asyncio.Queue. This Queue is only usable as a context manager.'''
-    queue: asyncio.Queue
-    workers_num: int
+    _id_counter: int
+    _queue: asyncio.Queue
+
+    workers: int
     maxsize: int
     responses: Dict
-    counter: int
-    workers: List
+    worker_tasks: List[asyncio.Task]
     exception_handler: Callable[[Exception], Any]
 
-    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 0, exception_handler: Callable[[Exception], Any] = LOGGER.warning):
+    def __init__(self, workers: int = 25, maxsize: int = None, log_level: int = 0, exception_handler: ExceptionHandlerFunction = traceback.print_exception):
         if workers < 1: raise ValueError('Number of workers must be an integer greater than 0')
-        self.workers_num = workers
+        self.workers = workers
         self.exception_handler = exception_handler
         if maxsize is None:
             self.maxsize = workers * 2
@@ -38,36 +43,36 @@ class Queue:
             self.maxsize = maxsize
         self.log_level = log_level
 
-    async def worker(self, queue):
+    async def worker(self, queue: asyncio.Queue):
         while True:
-            item: Item = await queue.get()
+            item: QueueItem = await queue.get()
             try:
                 res = await item.coro
                 if res is not None:
                     self.responses[item.id] = res
-            except Exception as e:
+            except Exception:
+                one, two, three = sys.exc_info()
                 self.exception_handler(traceback.format_exc())
             finally:
                 queue.task_done()
 
     async def __aenter__(self) -> "Queue":
-        self.queue = asyncio.Queue(maxsize=self.maxsize)
+        self._queue = asyncio.Queue(maxsize=self.maxsize)
         self.responses = {}
-        self.workers = []
-        self.counter = 0
-        for _ in range(self.workers_num):
-            worker = asyncio.create_task(self.worker(self.queue))
-            self.workers.append(worker)
-        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Spawned {self.workers_num} workers")
+        self.worker_tasks = []
+        self._id_counter = 0
+        for _ in range(self.workers):
+            worker = asyncio.create_task(self.worker(self._queue))
+            self.worker_tasks.append(worker)
+        LOGGER.log(self.log_level, f"[pyot.core.queue:Queue] Spawned {self.workers} workers")
         return self
 
     async def __aexit__(self, *args):
-        await self.queue.join()
-        for worker in self.workers:
+        await self._queue.join()
+        for worker in self.worker_tasks:
             worker.cancel()
-        await asyncio.gather(*self.workers, return_exceptions=True)
-        LOGGER.log(self.log_level, f"[Trace: Pyot Queue] Joined {self.workers_num} workers")
-        return
+        await asyncio.gather(*self.worker_tasks, return_exceptions=True)
+        LOGGER.log(self.log_level, f"[pyot.core.queue:Queue] Joined {self.workers} workers")
 
     async def put(self, coro: Awaitable, delay: float = 0):
         '''
@@ -76,10 +81,10 @@ class Queue:
         '''
         if delay > 0:
             await asyncio.sleep(delay)
-        if not asyncio.iscoroutine(coro):
-            raise ValueError(f"[Trace: Pyot Queue] {str(coro)} is not a coroutine")
-        await self.queue.put(Item(self.counter, coro))
-        self.counter += 1
+        if not inspect.isawaitable(coro):
+            raise ValueError(f"{str(coro)} is not awaitable")
+        await self._queue.put(QueueItem(self._id_counter, coro))
+        self._id_counter += 1
 
     async def join(self, class_of_t: Optional[Type[T]] = None) -> List[T]:
         '''
@@ -88,8 +93,8 @@ class Queue:
 
         NoneType and Exceptions are not collected, order of the responses might not correspond the put order.
         '''
-        await self.queue.join()
+        await self._queue.join()
         response = [res[1] for res in sorted(self.responses.items())]
         self.responses = {}
-        self.counter = 0
+        self._id_counter = 0
         return response

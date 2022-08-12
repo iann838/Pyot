@@ -2,7 +2,7 @@
 
 Module: `pyot.models.lor.card` 
 
-### _class_ Card
+### _class_ `Card`
 
 Type: `PyotCore` 
 
@@ -55,7 +55,7 @@ Properties:
 * _property_ `associated_cards` -> `List[ForwardRef(Card)]` 
 
 
-### _class_ Cards
+### _class_ `Cards`
 
 Type: `PyotCore` 
 
@@ -74,7 +74,7 @@ Attributes:
 * `cards` -> `List[pyot.models.lor.card.Card]` 
 
 
-### _class_ CardAssetData
+### _class_ `CardAssetData`
 
 Type: `PyotStatic` 
 
@@ -83,7 +83,7 @@ Attributes:
 * `full_absolute_path` -> `str` 
 
 
-### _class_ Batch
+### _class_ `Batch`
 
 Type: `PyotUtils` 
 
@@ -106,7 +106,7 @@ Properties:
 * _property_ `card` -> `pyot.models.lor.card.Card` 
 
 
-### _class_ Deck
+### _class_ `Deck`
 
 Type: `PyotUtils` 
 

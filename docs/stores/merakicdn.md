@@ -6,7 +6,7 @@
 
 Until now, champion abilities in particular were unavailable because ddragon's data is inaccurate and cdragon's data is unparsable, instead the data provided are collected from wiki and served by the meraki cdn.
 
-## _class_ MerakiCDN
+## _class_ `MerakiCDN`
 
 Backend: `pyot.stores.merakicdn.MerakiCDN`
 

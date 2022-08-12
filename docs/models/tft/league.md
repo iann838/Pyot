@@ -2,7 +2,7 @@
 
 Module: `pyot.models.tft.league` 
 
-### _class_ ApexLeague
+### _class_ `ApexLeague`
 
 Type: `PyotCore` 
 
@@ -25,10 +25,9 @@ Attributes:
 
 Properties: 
 * _property_ `league` -> `pyot.models.tft.league.League` 
-* _property_ `platform` -> `str` 
 
 
-### _class_ ChallengerLeague
+### _class_ `ChallengerLeague`
 
 Type: `PyotCore` 
 
@@ -37,8 +36,6 @@ Extends:
 * `pyot.models.tft.league.League` 
 
 Definitions: 
-* `__init__` -> `None` 
-  * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 
 * `league_v1_challenger_league`: `[]` 
@@ -50,12 +47,8 @@ Attributes:
 * `name` -> `str` 
 * `entries` -> `List[pyot.models.tft.league.LeagueEntryData]` 
 
-Properties: 
-* _property_ `league` -> `pyot.models.tft.league.League` 
-* _property_ `platform` -> `str` 
 
-
-### _class_ DivisionLeague
+### _class_ `DivisionLeague`
 
 Type: `PyotCore` 
 
@@ -67,13 +60,11 @@ Definitions:
   * `division`: `str = None` 
   * `tier`: `str = None` 
   * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
-* `__iter__` -> `Iterator[pyot.models.tft.league.SummonerLeagueEntryData]` 
-* `__len__` -> `int` 
 
 Endpoints: 
 * `league_v1_entries_by_division`: `['tier', 'division']` 
 
-Queries: 
+Query Params: 
 * `page`: `int = None` 
 
 Attributes: 
@@ -84,11 +75,10 @@ Attributes:
 * `tier` -> `str` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `NoReturn` 
 
 
-### _class_ GrandmasterLeague
+### _class_ `GrandmasterLeague`
 
 Type: `PyotCore` 
 
@@ -97,8 +87,6 @@ Extends:
 * `pyot.models.tft.league.League` 
 
 Definitions: 
-* `__init__` -> `None` 
-  * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 
 * `league_v1_grandmaster_league`: `[]` 
@@ -110,12 +98,8 @@ Attributes:
 * `name` -> `str` 
 * `entries` -> `List[pyot.models.tft.league.LeagueEntryData]` 
 
-Properties: 
-* _property_ `league` -> `pyot.models.tft.league.League` 
-* _property_ `platform` -> `str` 
 
-
-### _class_ League
+### _class_ `League`
 
 Type: `PyotCore` 
 
@@ -134,11 +118,8 @@ Attributes:
 * `name` -> `str` 
 * `entries` -> `List[pyot.models.tft.league.LeagueEntryData]` 
 
-Properties: 
-* _property_ `platform` -> `str` 
 
-
-### _class_ MasterLeague
+### _class_ `MasterLeague`
 
 Type: `PyotCore` 
 
@@ -147,8 +128,6 @@ Extends:
 * `pyot.models.tft.league.League` 
 
 Definitions: 
-* `__init__` -> `None` 
-  * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 
 * `league_v1_master_league`: `[]` 
@@ -160,12 +139,8 @@ Attributes:
 * `name` -> `str` 
 * `entries` -> `List[pyot.models.tft.league.LeagueEntryData]` 
 
-Properties: 
-* _property_ `league` -> `pyot.models.tft.league.League` 
-* _property_ `platform` -> `str` 
 
-
-### _class_ SummonerLeague
+### _class_ `SummonerLeague`
 
 Type: `PyotCore` 
 
@@ -184,11 +159,10 @@ Attributes:
 * `entries` -> `List[pyot.models.tft.league.SummonerLeagueEntryData]` 
 
 Properties: 
-* _property_ `platform` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ LeagueEntryData
+### _class_ `LeagueEntryData`
 
 Type: `PyotStatic` 
 
@@ -209,7 +183,7 @@ Properties:
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ MiniSeriesData
+### _class_ `MiniSeriesData`
 
 Type: `PyotStatic` 
 
@@ -220,7 +194,7 @@ Attributes:
 * `progress` -> `str` 
 
 
-### _class_ SummonerLeagueEntryData
+### _class_ `SummonerLeagueEntryData`
 
 Type: `PyotStatic` 
 
@@ -245,6 +219,5 @@ Attributes:
 
 Properties: 
 * _property_ `league` -> `League` 
-* _property_ `summoner` -> `Summoner` 
 
 

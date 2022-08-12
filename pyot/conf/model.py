@@ -1,9 +1,10 @@
 from abc import ABC
+import warnings
 
-from pyot.utils.logging import Logger
+from pyot.core.warnings import PyotConfWarning
+
 from .utils import ConfDict, reraise_model_inactive
 
-LOGGER = Logger(__name__)
 
 AVAILABLE_MODELS = {"riot", "lol", "tft", "lor", "val"}
 
@@ -62,7 +63,7 @@ def activate_model(name: str):
                 continue
             raise ValueError(f"Missing value for '{key}' in {cls} conf")
         if name in models or hasattr(models, name):
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate model '{name}' was ignored (model already active)")
+            warnings.warn(f"An attempt to activate model '{name}' was ignored due to model already active", PyotConfWarning)
             return cls
         models[name] = Model(cls.default_platform, cls.default_region, cls.default_locale, cls.default_version)
         return cls

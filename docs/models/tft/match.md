@@ -2,7 +2,7 @@
 
 Module: `pyot.models.tft.match` 
 
-### _class_ Match
+### _class_ `Match`
 
 Type: `PyotCore` 
 
@@ -19,11 +19,8 @@ Attributes:
 * `info` -> `pyot.models.tft.match.MatchInfoData` 
 * `metadata` -> `pyot.models.tft.match.MatchMetadataData` 
 
-Properties: 
-* _property_ `region` -> `str` 
 
-
-### _class_ MatchHistory
+### _class_ `MatchHistory`
 
 Type: `PyotCore` 
 
@@ -37,7 +34,7 @@ Definitions:
 Endpoints: 
 * `match_v1_matchlist`: `['puuid']` 
 
-Queries: 
+Query Params: 
 * `count`: `int = 20` 
 
 Attributes: 
@@ -46,11 +43,10 @@ Attributes:
 
 Properties: 
 * _property_ `matches` -> `List[pyot.models.tft.match.Match]` 
-* _property_ `region` -> `str` 
 * _property_ `summoner` -> `Summoner` 
 
 
-### _class_ MatchInfoCompanionData
+### _class_ `MatchInfoCompanionData`
 
 Type: `PyotStatic` 
 
@@ -60,7 +56,7 @@ Attributes:
 * `species` -> `str` 
 
 
-### _class_ MatchInfoData
+### _class_ `MatchInfoData`
 
 Type: `PyotStatic` 
 
@@ -79,7 +75,7 @@ Properties:
 * _property_ `length` -> `datetime.timedelta` 
 
 
-### _class_ MatchInfoParticipantData
+### _class_ `MatchInfoParticipantData`
 
 Type: `PyotStatic` 
 
@@ -101,7 +97,7 @@ Properties:
 * _property_ `time_eliminated` -> `datetime.timedelta` 
 
 
-### _class_ MatchInfoTraitData
+### _class_ `MatchInfoTraitData`
 
 Type: `PyotStatic` 
 
@@ -116,7 +112,7 @@ Properties:
 * _property_ `trait` -> `Trait` 
 
 
-### _class_ MatchInfoUnitData
+### _class_ `MatchInfoUnitData`
 
 Type: `PyotStatic` 
 
@@ -133,7 +129,7 @@ Properties:
 * _property_ `items` -> `List[ForwardRef(Item)]` 
 
 
-### _class_ MatchMetadataData
+### _class_ `MatchMetadataData`
 
 Type: `PyotStatic` 
 

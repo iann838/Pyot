@@ -13,14 +13,14 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 install_requires = [
     "wheel",
     "python-dateutil>=2.8",
-    "aiohttp>=3.7",
+    "aiohttp>=3.8",
     "pytz",
     "lor-deckcodes",
 ]
 
 extras_require = {
     "diskcache": ["diskcache>=5.1", "asgiref>=3.2"],
-    "redis": ["aioredis<2.0"],
+    "redis": ["aioredis[hiredis]>=2.0"],
     "mongodb": ["motor>=2.3"],
     "test": ["typeguard>=2.13"],
 }
@@ -32,7 +32,7 @@ if sys.version_info.major != 3 and sys.version_info.minor < 7:
 
 setup(
     name="pyot",
-    version="5.3.3",
+    version="6.0.0",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",

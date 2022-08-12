@@ -2,7 +2,7 @@
 
 Module: `pyot.models.val.ranked` 
 
-### _class_ Leaderboard
+### _class_ `Leaderboard`
 
 Type: `PyotCore` 
 
@@ -16,9 +16,9 @@ Definitions:
 Endpoints: 
 * `ranked_v1_leaderboards`: `['act_id']` 
 
-Queries: 
-* `size`: `int = None` 
-* `start_index`: `int = None` 
+Query Params: 
+* `size`: `int = 200` 
+* `start_index`: `int = 0` 
 
 Attributes: 
 * `act_id` -> `str` 
@@ -32,11 +32,8 @@ Attributes:
 * `query_str` -> `str` 
 * `shard` -> `str` 
 
-Properties: 
-* _property_ `platform` -> `str` 
 
-
-### _class_ LeaderboardPlayerData
+### _class_ `LeaderboardPlayerData`
 
 Type: `PyotStatic` 
 
@@ -53,7 +50,7 @@ Properties:
 * _property_ `account` -> `Account` 
 
 
-### _class_ LeaderboardTierDetailData
+### _class_ `LeaderboardTierDetailData`
 
 Type: `PyotStatic` 
 

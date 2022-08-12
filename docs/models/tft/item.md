@@ -2,7 +2,7 @@
 
 Module: `pyot.models.tft.item` 
 
-### _class_ Item
+### _class_ `Item`
 
 Type: `PyotCore` 
 
@@ -25,12 +25,10 @@ Attributes:
 * `unique` -> `bool` 
 
 Properties: 
-* _lazy_property_ `cleaned_description` -> `str` 
 * _property_ `from_items` -> `List[ForwardRef(Item)]` 
-* _lazy_property_ `icon_abspath` -> `str` 
 
 
-### _class_ Items
+### _class_ `Items`
 
 Type: `PyotCore` 
 

@@ -3,7 +3,7 @@ from typing import List, Dict, Iterator, TYPE_CHECKING
 from pyot.conf.model import models
 from pyot.core.functional import lazy_property
 from pyot.utils.lol.champion import id_by_key, id_by_name
-from pyot.utils.lol.cdragon import abs_url, sanitize
+from pyot.utils.lol.cdragon import abs_url, sanitize_description
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -155,7 +155,7 @@ class ChampionSpellData(PyotStatic):
 
     @lazy_property
     def cleaned_description(self) -> str:
-        return sanitize(self.long_description)
+        return sanitize_description(self.long_description)
 
 
 class ChampionAbilityData(PyotStatic):

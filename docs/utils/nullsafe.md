@@ -2,7 +2,7 @@
 
 Module: `pyot.utils.nullsafe` 
 
-### _class_ NullSafe
+### _class_ `NullSafe`
 
 > Documentation at: <https://github.com/paaksing/nullsafe-python>
 
@@ -25,7 +25,7 @@ Definitions:
 * `__str__` -> `str` 
 
 
-### _class_ NullSafeProxy
+### _class_ `NullSafeProxy`
 
 Extends: 
 * `Generic` 
@@ -37,10 +37,6 @@ Definitions:
   * `k`: `str` 
 * `__init__` -> `None` 
   * `o`: `~T` 
-* `__new__` -> `None` 
-  * `cls`: `None` 
-  * `args`: `None` 
-  * `kwds`: `None` 
 * `__repr__` -> `str` 
 * `__setattr__` -> `None` 
   * `name`: `str` 

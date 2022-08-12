@@ -1,11 +1,11 @@
 from typing import Dict
-from ..text import snakecase
+from ..text import snake_case
 
 
 BASE_URL = "https://raw.communitydragon.org/"
 
 
-def join_set_data(data: Dict, set: int, collection_key: str):
+def merge_set_data(data: Dict, set: int, collection_key: str):
     set = int(max(data["sets"], key=int)) if set == -1 else set
     collected = {}
     for set_data in data["setData"]:
@@ -27,7 +27,7 @@ def abs_url(link: str, version="latest") -> str:
     return BASE_URL + version + "/game/" + link
 
 
-def sanitize_item(string: str, obj: dict) -> str:
+def sanitize_item_description(string: str, obj: dict) -> str:
     '''Sanitize CDragon tft item descriptions'''
     if string is None: return string
     new_string = ""
@@ -63,7 +63,7 @@ def sanitize_item(string: str, obj: dict) -> str:
     return new_string
 
 
-def sanitize_champion(string: str, list_of_obj: list) -> str:
+def sanitize_champion_description(string: str, list_of_obj: list) -> str:
     '''Sanitize CDragon tft champion descriptions'''
     if string is None: return string
     new_string = ""
@@ -81,11 +81,11 @@ def sanitize_champion(string: str, list_of_obj: list) -> str:
         elif s == "@" and not is_at: is_at = True
         elif s == "@":
             is_at = False
-            tags = snakecase(tag).split("_")
+            tags = snake_case(tag).split("_")
             found = False
             for t in tags:
                 for obj in list_of_obj:
-                    if t in snakecase(obj["name"]):
+                    if t in snake_case(obj["name"]):
                         new_string += "/".join([str(vall) for vall in obj["value"][1:4]])
                         found = True
                         break
