@@ -19,5 +19,5 @@ Definitions:
 ## Endpoints
 
 * `lol`
-  * `meraki_champion_by_key`: ``/lol/resources/latest/en-US/champions/{key}.json`
-  * `meraki_item_by_id`: ``/lol/resources/latest/en-US/items/{id}.json`
+  * `meraki_champion_by_key`: `/lol/resources/latest/en-US/champions/{key}.json`
+  * `meraki_item_by_id`: `/lol/resources/latest/en-US/items/{id}.json`
