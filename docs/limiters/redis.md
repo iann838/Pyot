@@ -11,10 +11,6 @@ Cons:
 
 - Although minimal, latency exists when the redis server is on another machine.
 
-{% hint style='info' %}
-This rate limiter is built using aioredis v1.3, it does not support aioredis v2+ since it went through massive rework of all interfaces. A future rate limiter called `RedisLimiterV2` will be added with support for aioredis v2+.
-{% endhint %}
-
 An extra installation is required: `pip install pyot[redis]`
 
 ## _class_ `RedisLimiter`
