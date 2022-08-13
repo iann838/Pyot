@@ -1,3 +1,4 @@
+import warnings
 
 
 class PyotConfWarning(UserWarning):
@@ -18,3 +19,6 @@ class PyotRuntimeWarning(RuntimeWarning):
 
 class PyotResourceWarning(ResourceWarning):
     pass
+
+
+warnings.simplefilter("default", PyotResourceWarning)
