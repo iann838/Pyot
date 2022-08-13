@@ -26,7 +26,7 @@ Depending on the need, installation of extras may be needed:
 
 ```shell
 pip install pyot[diskcache]     # installs: ["diskcache>=5.1", "asgiref>=3.2"]
-pip install pyot[redis]         # installs: ["aioredis<2.0"]
+pip install pyot[redis]         # installs: ["aioredis[hiredis]>=2.0"]
 pip install pyot[mongodb]       # installs: ["motor>=2.3"]
-pip install pyot[test]          # installs: ["typeguard>=2.13"]
+pip install pyot[test]          # installs: ["typeguard>=2.13"] + all above
 ```
