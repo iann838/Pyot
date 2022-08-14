@@ -46,5 +46,5 @@ The documentation covers:
 Due to the complexity of the framework, there is no quick-start guide, it is recommended to start with:
 
 - Reading and understanding the **Cores** section of the documentation.
-- Reading and understanding the example projects at **Examples** section (pending, work in progress) to get familiar.
+- Reading and understanding the example projects at **Examples** section to get familiar.
 - If your project requires a specific integration, check out **Integrations** section.

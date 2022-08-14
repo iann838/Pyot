@@ -1,6 +1,6 @@
 # Configuration
 
-Pyot requires many setups and configurations in order to work properly.
+Pyot requires many setups and configurations in order to work properly. Models cannot be imported until the related confs are evaluated (raises `Model ... is inactive`).
 
 These configurations generally stays all packed in a single file (generally called `conf.py` or `pyotconf.py`) or one file per model, they must be loaded **once and only once** at application startup.
 
@@ -61,7 +61,7 @@ For cache stores, multiple stores of the same backend can be configured, it may 
 ## Imports
 
 {% hint style='info' %}
-If you wish to pack everything into a single file project, put all conf at the top of your file, and skip importing. This is generally not a good practice.
+If you wish to pack everything into a single file project, put all conf at the top of your file, and skip importing. This is generally not recommended.
 {% endhint %}
 
 Conf files can be imported in following ways:
@@ -75,7 +75,7 @@ Conf files can be imported in following ways:
     * `path_or_paths`: Import path or list of import paths to the conf files.
 
 {% hint style='tip' %}
-Import path is the path used as if the file/module is being imported using python syntax via `import`, `__import__` or `importlib.import_module`
+Import path is the path used as if the file/module is being imported using python syntax via `import`, `__import__` or `importlib.import_module`.
 {% endhint %}
 
 ## Example
@@ -83,7 +83,7 @@ Import path is the path used as if the file/module is being imported using pytho
 Example configuration of `lol` model and a default pipeline including a cache store that caches summoners for 100 seconds, matches and timelines for 10 minutes; and service stores for CDragon and RiotAPI:
 
 ```python
-# myproject/mymodule/pyotconf.py
+# myproject/pyotconf.py
 
 from pyot.conf.model import activate_model, ModelConf
 from pyot.conf.pipeline import activate_pipeline, PipelineConf
@@ -123,9 +123,9 @@ class LolPipeline(PipelineConf):
 Now import the confs into your application:
 
 ```python
-# myproject/mymodule/__main__.py
+# myproject/myapp.py
 
 from pyot.conf.utils import import_confs
 
-import_confs("mymodule.pyotconf")
+import_confs("pyotconf")
 ```

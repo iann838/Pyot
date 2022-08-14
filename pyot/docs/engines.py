@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import os
 from typing import Callable, Iterable, TypeVar, get_type_hints
 from pathlib import Path
 import shutil
@@ -451,3 +452,37 @@ class UtilsDocEngine(DocEngine):
             "properties": dict(filter(lambda item: item[1]["type"].endswith(("property", "lazy_property")), o.items())),
             "methods": dict(filter(lambda item: item[1]["type"].endswith("method"), o.items())),
         }
+
+
+class ExamplesDocEngine(DocEngine):
+
+    
+    BASE_PATH = Path.cwd() / 'docs' / 'examples'
+
+    def prepare(self):
+        '''Activate all models and remove existing docs'''
+        shutil.rmtree(self.BASE_PATH, ignore_errors=True)
+
+    def build(self):
+        (self.BASE_PATH).mkdir(parents=True, exist_ok=True)
+        with open(self.BASE_PATH / 'README.md', 'w+') as f:
+            f.writelines(["# Examples"])
+        self.build_by_path("examples")
+
+    def build_by_path(self, path: str):
+        for dirpath, dirnames, filenames in os.walk(path):
+            if len(dirpath.split("\\")) != 2:
+                continue
+            with open(dirpath + "/docs.md") as rf, open(self.BASE_PATH / (dirpath.split("\\")[-1] + ".md"), "w") as wf:
+                for line in rf.readlines():
+                    if line.startswith("!!!File="):
+                        filepath = line.replace("!!!File=", "").strip()
+                        wf.writelines([
+                            f"File: `{filepath}`\n",
+                            "```python\n",
+                            (Path(dirpath) / filepath).read_text() + "\n",
+                            "```\n\n"
+                        ])
+                    else:
+                        wf.write(line)
+
