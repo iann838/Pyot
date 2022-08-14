@@ -60,6 +60,10 @@ For cache stores, multiple stores of the same backend can be configured, it may 
 
 ## Imports
 
+{% hint style='info' %}
+If you wish to pack everything into a single file project, put all conf at the top of your file, and skip importing. This is generally not a good practice.
+{% endhint %}
+
 Conf files can be imported in following ways:
 
 - Using `import_confs` from `pyot.conf.utils`.
