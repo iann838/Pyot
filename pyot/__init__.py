@@ -1,6 +1,6 @@
 from . import integrations
 
-__version__ = "6.0.1"
+__version__ = "6.0.2"
 
 
 integrations.django.activate()

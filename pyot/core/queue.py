@@ -52,7 +52,7 @@ class Queue:
                     self.responses[item.id] = res
             except Exception:
                 one, two, three = sys.exc_info()
-                self.exception_handler(traceback.format_exc())
+                self.exception_handler(one, two, three)
             finally:
                 queue.task_done()
 
