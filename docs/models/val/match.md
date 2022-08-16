@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str = None` 
+  * `id`: `str = empty` 
   * `platform`: `str = models.val.DEFAULT_PLATFORM` 
 
 Endpoints: 
@@ -35,7 +35,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `puuid`: `str = None` 
+  * `puuid`: `str = empty` 
   * `platform`: `str = models.val.DEFAULT_PLATFORM` 
 * `__iter__` -> `Iterator[pyot.models.val.match.Match]` 
 * `__len__` -> `int` 
@@ -57,7 +57,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `queue`: `str = None` 
+  * `queue`: `str = empty` 
   * `platform`: `str = models.val.DEFAULT_PLATFORM` 
 * `__iter__` -> `Iterator[pyot.models.val.match.Match]` 
 * `__len__` -> `int` 

@@ -1,6 +1,7 @@
 from typing import List, Iterator, NoReturn, TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -59,7 +60,7 @@ class League(PyotCore):
         rules = {"league_v1_league_by_league_id": ["id"]}
         renamed = {"league_id": "id"}
 
-    def __init__(self, id: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+    def __init__(self, id: str = empty, platform: str = models.tft.DEFAULT_PLATFORM):
         self.initialize(locals())
 
 
@@ -103,7 +104,7 @@ class SummonerLeague(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"league_v1_summoner_entries": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.tft.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -138,10 +139,10 @@ class DivisionLeague(SummonerLeague):
         division_list = ["I", "II", "III", "IV"]
         tier_list = ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]
 
-    def __init__(self, division: str = None, tier: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+    def __init__(self, division: str = empty, tier: str = empty, platform: str = models.tft.DEFAULT_PLATFORM):
         self.initialize(locals())
 
-    def query(self, page: int = None):
+    def query(self, page: int = empty):
         '''Set query request parameters.'''
         super()._place_query(locals())
         return self

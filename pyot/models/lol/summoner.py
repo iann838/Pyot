@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore
 
 if TYPE_CHECKING:
@@ -35,7 +36,7 @@ class Summoner(PyotCore):
         }
         renamed = {"summoner_level": "level", "revision_date": "revision_date_millis"}
 
-    def __init__(self, id: str = None, account_id: str = None, name: str = None, puuid: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, id: str = empty, account_id: str = empty, name: str = empty, puuid: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     @property

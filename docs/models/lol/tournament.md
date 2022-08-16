@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `region`: `str = None` 
+  * `region`: `str = empty` 
 
 Endpoints: 
 * `tournament_v4_tournaments`: `[]` 
@@ -28,8 +28,8 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `code`: `str = None` 
-  * `region`: `str = None` 
+  * `code`: `str = empty` 
+  * `region`: `str = empty` 
 
 Endpoints: 
 * `tournament_v4_codes_by_code`: `['code']` 
@@ -38,7 +38,7 @@ Body Params:
 * `map_type`: `str` 
 * `pick_type`: `str` 
 * `spectator_type`: `str` 
-* `allowed_summoner_ids`: `List[str] = None` 
+* `allowed_summoner_ids`: `List[str] = empty` 
 
 Attributes: 
 * `code` -> `str` 
@@ -65,22 +65,22 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `region`: `str = None` 
+  * `region`: `str = empty` 
 
 Endpoints: 
 * `tournament_v4_codes`: `[]` 
 
 Query Params: 
 * `tournament_id`: `int` 
-* `count`: `int = None` 
+* `count`: `int = empty` 
 
 Body Params: 
 * `map_type`: `str` 
 * `pick_type`: `str` 
 * `team_size`: `int` 
 * `spectator_type`: `str` 
-* `allowed_summoner_ids`: `List[str] = None` 
-* `metadata`: `str = None` 
+* `allowed_summoner_ids`: `List[str] = empty` 
+* `metadata`: `str = empty` 
 
 Attributes: 
 * `codes` -> `List[str]` 
@@ -96,8 +96,8 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `code`: `int = None` 
-  * `region`: `str = None` 
+  * `code`: `int = empty` 
+  * `region`: `str = empty` 
 * `__iter__` -> `Iterator[pyot.models.lol.tournament.TournamentLobbyEventData]` 
 * `__len__` -> `int` 
 
@@ -115,7 +115,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `region`: `str = None` 
+  * `region`: `str = empty` 
 
 Endpoints: 
 * `tournament_v4_providers`: `[]` 
@@ -164,15 +164,15 @@ Endpoints:
 
 Query Params: 
 * `tournament_id`: `int` 
-* `count`: `int = None` 
+* `count`: `int = empty` 
 
 Body Params: 
 * `map_type`: `str` 
 * `pick_type`: `str` 
 * `team_size`: `int` 
 * `spectator_type`: `str` 
-* `allowed_summoner_ids`: `List[str] = None` 
-* `metadata`: `str = None` 
+* `allowed_summoner_ids`: `List[str] = empty` 
+* `metadata`: `str = empty` 
 
 Attributes: 
 * `codes` -> `List[str]` 

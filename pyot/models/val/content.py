@@ -1,6 +1,7 @@
 from typing import List, TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -103,7 +104,7 @@ class Content(PyotCore):
     def __init__(self, platform: str = models.val.DEFAULT_PLATFORM):
         self.initialize(locals())
 
-    def query(self, locale: str = None):
+    def query(self, locale: str = empty):
         '''Set query request parameters.'''
         super()._place_query(locals())
         return self

@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str = None` 
+  * `id`: `str = empty` 
   * `region`: `str = models.tft.DEFAULT_REGION` 
 
 Endpoints: 
@@ -26,7 +26,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `puuid`: `str = None` 
+  * `puuid`: `str = empty` 
   * `region`: `str = models.tft.DEFAULT_REGION` 
 * `__iter__` -> `Iterator[pyot.models.tft.match.Match]` 
 * `__len__` -> `int` 

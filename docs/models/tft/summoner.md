@@ -8,10 +8,10 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str = None` 
-  * `account_id`: `str = None` 
-  * `name`: `str = None` 
-  * `puuid`: `str = None` 
+  * `id`: `str = empty` 
+  * `account_id`: `str = empty` 
+  * `name`: `str = empty` 
+  * `puuid`: `str = empty` 
   * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 

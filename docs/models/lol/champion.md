@@ -8,9 +8,9 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `int = None` 
-  * `key`: `str = None` 
-  * `name`: `str = None` 
+  * `id`: `int = empty` 
+  * `key`: `str = empty` 
+  * `name`: `str = empty` 
   * `version`: `str = models.lol.DEFAULT_VERSION` 
   * `locale`: `str = models.lol.DEFAULT_LOCALE` 
 

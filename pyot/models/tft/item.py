@@ -1,7 +1,7 @@
 from typing import List, Iterator, Dict, Union
 
 from pyot.conf.model import models
-from pyot.core.functional import cache_indexes, lazy_property
+from pyot.core.functional import cache_indexes, lazy_property, empty
 from pyot.utils.tft.cdragon import sanitize_item_description, abs_url
 from .base import PyotCore
 
@@ -22,7 +22,7 @@ class Item(PyotCore):
         rules = {"cdragon_tft_full": ["?id", "version", "locale"]}
         renamed = {"from":"from_ids", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, id: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
 
     @cache_indexes

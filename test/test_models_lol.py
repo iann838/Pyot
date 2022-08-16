@@ -151,7 +151,7 @@ async def test_rune():
 
 @async_to_sync
 async def test_spectator():
-    o = await lol.FeaturedGames(platform="na1").get()
+    o = await lol.FeaturedGames(platform="euw1").get()
     assert_walkable(o)
     assert_types(o)
     s = await o[0].participants[0].summoner.get()

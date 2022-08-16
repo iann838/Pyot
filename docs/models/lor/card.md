@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `code`: `str = None` 
+  * `code`: `str = empty` 
   * `version`: `str = models.lor.DEFAULT_VERSION` 
   * `locale`: `str = models.lor.DEFAULT_LOCALE` 
 * `__str__` -> `str` 
@@ -61,7 +61,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `set`: `int = None` 
+  * `set`: `int = empty` 
   * `version`: `str = models.lor.DEFAULT_VERSION` 
   * `locale`: `str = models.lor.DEFAULT_LOCALE` 
 * `__iter__` -> `Iterator[pyot.models.lor.card.Card]` 

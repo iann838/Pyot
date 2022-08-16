@@ -127,4 +127,7 @@ def is_laziable(obj):
 
 
 def convert_keys_camel_case(kwargs: Dict) -> Dict:
-    return {camel_case(key): val for (key, val) in kwargs.items() if key != "self" and val is not None}
+    return {camel_case(key): val for (key, val) in kwargs.items() if val is not None}
+
+
+empty = None

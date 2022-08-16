@@ -57,15 +57,15 @@ Extends:
 
 Definitions: 
 * `__init__` -> `None` 
-  * `division`: `str = None` 
-  * `tier`: `str = None` 
+  * `division`: `str = empty` 
+  * `tier`: `str = empty` 
   * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 
 * `league_v1_entries_by_division`: `['tier', 'division']` 
 
 Query Params: 
-* `page`: `int = None` 
+* `page`: `int = empty` 
 
 Attributes: 
 * `summoner_id` -> `str` 
@@ -105,7 +105,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str = None` 
+  * `id`: `str = empty` 
   * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 
 Endpoints: 
@@ -146,7 +146,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `summoner_id`: `str = None` 
+  * `summoner_id`: `str = empty` 
   * `platform`: `str = models.tft.DEFAULT_PLATFORM` 
 * `__iter__` -> `Iterator[pyot.models.tft.league.SummonerLeagueEntryData]` 
 * `__len__` -> `int` 

@@ -2,6 +2,7 @@ from typing import List, TYPE_CHECKING
 from datetime import datetime
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -61,7 +62,7 @@ class ClashPlayers(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"clash_v1_players": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def transform(self, data):
@@ -89,7 +90,7 @@ class ClashTeam(PyotCore):
         renamed = {"captain": "captain_summoner_id"}
         rules = {"clash_v1_teams": ["id"]}
 
-    def __init__(self, id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def transform(self, data):
@@ -142,7 +143,7 @@ class ClashTournament(ClashTournamentData, PyotCore):
             "clash_v1_toutnaments_by_tournament_id": ["id"]
         }
 
-    def __init__(self, id: int = None, team_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, id: int = empty, team_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     @property

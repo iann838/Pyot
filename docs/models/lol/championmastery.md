@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `summoner_id`: `str = None` 
+  * `summoner_id`: `str = empty` 
   * `platform`: `str = models.lol.DEFAULT_PLATFORM` 
 * `__iter__` -> `Iterator[pyot.models.lol.championmastery.ChampionMastery]` 
 * `__len__` -> `int` 
@@ -31,8 +31,8 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `summoner_id`: `str = None` 
-  * `champion_id`: `int = None` 
+  * `summoner_id`: `str = empty` 
+  * `champion_id`: `int = empty` 
   * `platform`: `str = models.lol.DEFAULT_PLATFORM` 
 
 Endpoints: 

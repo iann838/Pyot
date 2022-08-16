@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -243,7 +244,7 @@ class Match(PyotCore):
         renamed = {"match_info": "info", "game_start_time_millis": "start_time_millis", "match_id": "id"}
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: str = None, platform: str = models.val.DEFAULT_PLATFORM):
+    def __init__(self, id: str = empty, platform: str = models.val.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     @property
@@ -258,7 +259,7 @@ class MatchHistory(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v1_matchlist": ["puuid"]}
 
-    def __init__(self, puuid: str = None, platform: str = models.val.DEFAULT_PLATFORM):
+    def __init__(self, puuid: str = empty, platform: str = models.val.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -287,7 +288,7 @@ class RecentMatches(PyotCore):
         rules = {"match_v1_recent": ["queue"]}
         renamed = {"current_time": "current_timestamp"}
 
-    def __init__(self, queue: str = None, platform: str = models.val.DEFAULT_PLATFORM):
+    def __init__(self, queue: str = empty, platform: str = models.val.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def __getitem__(self, item):

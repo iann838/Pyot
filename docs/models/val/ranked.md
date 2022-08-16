@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `act_id`: `str = None` 
+  * `act_id`: `str = empty` 
   * `platform`: `str = models.val.DEFAULT_PLATFORM` 
 * `__iter__` -> `Iterator[pyot.models.val.ranked.LeaderboardPlayerData]` 
 * `__len__` -> `int` 

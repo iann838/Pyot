@@ -1,5 +1,6 @@
 from typing import List, Iterator, TYPE_CHECKING
 
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -23,7 +24,7 @@ class TournamentProvider(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"tournament_v4_providers": []}
 
-    def __init__(self, region: str = None):
+    def __init__(self, region: str = empty):
         self.initialize(locals())
 
     def body(self, region: str, url: str):
@@ -52,7 +53,7 @@ class Tournament(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"tournament_v4_tournaments": []}
 
-    def __init__(self, region: str = None):
+    def __init__(self, region: str = empty):
         self.initialize(locals())
 
     def body(self, name: str, provider_id: int):
@@ -81,7 +82,7 @@ class TournamentLobbyEvents(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"tournament_v4_lobby_events": ["code"]}
 
-    def __init__(self, code: int = None, region: str = None):
+    def __init__(self, code: int = empty, region: str = empty):
         self.initialize(locals())
 
     def transform(self, data):
@@ -125,10 +126,10 @@ class TournamentCode(PyotCore):
         renamed = {"region": "hosted_region", "participants": "summoner_ids"}
         rules = {"tournament_v4_codes_by_code": ["code"]}
 
-    def __init__(self, code: str = None, region: str = None):
+    def __init__(self, code: str = empty, region: str = empty):
         self.initialize(locals())
 
-    def body(self, map_type: str, pick_type: str, spectator_type: str, allowed_summoner_ids: List[str] = None):
+    def body(self, map_type: str, pick_type: str, spectator_type: str, allowed_summoner_ids: List[str] = empty):
         '''Set body request parameters.'''
         super()._place_body(locals())
         return self
@@ -147,10 +148,10 @@ class TournamentCodes(PyotCore):
         raws = {"codes"}
         rules = {"tournament_v4_codes": []}
 
-    def __init__(self, region: str = None):
+    def __init__(self, region: str = empty):
         self.initialize(locals())
 
-    def query(self, tournament_id: int, count: int = None):
+    def query(self, tournament_id: int, count: int = empty):
         '''Set query request parameters.'''
         super()._place_query(locals())
         return self

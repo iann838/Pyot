@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `int = None` 
+  * `id`: `int = empty` 
 
 Endpoints: 
 * `meraki_item_by_id`: `['id']` 

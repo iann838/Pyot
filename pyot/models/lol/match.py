@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Iterator, Dict, TYPE_CHECKING, Tuple, Union
 
 from pyot.conf.model import models
-from pyot.core.functional import lazy_property
+from pyot.core.functional import lazy_property, empty
 
 from .base import PyotCore, PyotStatic
 
@@ -570,7 +570,7 @@ class Match(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v5_match": ["id"]}
 
-    def __init__(self, id: str, region: str = models.lol.DEFAULT_REGION):
+    def __init__(self, id: str = empty, region: str = models.lol.DEFAULT_REGION):
         self.initialize(locals())
 
     @property
@@ -618,7 +618,7 @@ class Timeline(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v5_timeline": ["id"]}
 
-    def __init__(self, id: str, region: str = models.lol.DEFAULT_REGION):
+    def __init__(self, id: str = empty, region: str = models.lol.DEFAULT_REGION):
         self.initialize(locals())
 
     def transform(self, data):
@@ -646,7 +646,7 @@ class MatchHistory(PyotCore):
         rules = {"match_v5_matches": ["puuid"]}
         raws = {"ids"}
 
-    def __init__(self, puuid: str, region: str = models.lol.DEFAULT_REGION):
+    def __init__(self, puuid: str = empty, region: str = models.lol.DEFAULT_REGION):
         self.initialize(locals())
 
     def __getitem__(self, item) -> Match:
@@ -672,7 +672,7 @@ class MatchHistory(PyotCore):
     def match_timelines(self) -> List[Tuple[Match, Timeline]]:
         return [(Match(id=id_, region=self.region), Timeline(id=id_, region=self.region)) for id_ in self.ids]
 
-    def query(self, start: int = 0, count: int = 20, queue: int = None, type: str = None, start_time: Union[int, datetime] = None, end_time: Union[int, datetime] = None):
+    def query(self, start: int = 0, count: int = 20, queue: int = empty, type: str = empty, start_time: Union[int, datetime] = empty, end_time: Union[int, datetime] = empty):
         '''Set query request parameters.'''
         if isinstance(start_time, datetime):
             start_time = int(start_time.timestamp())

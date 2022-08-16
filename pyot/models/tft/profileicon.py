@@ -1,7 +1,7 @@
 from typing import List, Iterator
 
 from pyot.conf.model import models
-from pyot.core.functional import cache_indexes, lazy_property
+from pyot.core.functional import cache_indexes, lazy_property, empty
 from pyot.utils.tft.cdragon import abs_url
 from .base import PyotCore
 
@@ -13,7 +13,7 @@ class ProfileIcon(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_profile_icon_full": ["?id", "version", "locale"]}
 
-    def __init__(self, id: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
 
     @cache_indexes

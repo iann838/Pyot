@@ -1,9 +1,10 @@
 from typing import List, TYPE_CHECKING
+
+from pyot.core.functional import empty
 from .base import PyotStatic, PyotCore
 
 if TYPE_CHECKING:
     from .item import Item
-    from .champion import Champion
     from .merakichampion import MerakiChampion
 
 
@@ -103,7 +104,7 @@ class MerakiItem(PyotCore):
         renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids",
             "required_champion": "required_champion_key", "special_recipe": "special_recipe_id"}
 
-    def __init__(self, id: int = None):
+    def __init__(self, id: int = empty):
         self.initialize({"locale": "default", **locals()})
 
     @property

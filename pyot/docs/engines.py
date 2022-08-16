@@ -95,7 +95,7 @@ class ModelsDocEngine(DocEngine):
                                 for def_name, definition in clas_detail['definitions'].items():
                                     lines.extend([
                                         f"* `{def_name}` -> `{definition['returns']}` \n",
-                                        *[f"  * `{arg_name}`: `{arg_type}` \n" for arg_name, arg_type in definition['args'].items()]
+                                        *[f"  * `{arg_name}`: `{arg_type.replace('= None', '= empty')}` \n" for arg_name, arg_type in definition['args'].items()]
                                     ])
                             if clas_detail['endpoints']:
                                 lines.append(f'\nEndpoints: \n')
@@ -104,11 +104,11 @@ class ModelsDocEngine(DocEngine):
                             if clas_detail['query_params']:
                                 lines.append(f'\nQuery Params: \n')
                                 for q_name, q_type in clas_detail['query_params'].items():
-                                    lines.append(f"* `{q_name}`: `{q_type}` \n")
+                                    lines.append(f"* `{q_name}`: `{q_type.replace('= None', '= empty')}` \n")
                             if clas_detail['body_params']:
                                 lines.append(f'\nBody Params: \n')
                                 for q_name, q_type in clas_detail['body_params'].items():
-                                    lines.append(f"* `{q_name}`: `{q_type}` \n")
+                                    lines.append(f"* `{q_name}`: `{q_type.replace('= None', '= empty')}` \n")
                             if clas_detail['methods']:
                                 lines.append(f'\nMethods: \n')
                                 for att_name, att_content in clas_detail['methods'].items():

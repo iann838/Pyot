@@ -1,7 +1,7 @@
 from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
-from pyot.core.functional import lazy_property, cache_indexes
+from pyot.core.functional import lazy_property, cache_indexes, empty
 from pyot.core.exceptions import NotFound
 from pyot.utils.tft.cdragon import merge_set_data, sanitize_champion_description, abs_url
 from .base import PyotCore, PyotStatic
@@ -69,7 +69,7 @@ class Champion(PyotCore):
         rules = {"cdragon_tft_full": ["?key", "?set", "version", "locale"]}
         renamed = {"api_name": "key", "traits": "trait_keys", "icon": "icon_path"}
 
-    def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, key: str = empty, set: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
         if key and set is None:
             self.find_set()

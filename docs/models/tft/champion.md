@@ -8,8 +8,8 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `key`: `str = None` 
-  * `set`: `int = None` 
+  * `key`: `str = empty` 
+  * `set`: `int = empty` 
   * `version`: `str = models.tft.DEFAULT_VERSION` 
   * `locale`: `str = models.lol.DEFAULT_LOCALE` 
 

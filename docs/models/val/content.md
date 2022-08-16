@@ -14,7 +14,7 @@ Endpoints:
 * `content_v1_contents`: `[]` 
 
 Query Params: 
-* `locale`: `str = None` 
+* `locale`: `str = empty` 
 
 Attributes: 
 * `version` -> `str` 

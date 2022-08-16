@@ -85,15 +85,15 @@ class ResourceTemplate(Generic[R]):
 
     _acquisitions: Dict[asyncio.AbstractEventLoop, R]
 
-    def __init__(self, acquire_func: Callable[[], Union[R, Awaitable[R]]], release_func: Callable[[R], Any] = ...) -> None:
+    def __init__(self, acquire_func: Callable[[], Union[R, Awaitable[R]]], release_func: Callable[[R], Any] = None) -> None:
         self._acquisitions = {}
         self._lock = AsyncLock()
         self.acquire_func = acquire_func
         self.release_func = release_func
         resource_templates.append(self)
 
-    async def acquire(self, loop: asyncio.AbstractEventLoop = ...) -> R:
-        if loop is ...:
+    async def acquire(self, loop: asyncio.AbstractEventLoop = None) -> R:
+        if loop is None:
             loop = asyncio.get_event_loop()
         if loop in self._acquisitions:
             return self._acquisitions[loop]
@@ -115,13 +115,13 @@ class ResourceTemplate(Generic[R]):
                 await self.purge()
             return self._acquisitions[loop]
 
-    async def release(self, loop: asyncio.AbstractEventLoop = ...):
-        if loop is ...:
+    async def release(self, loop: asyncio.AbstractEventLoop = None):
+        if loop is None:
             loop = asyncio.get_event_loop()
         async with self._lock:
             try:
                 acquisition = self._acquisitions.pop(loop)
-                if self.release_func is not ...:
+                if self.release_func is not None:
                     called = self.release_func(acquisition)
                     if inspect.isawaitable(called):
                         await called

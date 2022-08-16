@@ -2,6 +2,7 @@ from typing import List, Iterator, TYPE_CHECKING
 from datetime import datetime, timedelta
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -201,7 +202,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
     class Meta(FeaturedGameData.Meta, PyotCore.Meta):
         rules = {"spectator_v4_current_game": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def transform(self, data):

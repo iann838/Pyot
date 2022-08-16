@@ -1,6 +1,7 @@
 from typing import List, Iterator, TYPE_CHECKING, NoReturn
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -61,7 +62,7 @@ class League(PyotCore):
         rules = {"league_v4_league_by_league_id": ["id"]}
         renamed = {"league_id": "id"}
 
-    def __init__(self, id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
 
@@ -72,7 +73,7 @@ class ApexLeague(League):
     class Meta(League.Meta):
         pass
 
-    def __init__(self, queue: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, queue: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     @property
@@ -105,7 +106,7 @@ class SummonerLeague(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"league_v4_summoner_entries": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -138,10 +139,10 @@ class DivisionLeague(SummonerLeague):
     class Meta(SummonerLeague.Meta):
         rules = {"league_v4_entries_by_division": ["queue", "tier", "division"]}
 
-    def __init__(self, queue: str = None, division: str = None, tier: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, queue: str = empty, division: str = empty, tier: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
-    def query(self, page: int = None):
+    def query(self, page: int = empty):
         '''Set query request parameters.'''
         super()._place_query(locals())
         return self

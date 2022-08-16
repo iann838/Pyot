@@ -2,9 +2,10 @@ from typing import Dict, List, Iterator, Union
 
 from lor_deckcodes.encode import encode_deck
 from lor_deckcodes.decode import decode_deck
+
 from pyot.conf.model import models
 from pyot.core.objects import PyotUtilBase
-from pyot.core.functional import cache_indexes
+from pyot.core.functional import cache_indexes, empty
 from pyot.utils.lor.cards import batch_to_ccac
 from .base import PyotCore, PyotStatic
 
@@ -58,7 +59,7 @@ class Card(PyotCore):
         renamed = {"card_code": "code", "associated_cards": "associated_card_codes"}
         rules = {"ddragon_lor_set_data": ["set", "?code", "version", "locale"]}
 
-    def __init__(self, code: str = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+    def __init__(self, code: str = empty, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
         self.initialize(locals())
         if code:
             self.set = int(code[:2])
@@ -90,7 +91,7 @@ class Cards(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"ddragon_lor_set_data": ["set", "version", "locale"]}
 
-    def __init__(self, set: int = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+    def __init__(self, set: int = empty, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -117,7 +118,7 @@ class Batch(PyotUtilBase):
     set: int
     number: int
 
-    def __init__(self, code: str = None, count: int = 1, raw: str = None):
+    def __init__(self, code: str = empty, count: int = 1, raw: str = empty):
         if code:
             self.code = code
             self.count = int(count)
@@ -166,7 +167,7 @@ class Deck(PyotUtilBase):
     batches: List[Batch]
     code: str
 
-    def __init__(self, batches: Union[List[str], List[Batch]] = None, code: str = None):
+    def __init__(self, batches: Union[List[str], List[Batch]] = empty, code: str = empty):
         self.batches = []
         if batches:
             for batch in batches:

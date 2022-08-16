@@ -1,6 +1,7 @@
 from typing import Dict, List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -48,7 +49,7 @@ class Leaderboard(PyotCore):
         rules = {"ranked_v1_leaderboards": ["act_id"]}
         renamed = {"query": "query_str"}
 
-    def __init__(self, act_id: str = None, platform: str = models.val.DEFAULT_PLATFORM):
+    def __init__(self, act_id: str = empty, platform: str = models.val.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def __getitem__(self, item):

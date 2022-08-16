@@ -1,7 +1,7 @@
 from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
-from pyot.core.functional import cache_indexes, lazy_property
+from pyot.core.functional import cache_indexes, lazy_property, empty
 from pyot.utils.lol.cdragon import abs_url, sanitize_description
 from .base import PyotCore
 
@@ -41,7 +41,7 @@ class Item(PyotCore):
             "required_buff_currency_name": "required_currency", "required_buff_currency_cost": "required_currency_cost",
             "required_champion": "required_champion_key", "price": "self_cost", "price_total": "total_cost", "special_recipe": "special_recipe_id"}
 
-    def __init__(self, id: int = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
 
     @cache_indexes

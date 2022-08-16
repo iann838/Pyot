@@ -4,6 +4,7 @@ from typing import List, Iterator, TYPE_CHECKING
 from dateutil.parser import parse
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -77,7 +78,7 @@ class Match(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: str = None, region: str = models.lor.DEFAULT_REGION):
+    def __init__(self, id: str = empty, region: str = models.lor.DEFAULT_REGION):
         self.initialize(locals())
 
     def transform(self, data):
@@ -99,7 +100,7 @@ class MatchHistory(PyotCore):
         raws = {"ids"}
         rules = {"match_v1_matchlist": ["puuid"]}
 
-    def __init__(self, puuid: str = None, region: str = models.lor.DEFAULT_REGION):
+    def __init__(self, puuid: str = empty, region: str = models.lor.DEFAULT_REGION):
         self.initialize(locals())
 
     def transform(self, data):

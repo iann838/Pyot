@@ -91,7 +91,7 @@ class Queue:
         Block until all items in the queue have been gotten and processed.
         Empty the collected responses and returns them.
 
-        NoneType and Exceptions are not collected, order of the responses might not correspond the put order.
+        `None` and `Exception` responses are not collected, order of the responses might not correspond the put order.
         '''
         await self._queue.join()
         response = [res[1] for res in sorted(self.responses.items())]

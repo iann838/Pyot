@@ -1,7 +1,7 @@
 from typing import List, Dict, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
-from pyot.core.functional import lazy_property
+from pyot.core.functional import lazy_property, empty
 from pyot.utils.lol.champion import id_by_key, id_by_name
 from pyot.utils.lol.cdragon import abs_url, sanitize_description
 from .base import PyotCore, PyotStatic
@@ -193,7 +193,7 @@ class Champion(PyotCore):
         raws = {"roles", "recommended_item_defaults"}
         renamed = {"alias": "key", "short_bio": "lore", "playstyle_info": "play_style", "square_portrait_path": "square_path", "spells": "abilities"}
 
-    def __init__(self, id: int = None, key: str = None, name: str = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, key: str = empty, name: str = empty, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
         self.initialize(locals())
 
     async def setup(self):

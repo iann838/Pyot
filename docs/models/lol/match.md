@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str` 
+  * `id`: `str = empty` 
   * `region`: `str = models.lol.DEFAULT_REGION` 
 
 Endpoints: 
@@ -35,7 +35,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `puuid`: `str` 
+  * `puuid`: `str = empty` 
   * `region`: `str = models.lol.DEFAULT_REGION` 
 * `__iter__` -> `Iterator[pyot.models.lol.match.Match]` 
 * `__len__` -> `int` 
@@ -46,10 +46,10 @@ Endpoints:
 Query Params: 
 * `start`: `int = 0` 
 * `count`: `int = 20` 
-* `queue`: `int = None` 
-* `type`: `str = None` 
-* `start_time`: `Union[int, datetime.datetime] = None` 
-* `end_time`: `Union[int, datetime.datetime] = None` 
+* `queue`: `int = empty` 
+* `type`: `str = empty` 
+* `start_time`: `Union[int, datetime.datetime] = empty` 
+* `end_time`: `Union[int, datetime.datetime] = empty` 
 
 Attributes: 
 * `ids` -> `List[str]` 
@@ -67,7 +67,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str` 
+  * `id`: `str = empty` 
   * `region`: `str = models.lol.DEFAULT_REGION` 
 
 Endpoints: 

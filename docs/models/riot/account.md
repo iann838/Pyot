@@ -8,9 +8,9 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `puuid`: `str = None` 
-  * `game_name`: `str = None` 
-  * `tag_line`: `str = None` 
+  * `puuid`: `str = empty` 
+  * `game_name`: `str = empty` 
+  * `tag_line`: `str = empty` 
   * `region`: `str = models.riot.DEFAULT_REGION` 
 
 Endpoints: 
@@ -33,8 +33,8 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `puuid`: `str = None` 
-  * `game`: `str = None` 
+  * `puuid`: `str = empty` 
+  * `game`: `str = empty` 
   * `region`: `str = models.riot.DEFAULT_REGION` 
 
 Endpoints: 

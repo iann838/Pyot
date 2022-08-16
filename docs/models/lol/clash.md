@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `summoner_id`: `str = None` 
+  * `summoner_id`: `str = empty` 
   * `platform`: `str = models.lol.DEFAULT_PLATFORM` 
 
 Endpoints: 
@@ -28,7 +28,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `str = None` 
+  * `id`: `str = empty` 
   * `platform`: `str = models.lol.DEFAULT_PLATFORM` 
 
 Endpoints: 
@@ -58,8 +58,8 @@ Extends:
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `int = None` 
-  * `team_id`: `str = None` 
+  * `id`: `int = empty` 
+  * `team_id`: `str = empty` 
   * `platform`: `str = models.lol.DEFAULT_PLATFORM` 
 
 Endpoints: 

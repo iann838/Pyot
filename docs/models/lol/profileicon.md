@@ -8,7 +8,7 @@ Type: `PyotCore`
 
 Definitions: 
 * `__init__` -> `None` 
-  * `id`: `int = None` 
+  * `id`: `int = empty` 
   * `version`: `str = models.lol.DEFAULT_VERSION` 
   * `locale`: `str = models.lol.DEFAULT_LOCALE` 
 

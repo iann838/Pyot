@@ -1,6 +1,7 @@
 from typing import List, TYPE_CHECKING, Union
 
 from pyot.utils.lol.champion import key_by_id, key_by_name
+from pyot.core.functional import empty
 from .base import PyotStatic, PyotCore
 
 if TYPE_CHECKING:
@@ -207,7 +208,7 @@ class MerakiChampion(PyotCore):
         rules = {"meraki_champion_by_key": ["key"]}
         raws = {"roles"}
 
-    def __init__(self, id: int = None, key: str = None, name: str = None):
+    def __init__(self, id: int = empty, key: str = empty, name: str = empty):
         self.initialize({"locale": "default", **locals()})
 
     async def setup(self):

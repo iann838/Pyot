@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Iterator, TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class ChampionMastery(PyotCore):
         rules = {"champion_mastery_v4_by_champion_id": ["summoner_id", "champion_id"]}
         renamed = {'last_play_time': 'last_play_timestamp'}
 
-    def __init__(self, summoner_id: str = None, champion_id: int = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, champion_id: int = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     @property
@@ -70,7 +71,7 @@ class ChampionMasteries(PyotCore):
     def __len__(self):
         return len(self.masteries)
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def transform(self, data):

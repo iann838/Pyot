@@ -2,6 +2,7 @@
 from typing import TYPE_CHECKING
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore
 
 if TYPE_CHECKING:
@@ -15,7 +16,7 @@ class ThirdPartyCode(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"third_party_code_v4_code": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(self, summoner_id: str = empty, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
 
     def transform(self, data):

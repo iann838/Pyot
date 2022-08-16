@@ -2,6 +2,7 @@ from typing import List, Iterator, TYPE_CHECKING
 from datetime import datetime, timedelta
 
 from pyot.conf.model import models
+from pyot.core.functional import empty
 from .base import PyotCore, PyotStatic
 
 if TYPE_CHECKING:
@@ -129,7 +130,7 @@ class Match(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"match_v1_match": ["id"]}
 
-    def __init__(self, id: str = None, region: str = models.tft.DEFAULT_REGION):
+    def __init__(self, id: str = empty, region: str = models.tft.DEFAULT_REGION):
         self.initialize(locals())
 
     def transform(self, data):
@@ -158,7 +159,7 @@ class MatchHistory(PyotCore):
     def __len__(self):
         return len(self.ids)
 
-    def __init__(self, puuid: str = None, region: str = models.tft.DEFAULT_REGION):
+    def __init__(self, puuid: str = empty, region: str = models.tft.DEFAULT_REGION):
         self.initialize(locals())
 
     def query(self, count: int = 20):
