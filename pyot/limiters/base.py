@@ -36,10 +36,6 @@ class BaseLimiter(ABC):
             app_count = [[int(val) for val in token.split(':')] for token in headers["X-App-Rate-Limit-Count"].split(',')]
             method_limit = [[int(val) for val in token.split(':')] for token in headers["X-Method-Rate-Limit"].split(',')]
             method_count = [[int(val) for val in token.split(':')] for token in headers["X-Method-Rate-Limit-Count"].split(',')]
-            # if len(method_limit) == 1:
-            #     method_limit.append(method_limit[0])
-            # if len(method_count) == 1:
-            #     method_count.append(method_count[0])
             return {
                 "app_limit": app_limit,
                 "app_count": app_count,
@@ -57,7 +53,7 @@ class BaseLimiter(ABC):
             return None
         return {
             "type": response.headers["X-Rate-Limit-Type"] if "X-Rate-Limit-Type" in response.headers else "service",
-            "time": response.headers["Retry-After"] if "Retry-After" in response.headers else 1,
+            "time": float(response.headers["Retry-After"]) if "Retry-After" in response.headers else 1,
         }
 
     @abstractmethod
