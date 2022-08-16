@@ -160,7 +160,7 @@ class RedisLimiter(BaseLimiter):
         '''
         freeze_rates_lua = '''
         local now = tonumber(ARGV[1])
-        local time = ARGV[2]
+        local time = tonumber(ARGV[2])
         for i=1, #KEYS do
             redis.call("SET", KEYS[i]..":freeze", tostring(now + time))
         end
@@ -235,7 +235,7 @@ class RedisLimiter(BaseLimiter):
         redis = await self.redises.acquire()
         sha = await self.get_sha("freeze_rates")
         now = time() + self.latency + 0.005
-        args = [str(now), header["time"]]
+        args = [str(now), str(header["time"])]
         keys = []
         for (prefix_i, type, _) in token.pinging:
             if type != header["type"]:
