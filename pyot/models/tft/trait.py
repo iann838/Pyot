@@ -34,7 +34,7 @@ class Trait(PyotCore):
         rules = {"cdragon_tft_full": ["?set", "?key", "version", "locale"]}
         renamed = {"api_name": "key", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, key: str = empty, set: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, key: str = empty, set: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
         if key and set is None:
             self.find_set()
@@ -65,7 +65,7 @@ class Traits(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["?set", "version", "locale"]}
 
-    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
 
     def __getitem__(self, item):
