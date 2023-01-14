@@ -22,7 +22,7 @@ class Item(PyotCore):
         rules = {"cdragon_tft_full": ["?id", "version", "locale"]}
         renamed = {"from":"from_ids", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
 
     @cache_indexes
@@ -48,7 +48,7 @@ class Items(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
 
     def __getitem__(self, item):

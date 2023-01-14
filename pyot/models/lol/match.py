@@ -627,7 +627,8 @@ class Timeline(PyotCore):
         data["info"]["frames"] = data["info"]["frames"].copy()
         for i, f in enumerate(data["info"]["frames"]):
             data["info"]["frames"][i] = f.copy()
-            data["info"]["frames"][i]["participantFrames"] = list(sorted(f["participantFrames"].values(), key=lambda p: p["participantId"]))
+            if f["participantFrames"]:
+                data["info"]["frames"][i]["participantFrames"] = list(sorted(f["participantFrames"].values(), key=lambda p: p["participantId"]))
         return data
 
     @property

@@ -13,7 +13,7 @@ class ProfileIcon(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_profile_icon_full": ["?id", "version", "locale"]}
 
-    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, id: int = empty, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
 
     @cache_indexes
@@ -31,7 +31,7 @@ class ProfileIcons(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_profile_icon_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(self, version: str = models.tft.DEFAULT_VERSION, locale: str = models.tft.DEFAULT_LOCALE):
         self.initialize(locals())
 
     def __getitem__(self, item):

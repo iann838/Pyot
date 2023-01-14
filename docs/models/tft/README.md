@@ -6,6 +6,7 @@
 * `asia`
 * `esports`
 * `europe`
+* `sea`
 
 ## Routing Platforms 
 
@@ -20,4 +21,8 @@
 * `oc1`
 * `ru`
 * `tr1`
-
+* `ph2`
+* `sg2`
+* `th2`
+* `tw2`
+* `vn2`
