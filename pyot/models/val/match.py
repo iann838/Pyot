@@ -16,6 +16,7 @@ class MatchInfoData(PyotStatic):
     map_url: str
     start_millis: int
     length_millis: int
+    alt_region: str
     provisioning_flow_id: str
     is_completed: bool
     custom_game_name: str
@@ -26,7 +27,7 @@ class MatchInfoData(PyotStatic):
     season_id: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id", "map_id": "map_url"}
+        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id", "map_id": "map_url", "region": "alt_region"}
 
     @property
     def start(self) -> datetime:
