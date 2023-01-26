@@ -37,11 +37,15 @@ class Queue:
         if workers < 1: raise ValueError('Number of workers must be an integer greater than 0')
         self.workers = workers
         self.exception_handler = exception_handler
+        self.responses = {}
+        self.worker_tasks = []
         if maxsize is None:
             self.maxsize = workers * 2
         else:
             self.maxsize = maxsize
         self.log_level = log_level
+        self._queue = asyncio.Queue(maxsize=self.maxsize)
+        self._id_counter = 0
 
     async def worker(self, queue: asyncio.Queue):
         while True:
