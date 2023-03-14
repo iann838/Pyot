@@ -27,7 +27,7 @@ extras_require = {
 
 
 # Require python 3.7
-if sys.version_info.major != 3 and sys.version_info.minor < 7:
+if sys.version_info < (3,7):
     sys.exit("'Pyot' requires Python >= 3.7")
 
 setup(
