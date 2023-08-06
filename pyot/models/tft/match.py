@@ -1,4 +1,4 @@
-from typing import List, Iterator, TYPE_CHECKING
+from typing import List, Iterator, TYPE_CHECKING, Union
 from datetime import datetime, timedelta
 
 from pyot.conf.model import models
@@ -162,8 +162,12 @@ class MatchHistory(PyotCore):
     def __init__(self, puuid: str = empty, region: str = models.tft.DEFAULT_REGION):
         self.initialize(locals())
 
-    def query(self, count: int = 20):
+    def query(self, start: int = 0, count: int = 20, queue: int = empty, type: str = empty, start_time: Union[int, datetime] = empty, end_time: Union[int, datetime] = empty):
         '''Set query request parameters.'''
+        if isinstance(start_time, datetime):
+            start_time = int(start_time.timestamp())
+        if isinstance(end_time, datetime):
+            end_time = int(end_time.timestamp())
         super()._place_query(locals())
         return self
 
