@@ -20,9 +20,9 @@ install_requires = [
 
 extras_require = {
     "diskcache": ["diskcache>=5.1", "asgiref>=3.2"],
-    "redis": ["aioredis[hiredis]>=2.0"],
+    "redis": ["redis[hiredis]>=4.5.0"],
     "mongodb": ["motor>=2.3"],
-    "test": ["typeguard>=2.13", "aioredis[hiredis]>=2.0", "motor>=2.3", "diskcache>=5.1", "asgiref>=3.2"],
+    "test": ["typeguard>=2.13", "redis[hiredis]>=4.5.0", "motor>=2.3", "diskcache>=5.1", "asgiref>=3.2"],
 }
 
 
