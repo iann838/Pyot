@@ -11,7 +11,7 @@ Pyot is an asyncIO based high-level Python Riot Games API framework which encour
 | PyPI | `6.0.8` |
 | master | `6.0.8` |
 
-If you're migrating your project to a newer version of Pyot, please refer to **Changelog** section of the [documentation](https://pyot.paaksing.com).
+If you're migrating your project to a newer version of Pyot, please refer to **Changelog** section of the [documentation](https://pyot.iann838.com).
 
 ## Features
 
