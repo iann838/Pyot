@@ -33,9 +33,9 @@ if sys.version_info < (3,7):
 setup(
     name="pyot",
     version="6.0.9",
-    author="Paaksing",
-    author_email="paaksingtech@gmail.com",
-    url="https://github.com/paaksing/Pyot",
+    author="Jian Huang",
+    author_email="iann838dev@gmail.com",
+    url="https://github.com/iann838/Pyot",
     description="AsyncIO-based high level Python framework Riot Games API framework that encourages rapid development and clean, pragmatic design.",
     long_description=long_description,
     long_description_content_type='text/markdown',
