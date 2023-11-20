@@ -3,7 +3,7 @@
 - Type: Cache
 - Description: Uses Redis servers as Caches. This cache provides similar speeds to Omnistone while preserving data even if the program is down.
 
-This Cache is built on top of Async Python integration of [redis](https://github.com/aio-libs/aioredis-py).
+This Cache is built on top of Async Python integration of [redis](https://github.com/redis/redis-py).
 
 An extra installation is required: `pip install pyot[redis]`
 

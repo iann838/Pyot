@@ -2,7 +2,7 @@ from time import time
 from typing import Dict, List, Union
 
 from aiohttp import ClientResponse
-import aioredis
+import redis.asyncio as aioredis
 
 from pyot.core.resources import ResourceTemplate
 

@@ -1,5 +1,5 @@
 from typing import Any
-import aioredis
+import redis.asyncio as aioredis
 import pickle
 
 from pyot.core.exceptions import NotFound
