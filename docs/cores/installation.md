@@ -17,7 +17,7 @@ pip install pyot -U
 Installing from source code master, it may include hotfixes and unstable code:
 
 ```shell
-pip install git+https://github.com/paaksing/Pyot.git
+pip install git+https://github.com/iann838/Pyot.git
 ```
 
 ## Extras
