@@ -32,11 +32,11 @@ if sys.version_info < (3,7):
 
 setup(
     name="pyot",
-    version="6.0.8",
+    version="6.0.9",
     author="Paaksing",
     author_email="paaksingtech@gmail.com",
     url="https://github.com/paaksing/Pyot",
-    description="AsyncIO based high level Python framework Riot Games API framework which encourages rapid development and clean, pragmatic design.",
+    description="AsyncIO-based high level Python framework Riot Games API framework that encourages rapid development and clean, pragmatic design.",
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "asyncio"],
