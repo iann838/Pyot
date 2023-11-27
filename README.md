@@ -1,10 +1,12 @@
-![Pyot](banner.jpg)
-# Pyot
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](https://github.com/paaksing/pyot/blob/master/LICENSE)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/iann838/pyot)
 
-Pyot is an asyncIO-based high-level Python Riot Games API framework that encourages rapid development and clean, pragmatic design. It takes care of much of the hassle of the Riot Games API, so developers can focus on writing apps without needing to reinvent the wheel. It’s free and open source.
+> [!CAUTION]
+> This package is now DEPRECATED and will no longer receive new updates. It has proved to be overly complex, hard to customize or extend, and contains an increased amount of implicit syntaxes that go against best practices. New projects shall NOT use this package and old projects should move away from this package as soon as possible.
+> 
+> The recommended package is [pulsefire](https://github.com/iann838/pulsefire). A modern and flexible Riot Games Python SDK. Built to be simple to use, highly configurable, and extendable. Objects and client responses are fully typed to speed up coding efficiency.
+
+# Pyot
+
+Pyot is an asyncIO-based high-level Python Riot Games API framework that encourages rapid development and clean, pragmatic design. It takes care of much of the hassle of the Riot Games API, so developers can focus on writing apps without reinventing the wheel. It’s free and open source.
 
 | Index | Version |
 | ---- | ------- |
